@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: </title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <link rel="alternate" type="application/rss+xml" title="Software Carpentry Blog" href="http://software-carpentry.org/feed.xml"/>
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://software-carpentry.org" title="Software Carpentry">
+          <img alt="Software Carpentry banner" src="img/software-carpentry-banner.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+                    <h1 class="title"></h1>
+          <h1 id="rnaseq-de-analysis-with-r---solutions">RNAseq DE analysis with R - Solutions</h1>
+<p>This document provides solutions to the exercises given in the ‘RNAseq DE analysis with R’ course.</p>
+<h2 id="clustering">Clustering</h2>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2><span class="glyphicon glyphicon-pencil"></span>Exercise: Heatmap</h2>
+</div>
+<div class="panel-body">
+<p>Produce a heatmap for the 50 most highly expressed genes and annotate the samples with with their age.</p>
+<ul>
+<li>Subset the read counts object for the 30 most highly expressed genes</li>
+<li>Annotate the samples in the subset with their age (check order with design!)</li>
+<li>Plot a heatmap with this subset of data, scaling genes and ordering both genes and samples</li>
+</ul>
+</div>
+</section>
+<p>Solution:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Subset the read counts object for the 30 most highly expressed genes</span>
+select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">50</span>]
+highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]
+
+<span class="co"># Annotate the samples in the subset with their age (check order with design!)</span>
+<span class="kw">colnames</span>(highexprgenes_counts)&lt;-<span class="st"> </span>experiment_design.ord$age
+<span class="kw">head</span>(highexprgenes_counts)</code></pre>
+<pre><code>##              26      26      30      30      30      26       26      30
+## 4550   12559197 7221252 3612091 3696466 5332585 7045283 12201302 5190887
+## 4549    2635341 1542503  880852  900136 1256473 1506197  2564452 1226882
+## 213         711     633 1554756 1591787 1992909     541      560 1939249
+## 378706    87658 2085194 1200456 1212964   62432 2063356    86078   61130
+## 6029      44288 1461296  723247  726382   18142 1449540    43866   17747
+## 125050    80094  740715  588378  595398   54657  726225    78199   53896</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Plot a heatmap with this subset of data, scaling genes and ordering both genes and samples</span>
+<span class="kw">heatmap</span>(highexprgenes_counts, <span class="dt">col=</span><span class="kw">topo.colors</span>(<span class="dv">50</span>), <span class="dt">margin=</span><span class="kw">c</span>(<span class="dv">10</span>,<span class="dv">6</span>))</code></pre>
+<div class="figure">
+<img src="figure/Heatmap-1.png" alt="plot of chunk Heatmap" /><p class="caption">plot of chunk Heatmap</p>
+</div>
+<h2 id="principal-component-analysis">Principal Component Analysis</h2>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2><span class="glyphicon glyphicon-pencil"></span>Exercise: PCA</h2>
+</div>
+<div class="panel-body">
+<p>Produce a PCA plot from the read counts of the 50 most highly expressed genes and change the labels until you can identify the reason for the split between samples from the same tissue.</p>
+<ul>
+<li>Get the read counts for the 50 most highly expressed genes</li>
+<li>Transpose this matrix of read counts</li>
+<li>Check the number of dimensions explaining the variability in the dataset</li>
+<li>Run the PCA with an appropriate number of components</li>
+<li>Annotate the samples with their age &amp; re-run the PCA &amp; plot the main components</li>
+<li>Annotate the samples with other clinical data &amp; re-run the PCA &amp; plot the main components until you can separate the samples within each tissue group</li>
+</ul>
+</div>
+</section>
+<p>Solution:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mixOmics)</code></pre>
+<pre><code>## Loading required package: MASS
+## Loading required package: lattice</code></pre>
+<pre><code>## Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display</code></pre>
+<pre><code>## Warning in fun(libname, pkgname): error in rgl_init</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get the read counts for the 50 most highly expressed genes</span>
+select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">50</span>]
+highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]
+
+<span class="co"># Transpose this matrix of read counts</span>
+data_for_mixOmics &lt;-<span class="st"> </span><span class="kw">t</span>(highexprgenes_counts)
+
+<span class="co"># Check the number of dimensions explaining the variability in the dataset</span>
+tune =<span class="st"> </span><span class="kw">tune.pca</span>(data_for_mixOmics, <span class="dt">center =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="ot">TRUE</span>)</code></pre>
+<pre><code>## Eigenvalues for the first  8 principal components: 
+##          PC1          PC2          PC3          PC4          PC5 
+## 3.287836e+01 1.507356e+01 2.030841e+00 1.555950e-02 8.432604e-04 
+##          PC6          PC7          PC8 
+## 5.918977e-04 2.454588e-04 1.570937e-31 
+## 
+## Proportion of explained variance for the first  8 principal components: 
+##          PC1          PC2          PC3          PC4          PC5 
+## 6.575673e-01 3.014711e-01 4.061682e-02 3.111900e-04 1.686521e-05 
+##          PC6          PC7          PC8 
+## 1.183795e-05 4.909175e-06 3.141875e-33 
+## 
+## Cumulative proportion explained variance for the first  8 principal components: 
+##       PC1       PC2       PC3       PC4       PC5       PC6       PC7 
+## 0.6575673 0.9590384 0.9996552 0.9999664 0.9999833 0.9999951 1.0000000 
+##       PC8 
+## 1.0000000</code></pre>
+<div class="figure">
+<img src="figure/PCA-1.png" alt="plot of chunk PCA" /><p class="caption">plot of chunk PCA</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r">tune$prop.var</code></pre>
+<pre><code>##          PC1          PC2          PC3          PC4          PC5 
+## 6.575673e-01 3.014711e-01 4.061682e-02 3.111900e-04 1.686521e-05 
+##          PC6          PC7          PC8 
+## 1.183795e-05 4.909175e-06 3.141875e-33</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Run the PCA with an appropriate number of components</span>
+result &lt;-<span class="st"> </span><span class="kw">pca</span>(data_for_mixOmics, <span class="dt">ncomp =</span> <span class="dv">3</span>, <span class="dt">center =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="ot">TRUE</span>) 
+<span class="kw">plotIndiv</span>(result, <span class="dt">comp =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="dt">ind.names =</span> <span class="ot">TRUE</span>) </code></pre>
+<div class="figure">
+<img src="figure/PCA-2.png" alt="plot of chunk PCA" /><p class="caption">plot of chunk PCA</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Annotate the samples with their age \&amp; re-run the PCA \&amp; plot the main components</span>
+<span class="kw">rownames</span>(data_for_mixOmics)&lt;-<span class="st"> </span>experiment_design.ord$age
+result &lt;-<span class="st"> </span><span class="kw">pca</span>(data_for_mixOmics, <span class="dt">ncomp =</span> <span class="dv">3</span>, <span class="dt">center =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="ot">TRUE</span>) 
+<span class="kw">plotIndiv</span>(result, <span class="dt">comp =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="dt">ind.names =</span> <span class="ot">TRUE</span>) </code></pre>
+<div class="figure">
+<img src="figure/PCA-3.png" alt="plot of chunk PCA" /><p class="caption">plot of chunk PCA</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Annotate the samples with other clinical data \&amp; re-run the PCA \&amp; plot the main components until you can separate the samples within each tissue group</span>
+<span class="kw">rownames</span>(data_for_mixOmics)&lt;-<span class="st"> </span>experiment_design.ord$technical_replicate_group
+result &lt;-<span class="st"> </span><span class="kw">pca</span>(data_for_mixOmics, <span class="dt">ncomp =</span> <span class="dv">3</span>, <span class="dt">center =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="ot">TRUE</span>) 
+<span class="kw">plotIndiv</span>(result, <span class="dt">comp =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="dt">ind.names =</span> <span class="ot">TRUE</span>) </code></pre>
+<div class="figure">
+<img src="figure/PCA-4.png" alt="plot of chunk PCA" /><p class="caption">plot of chunk PCA</p>
+</div>
+<h2 id="differential-expression">Differential Expression</h2>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2><span class="glyphicon glyphicon-pencil"></span>Exercise: Limma</h2>
+</div>
+<div class="panel-body">
+<p>Get the number of DE genes between technical group 1 and technical group 2 (all Brain samples) with adj pvalue&lt;0.01.</p>
+<ul>
+<li>Create a new design matrix for limma with the technical replicate groups</li>
+<li>Re-normalise the read counts with ‘voom’ function with new design matrix</li>
+<li>Fit a linear model on these normalised data</li>
+<li>Make the contrast matrix corresponding to the new set of parameters</li>
+<li>Fit the contrast matrix to the linear model</li>
+<li>Compute moderated t-statistics of differential expression</li>
+<li>Get the output table for the 10 most significant DE genes for this comparison</li>
+</ul>
+</div>
+</section>
+<p>Solution:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(limma)</code></pre>
+<pre><code>## Loading required package: methods</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create a new design matrix for limma with the technical replicate groups</span>
+techgroup&lt;-<span class="kw">factor</span>(experiment_design.ord$technical_replicate_group)
+design &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(~<span class="dv">0</span>+techgroup)
+<span class="kw">colnames</span>(design)&lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;techgroup&quot;</span>,<span class="st">&quot;&quot;</span>,<span class="kw">colnames</span>(design))
+design</code></pre>
+<pre><code>##   group_1 group_2 group_3 group_4
+## 1       0       1       0       0
+## 2       1       0       0       0
+## 3       0       0       0       1
+## 4       0       0       0       1
+## 5       0       0       1       0
+## 6       1       0       0       0
+## 7       0       1       0       0
+## 8       0       0       1       0
+## attr(,&quot;assign&quot;)
+## [1] 1 1 1 1
+## attr(,&quot;contrasts&quot;)
+## attr(,&quot;contrasts&quot;)$techgroup
+## [1] &quot;contr.treatment&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Re-normalise the read counts with &#39;voom&#39; function with new design matrix</span>
+y &lt;-<span class="st"> </span><span class="kw">voom</span>(mycounts,design,<span class="dt">lib.size=</span><span class="kw">colSums</span>(mycounts)*nf)
+counts.voom &lt;-<span class="st"> </span>y$E
+
+<span class="co"># Fit a linear model on these normalised data</span>
+fit &lt;-<span class="st"> </span><span class="kw">lmFit</span>(y,design)
+
+<span class="co"># Make the contrast matrix corresponding to the new set of parameters</span>
+cont.matrix &lt;-<span class="st"> </span><span class="kw">makeContrasts</span>(group_2-group_1,<span class="dt">levels=</span>design)
+cont.matrix </code></pre>
+<pre><code>##          Contrasts
+## Levels    group_2 - group_1
+##   group_1                -1
+##   group_2                 1
+##   group_3                 0
+##   group_4                 0</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Fit the contrast matrix to the linear model</span>
+fit &lt;-<span class="st"> </span><span class="kw">contrasts.fit</span>(fit, cont.matrix)
+
+<span class="co"># Compute moderated t-statistics of differential expression </span>
+fit &lt;-<span class="st"> </span><span class="kw">eBayes</span>(fit)
+<span class="kw">options</span>(<span class="dt">digits=</span><span class="dv">3</span>)
+
+<span class="co"># Get the output table for the 10 most significant DE genes for this comparison</span>
+<span class="kw">dim</span>(<span class="kw">topTable</span>(fit,<span class="dt">coef=</span><span class="st">&quot;group_2 - group_1&quot;</span>,<span class="dt">p.val=</span><span class="fl">0.01</span>,<span class="dt">n=</span><span class="ot">Inf</span>))</code></pre>
+<pre><code>## [1] 9652    6</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">topTable</span>(fit,<span class="dt">coef=</span><span class="st">&quot;group_2 - group_1&quot;</span>,<span class="dt">p.val=</span><span class="fl">0.01</span>)</code></pre>
+<pre><code>##         logFC AveExpr     t  P.Value adj.P.Val     B
+## 125050 -3.598   13.36 -1219 6.95e-58  1.04e-53 123.0
+## 378706 -4.964   14.07  -842 4.15e-54  3.12e-50 114.4
+## 6029   -5.432   13.07  -500 8.61e-49  4.31e-45 102.0
+## 4514    0.761   12.20   271 1.44e-42  5.42e-39  86.5
+## 26871  -2.795   10.87  -187 8.96e-39  2.69e-35  78.7
+## 6023   -4.752   10.00  -168 1.16e-37  2.90e-34  76.5
+## 6043   -2.923    8.73  -164 2.02e-37  4.34e-34  75.9
+## 5354    0.576    5.73   158 4.82e-37  9.05e-34  74.3
+## 692148  0.733   10.39   146 3.15e-36  5.26e-33  72.6
+## 652965 -2.864    7.83  -137 1.36e-35  2.04e-32  71.6</code></pre>
+<h2 id="gene-ontology">Gene Ontology</h2>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2><span class="glyphicon glyphicon-pencil"></span>Exercise: GOstats</h2>
+</div>
+<div class="panel-body">
+<p>Identify the GO terms in the Molecular Function domain that are over-represented (pvalue&lt;0.01) in your list of DE genes.</p>
+<ul>
+<li>Get your list of DE genes (Entrez Gene IDs)</li>
+<li>Set the new parameters for the hypergeometric test</li>
+<li>Run the test and adjust the pvalues in the output object</li>
+<li>Identify the significant GO terms at pvalue 0.01</li>
+</ul>
+</div>
+</section>
+<p>Solution:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(GOstats)</code></pre>
+<pre><code>## Loading required package: Biobase
+## Loading required package: BiocGenerics
+## Loading required package: parallel
+## 
+## Attaching package: &#39;BiocGenerics&#39;
+## 
+## The following objects are masked from &#39;package:parallel&#39;:
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB
+## 
+## The following object is masked from &#39;package:limma&#39;:
+## 
+##     plotMA
+## 
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     xtabs
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, append, as.data.frame, as.vector, cbind,
+##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
+##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
+##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
+##     table, tapply, union, unique, unlist, unsplit
+## 
+## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.
+## 
+## Loading required package: Category
+## Loading required package: stats4
+## Loading required package: Matrix
+## Loading required package: AnnotationDbi
+## Loading required package: GenomeInfoDb
+## Loading required package: S4Vectors
+## Loading required package: IRanges
+## 
+## Attaching package: &#39;IRanges&#39;
+## 
+## The following object is masked from &#39;package:Matrix&#39;:
+## 
+##     expand
+## 
+## 
+## Attaching package: &#39;AnnotationDbi&#39;
+## 
+## The following object is masked from &#39;package:MASS&#39;:
+## 
+##     select
+## 
+## Loading required package: GO.db
+## Loading required package: DBI
+## 
+## Loading required package: graph
+## 
+## Attaching package: &#39;GOstats&#39;
+## 
+## The following object is masked from &#39;package:AnnotationDbi&#39;:
+## 
+##     makeGOGraph</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get your list of DE genes (Entrez Gene IDs)</span>
+entrezgeneids &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">rownames</span>(limma.res.pval.FC))
+universeids &lt;-<span class="st"> </span><span class="kw">rownames</span>(mycounts)
+
+<span class="co"># Set the new parameters for the hypergeometric test</span>
+params &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;GOHyperGParams&quot;</span>,<span class="dt">annotation=</span><span class="st">&quot;org.Hs.eg&quot;</span>,<span class="dt">geneIds=</span>entrezgeneids,<span class="dt">universeGeneIds=</span>universeids,<span class="dt">ontology=</span><span class="st">&quot;MF&quot;</span>,<span class="dt">pvalueCutoff=</span><span class="fl">0.01</span>,<span class="dt">testDirection=</span><span class="st">&quot;over&quot;</span>)</code></pre>
+<pre><code>## Loading required package: org.Hs.eg.db</code></pre>
+<pre><code>## Warning in makeValidParams(.Object): removing geneIds not in
+## universeGeneIds</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Run the test and adjust the pvalues in the output object</span>
+hg &lt;-<span class="st"> </span><span class="kw">hyperGTest</span>(params)
+hg.pv &lt;-<span class="st"> </span><span class="kw">pvalues</span>(hg)
+hg.pv.fdr &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(hg.pv,<span class="st">&#39;fdr&#39;</span>)
+
+<span class="co"># Identify the significant GO terms at pvalue 0.01</span>
+sigGO.ID &lt;-<span class="st"> </span><span class="kw">names</span>(hg.pv.fdr[hg.pv.fdr &lt;<span class="st"> </span>hgCutoff])
+df &lt;-<span class="st"> </span><span class="kw">summary</span>(hg)
+GOterms.sig &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %in%<span class="st"> </span>sigGO.ID,<span class="st">&quot;Term&quot;</span>]
+
+<span class="kw">length</span>(GOterms.sig )</code></pre>
+<pre><code>## [1] 430</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(GOterms.sig)</code></pre>
+<pre><code>## [1] &quot;signaling receptor activity&quot;              
+## [2] &quot;transmembrane signaling receptor activity&quot;
+## [3] &quot;signal transducer activity&quot;               
+## [4] &quot;molecular transducer activity&quot;            
+## [5] &quot;receptor activity&quot;                        
+## [6] &quot;receptor binding&quot;</code></pre>
+<h2 id="r-environment">R environment</h2>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre>
+<pre><code>## R version 3.2.1 (2015-06-18)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 14.04.2 LTS
+## 
+## locale:
+##  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+##  [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+##  [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats4    parallel  methods   stats     graphics  grDevices utils    
+## [8] datasets  base     
+## 
+## other attached packages:
+##  [1] org.Hs.eg.db_3.1.2   GOstats_2.34.0       graph_1.46.0        
+##  [4] Category_2.34.2      GO.db_3.1.2          RSQLite_1.0.0       
+##  [7] DBI_0.3.1            AnnotationDbi_1.30.1 GenomeInfoDb_1.4.1  
+## [10] IRanges_2.2.5        S4Vectors_0.6.1      Matrix_1.2-1        
+## [13] Biobase_2.28.0       BiocGenerics_0.14.0  limma_3.24.12       
+## [16] mixOmics_5.0-4       lattice_0.20-31      MASS_7.3-41         
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.11.6            RGCCA_2.0              formatR_1.2           
+##  [4] RColorBrewer_1.1-2     plyr_1.8.3             tools_3.2.1           
+##  [7] annotate_1.46.0        evaluate_0.7           gtable_0.1.2          
+## [10] igraph_1.0.1           genefilter_1.50.0      stringr_1.0.0         
+## [13] knitr_1.10.5           grid_3.2.1             GSEABase_1.30.2       
+## [16] survival_2.38-2        XML_3.98-1.2           rgl_0.95.1247         
+## [19] RBGL_1.44.0            pheatmap_1.0.2         magrittr_1.5          
+## [22] splines_3.2.1          scales_0.2.5           AnnotationForge_1.10.1
+## [25] colorspace_1.2-6       xtable_1.7-4           stringi_0.5-5         
+## [28] munsell_0.4.2</code></pre>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://software-carpentry.org">Software Carpentry</a>
+        <a class="label swc-blue-bg" href="https://github.com/swcarpentry/r-novice-inflammation">Source</a>
+        <a class="label swc-blue-bg" href="mailto:admin@software-carpentry.org">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="http://software-carpentry.org/v5/js/jquery-1.9.1.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+  </body>
+</html>
