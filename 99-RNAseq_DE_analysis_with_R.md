@@ -93,7 +93,7 @@ To ensure highest quality of the sequences for subsequent mapping and differenti
 >
 > For the scope of this course we will focus on the R-based steps and will assume that the data are fit for purpose.
 >
-> Also the next two sections (Mapping and Read counts) have already been performed due to time and I/O limitations. Thus we will only go through them briefly for your own knowledge.
+> Also the next two sections (Mapping and Read counts) will be performed on small subsets of those files due to time and I/O limitations. 
 
 
 
@@ -130,6 +130,12 @@ REF_GENOME <- "hg19.fa"
 RSUBREAD_INDEX_PATH <- "data/RNAseq/ref_data"
 # define the basename for the index
 RSUBREAD_INDEX_BASE <- "hg19"
+# check what is in the reference directory
+dir(RSUBREAD_INDEX_PATH)
+```
+
+```
+## character(0)
 ```
 
 
@@ -183,26 +189,34 @@ propmapped(outputsamfile)
 
 Rsubread provides a read summarization function *featureCounts*, which takes as input the SAM or BAM files and assigns them to genomic features. This gives the number of reads mapped per gene, which can then be transformed into RPKM values (Read Per Killobase per Million), normalised and tested for differential expression. 
 
-In-built annotations for mm9, mm10 and hg19 are provided for users' convenience, or you can also use the index previously built.
-
-
-```r
-# Getting read counts using the inbuilt hg19 annotation
-mycounts.inbuilt<-featureCounts(outputfile, annot.inbuilt="hg19", isGTFAnnotationFile=FALSE, isPairedEnd=TRUE)
-```
-
-
+For the purpose of this course we will use the index previously built and its corresponding GTF file to identify and count the reads mapped to each feature (gene).
 
 
 ```r
 # Getting read counts using the index previously built
 mycounts<-featureCounts(outputsamfile, annot.ext=file.path(RSUBREAD_INDEX_PATH,"hg19.genes.gtf"), isGTFAnnotationFile=TRUE, isPairedEnd=TRUE)
+
+# Checking your output object
+summary(mycounts)
+dim(mycounts$counts)
+head(mycounts$annotation)
+mycounts$targets
+mycounts$stat
 ```
+
 
 
 > ## NOTE: {.callout}
 >
-> For the purpose of this course the read summarisation step has already been performed for all libraries. You will need to load the corresponding RData file to get these read counts. You can then print out these counts in a text file for future reference.
+>  In-built annotations for mm9, mm10 and hg19 are also provided for users' convenience, but we won't be using it for this course.
+> **Please do not run the command below**
+>
+> Getting read counts using the inbuilt hg19 annotation:
+>
+> mycounts.inbuilt <- featureCounts(myoutputfile, annot.inbuilt="hg19", isGTFAnnotationFile=FALSE, isPairedEnd=TRUE)
+> 
+
+For the purpose of this course the read summarisation step has already been performed for all libraries. You will need to load the corresponding RData file to get these read counts. 
 
 
 
@@ -238,6 +252,8 @@ counts$targets
 ## [8] "/data/Intro_to_R/RNAseq/mapping/ERR420393.sam"
 ```
 
+You can then print out these counts in a text file for future reference.
+
 
 ```r
 # print out counts table for every sample
@@ -252,7 +268,9 @@ write.table(counts$counts,file=file.path(RNASeqDIR,"raw_read_counts.txt"),sep="\
 > ` samtools view -Shb myfile.sam -o myfile.bam `
 >
 > ` gzip myfile.fq `
-
+>
+> Visualisation of the BAM files you created can also be done via a genome browser such as IGV (<http://www.broadinstitute.org/igv/>) after sorting and indexing of those files.
+>
 
 
 ### QC and stats
@@ -409,7 +427,7 @@ dev.off()
 > ## Exercise: Heatmap  {.challenge}
 > Produce a heatmap for the 50 most highly expressed genes and annotate the samples with with their age.
 >
-> * Subset the read counts object for the 30 most highly expressed genes
+> * Subset the read counts object for the 50 most highly expressed genes
 > * Annotate the samples in the subset with their age (check order with design!)
 > * Plot a heatmap with this subset of data, scaling genes and ordering both genes and samples
 

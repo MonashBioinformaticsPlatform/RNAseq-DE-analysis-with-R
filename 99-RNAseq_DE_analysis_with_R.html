@@ -92,7 +92,7 @@ RNASeqDATADIR &lt;-<span class="st"> </span><span class="kw">file.path</span>(HO
 </div>
 <div class="panel-body">
 <p>For the scope of this course we will focus on the R-based steps and will assume that the data are fit for purpose.</p>
-<p>Also the next two sections (Mapping and Read counts) have already been performed due to time and I/O limitations. Thus we will only go through them briefly for your own knowledge.</p>
+<p>Also the next two sections (Mapping and Read counts) will be performed on small subsets of those files due to time and I/O limitations.</p>
 </div>
 </aside>
 <h3 id="mapping-reads-to-a-reference-genome">Mapping reads to a reference genome</h3>
@@ -115,7 +115,10 @@ REF_GENOME &lt;-<span class="st"> &quot;hg19.fa&quot;</span>
 <span class="co"># define the output directory for the Rsubread index</span>
 RSUBREAD_INDEX_PATH &lt;-<span class="st"> &quot;data/RNAseq/ref_data&quot;</span>
 <span class="co"># define the basename for the index</span>
-RSUBREAD_INDEX_BASE &lt;-<span class="st"> &quot;hg19&quot;</span></code></pre>
+RSUBREAD_INDEX_BASE &lt;-<span class="st"> &quot;hg19&quot;</span>
+<span class="co"># check what is in the reference directory</span>
+<span class="kw">dir</span>(RSUBREAD_INDEX_PATH)</code></pre>
+<pre><code>## character(0)</code></pre>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pushpin"></span>NOTE</h2>
@@ -149,19 +152,27 @@ outputsamfile &lt;-<span class="st"> </span><span class="kw">file.path</span>(RN
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">propmapped</span>(outputsamfile)</code></pre>
 <h3 id="count-reads-for-each-feature">Count reads for each feature</h3>
 <p>Rsubread provides a read summarization function <em>featureCounts</em>, which takes as input the SAM or BAM files and assigns them to genomic features. This gives the number of reads mapped per gene, which can then be transformed into RPKM values (Read Per Killobase per Million), normalised and tested for differential expression.</p>
-<p>In-built annotations for mm9, mm10 and hg19 are provided for users’ convenience, or you can also use the index previously built.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Getting read counts using the inbuilt hg19 annotation</span>
-mycounts.inbuilt&lt;-<span class="kw">featureCounts</span>(outputfile, <span class="dt">annot.inbuilt=</span><span class="st">&quot;hg19&quot;</span>, <span class="dt">isGTFAnnotationFile=</span><span class="ot">FALSE</span>, <span class="dt">isPairedEnd=</span><span class="ot">TRUE</span>)</code></pre>
+<p>For the purpose of this course we will use the index previously built and its corresponding GTF file to identify and count the reads mapped to each feature (gene).</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Getting read counts using the index previously built</span>
-mycounts&lt;-<span class="kw">featureCounts</span>(outputsamfile, <span class="dt">annot.ext=</span><span class="kw">file.path</span>(RSUBREAD_INDEX_PATH,<span class="st">&quot;hg19.genes.gtf&quot;</span>), <span class="dt">isGTFAnnotationFile=</span><span class="ot">TRUE</span>, <span class="dt">isPairedEnd=</span><span class="ot">TRUE</span>)</code></pre>
+mycounts&lt;-<span class="kw">featureCounts</span>(outputsamfile, <span class="dt">annot.ext=</span><span class="kw">file.path</span>(RSUBREAD_INDEX_PATH,<span class="st">&quot;hg19.genes.gtf&quot;</span>), <span class="dt">isGTFAnnotationFile=</span><span class="ot">TRUE</span>, <span class="dt">isPairedEnd=</span><span class="ot">TRUE</span>)
+
+<span class="co"># Checking your output object</span>
+<span class="kw">summary</span>(mycounts)
+<span class="kw">dim</span>(mycounts$counts)
+<span class="kw">head</span>(mycounts$annotation)
+mycounts$targets
+mycounts$stat</code></pre>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pushpin"></span>NOTE:</h2>
 </div>
 <div class="panel-body">
-<p>For the purpose of this course the read summarisation step has already been performed for all libraries. You will need to load the corresponding RData file to get these read counts. You can then print out these counts in a text file for future reference.</p>
+<p>In-built annotations for mm9, mm10 and hg19 are also provided for users’ convenience, but we won’t be using it for this course. <strong>Please do not run the command below</strong></p>
+<p>Getting read counts using the inbuilt hg19 annotation:</p>
+<p>mycounts.inbuilt &lt;- featureCounts(myoutputfile, annot.inbuilt=“hg19”, isGTFAnnotationFile=FALSE, isPairedEnd=TRUE)</p>
 </div>
 </aside>
+<p>For the purpose of this course the read summarisation step has already been performed for all libraries. You will need to load the corresponding RData file to get these read counts.</p>
 <pre class="sourceCode r"><code class="sourceCode r">MAPPINGDIR &lt;-<span class="st"> </span><span class="kw">file.path</span>(HOMEDIR,<span class="st">&quot;data/RNAseq/mapping&quot;</span>)
 <span class="co"># load the counts previously calculated</span>
 <span class="kw">load</span>(<span class="kw">file.path</span>(MAPPINGDIR,<span class="st">&quot;RawCounts.RData&quot;</span>))
@@ -180,6 +191,7 @@ mycounts&lt;-<span class="kw">featureCounts</span>(outputsamfile, <span class="d
 ## [6] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420391.sam&quot;
 ## [7] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420392.sam&quot;
 ## [8] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420393.sam&quot;</code></pre>
+<p>You can then print out these counts in a text file for future reference.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># print out counts table for every sample</span>
 <span class="kw">write.table</span>(counts$counts,<span class="dt">file=</span><span class="kw">file.path</span>(RNASeqDIR,<span class="st">&quot;raw_read_counts.txt&quot;</span>),<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote=</span>F,<span class="dt">append=</span>F)</code></pre>
 <aside class="callout panel panel-info">
@@ -190,6 +202,7 @@ mycounts&lt;-<span class="kw">featureCounts</span>(outputsamfile, <span class="d
 <p>To save disk space on your machine, remember to convert your SAM files to BAM format using samtools and to compress the fastq files. This can be done out of Rstudio, in a shell window:</p>
 <p><code>samtools view -Shb myfile.sam -o myfile.bam</code></p>
 <p><code>gzip myfile.fq</code></p>
+<p>Visualisation of the BAM files you created can also be done via a genome browser such as IGV (<a href="http://www.broadinstitute.org/igv/">http://www.broadinstitute.org/igv/</a>) after sorting and indexing of those files.</p>
 </div>
 </aside>
 <h3 id="qc-and-stats">QC and stats</h3>
@@ -293,7 +306,7 @@ highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]
 <div class="panel-body">
 <p>Produce a heatmap for the 50 most highly expressed genes and annotate the samples with with their age.</p>
 <ul>
-<li>Subset the read counts object for the 30 most highly expressed genes</li>
+<li>Subset the read counts object for the 50 most highly expressed genes</li>
 <li>Annotate the samples in the subset with their age (check order with design!)</li>
 <li>Plot a heatmap with this subset of data, scaling genes and ordering both genes and samples</li>
 </ul>

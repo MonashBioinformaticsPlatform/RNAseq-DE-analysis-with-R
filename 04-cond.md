@@ -405,6 +405,13 @@ Now we can save all of the results with just one line of code:
 analyze_all("inflammation")
 ~~~
 
+
+
+~~~{.output}
+Error in read.table(file = file, header = header, sep = sep, quote = quote, : no lines available in input
+
+~~~
+
 Now if we need to make any changes to our analysis, we can edit the `analyze` function and quickly regenerate all the figures with `analzye_all`.
 
 > ## Challenge - Changing the behaviour of the plot command {.challenge}
