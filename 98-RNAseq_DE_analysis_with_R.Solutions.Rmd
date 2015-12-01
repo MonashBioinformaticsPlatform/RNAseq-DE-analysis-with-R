@@ -12,19 +12,17 @@ This document provides solutions to the exercises given in the 'RNAseq DE analys
 # Delete all previously saved R objects
 rm(list=ls())
 # Get your home directory
-#HOMEDIR <- "/mnt/vicnode/mbp/market/servers/bioinformatics-platform/home/roxane"
-HOMEDIR <- "/mnt/home/roxane"
-
+#HOMEDIR <- "/mnt/home/roxane"
 # define your working directory for the RNAseq data analysis
-RNASeqDIR <- file.path(HOMEDIR,"RNAseq")
+#RNASeqDIR <- file.path(HOMEDIR,"RNAseq")
 
-load(file.path(RNASeqDIR,"RNAseq_DE_analysis_with_R.RData"))
+load("/home/roxane/RNAseq_DE_analysis_with_R.RData")
 ```
 
 > ## Exercise: Heatmap  {.challenge}
 > Produce a heatmap for the 50 most highly expressed genes and annotate the samples with with their age.
 >
-> * Subset the read counts object for the 30 most highly expressed genes
+> * Subset the read counts object for the 50 most highly expressed genes
 > * Annotate the samples in the subset with their age (check order with design!)
 > * Plot a heatmap with this subset of data, scaling genes and ordering both genes and samples
 
@@ -47,9 +45,9 @@ heatmap(highexprgenes_counts, col=topo.colors(50), margin=c(10,6))
 ## Principal Component Analysis
 
 > ## Exercise: PCA {.challenge}
-> Produce a PCA plot from the read counts of the 50 most highly expressed genes and change the labels until you can identify the reason for the split between samples from the same tissue. 
+> Produce a PCA plot from the read counts of the 500 most highly expressed genes and change the labels until you can identify the reason for the split between samples from the same tissue. 
 >
-> * Get the read counts for the 50 most highly expressed genes
+> * Get the read counts for the 500 most highly expressed genes
 > * Transpose this matrix of read counts
 > * Check the number of dimensions explaining the variability in the dataset
 > * Run the PCA with an appropriate number of components
@@ -59,32 +57,29 @@ heatmap(highexprgenes_counts, col=topo.colors(50), margin=c(10,6))
 
 Solution:
 ```{r PCA}
-library(mixOmics)
-
-# Get the read counts for the 50 most highly expressed genes
-select = order(rowMeans(counts$counts), decreasing=TRUE)[1:50]
+# select data for the 1000 most highly expressed genes
+select = order(rowMeans(counts$counts), decreasing=TRUE)[1:500]
 highexprgenes_counts <- counts$counts[select,]
 
-# Transpose this matrix of read counts
-data_for_mixOmics <- t(highexprgenes_counts)
-
-# Check the number of dimensions explaining the variability in the dataset
-tune = tune.pca(data_for_mixOmics, center = TRUE, scale = TRUE)
-tune$prop.var
+# transpose the data to have variables (genes) as columns
+data_for_PCA <- t(highexprgenes_counts)
 
 # Run the PCA with an appropriate number of components
-result <- pca(data_for_mixOmics, ncomp = 3, center = TRUE, scale = TRUE) 
-plotIndiv(result, comp = c(1, 2), ind.names = TRUE) 
+mds <- cmdscale(dist(data_for_PCA))
 
-# Annotate the samples with their age \& re-run the PCA \& plot the main components
-rownames(data_for_mixOmics)<- experiment_design.ord$age
-result <- pca(data_for_mixOmics, ncomp = 3, center = TRUE, scale = TRUE) 
-plotIndiv(result, comp = c(1, 2), ind.names = TRUE) 
+# Plot the PCA
+plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
+text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 
-# Annotate the samples with other clinical data \& re-run the PCA \& plot the main components until you can separate the samples within each tissue group
-rownames(data_for_mixOmics)<- experiment_design.ord$technical_replicate_group
-result <- pca(data_for_mixOmics, ncomp = 3, center = TRUE, scale = TRUE) 
-plotIndiv(result, comp = c(1, 2), ind.names = TRUE) 
+# Annotate the samples with their age & re-run the PCA & plot the main components
+rownames(mds) <- experiment_design.ord$age
+plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
+text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
+
+# Annotate the samples with other clinical data & re-run the PCA & plot the main components until you can separate the samples within each tissue group
+rownames(mds)<- experiment_design.ord$technical_replicate_group
+plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
+text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
 

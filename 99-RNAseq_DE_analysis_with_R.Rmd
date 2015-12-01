@@ -2,7 +2,7 @@
 output: html_document
 ---
 
-# RNA-seq: differential gene expression analysis
+# RNA-seq: differential gene expression analysis  
 
 > ## Learning Objectives {.objectives}
 > This course is an introduction to differential expression analysis from RNAseq data. It will take you from the raw fastq files all the way to the list of differentially expressed genes, via the mapping of the reads to a reference genome and statistical analysis using the limma package.
@@ -33,47 +33,25 @@ biocLite()
 > All packages required for this course have already been installed on our training server so you won't need to run this part today.
 
 
-### Data pre-processing
+### Data pre-processing  
 
 To start with, delete all previously saved R objects and define your working directory for the RNAseq data analysis.
 
-```{r , echo=TRUE, eval=FALSE}
+```{r , echo=TRUE, eval=TRUE}
 # Delete all previously saved R objects
 rm(list=ls())
-# Get your home directory
-HOMEDIR <- getwd()
-# define your working directory for the RNAseq data analysis
-RNASeqDIR <- file.path(HOMEDIR,"RNAseq")
-# create the directory if it does not exist yet
-command <- paste("mkdir",RNASeqDIR)
-system(command)
 ```
-
-```{r , echo=FALSE,eval=TRUE}
-## for my path when creating teh doc
-# Delete all previously saved R objects
-rm(list=ls())
-# Get your home directory
-#HOMEDIR <- "/mnt/vicnode/mbp/market/servers/bioinformatics-platform/home/roxane"
-HOMEDIR <- "/mnt/home/roxane"
-# define your working directory for the RNAseq data analysis
-RNASeqDIR <- file.path(HOMEDIR,"RNAseq")
-# create the directory if it does not exist yet
-command <- paste("mkdir",RNASeqDIR)
-system(command)
-```
-
 
 The data considered for the RNAseq part of the course have been downloaded from ArrayExpress (<http://www.ebi.ac.uk/arrayexpress>) and correspond to 8 RNA sequencing libraries from Human brain and liver.
 
-Raw sequencing data are usually available in FASTQ format which is a well defined text-based format for storing both biological sequences (usually nucleotide sequences) and their corresponding quality scores. The raw data from this study have been downloaded (8Gb / fastq file) into the shared directory "/data/RNAseq/raw_data".
+Raw sequencing data are usually available in FASTQ format which is a well defined text-based format for storing both biological sequences (usually nucleotide sequences) and their corresponding quality scores. The raw data from this study have been downloaded (8Gb / fastq file) into the shared directory "~/data/RNAseq/raw_data".
 
 
 ```{r , eval=TRUE}
 # define shared directory for RNAseq data
-RNASeqDATADIR <- file.path(HOMEDIR,"data/RNAseq/raw_data")
+RNAseqDATADIR <- "/mnt/RNAseqCourse/raw_data"
 #list the fastq files in the raw data directory
-dir(RNASeqDATADIR)
+dir(RNAseqDATADIR)
 ```
 
 
@@ -115,11 +93,11 @@ biocLite("Rsubread")
 
 Rsubread provides reference genome indices for the most common organisms: human and mouse. If you are working with a different organism you can build your own index using the *buildindex* command.
 
-```{r ,eval=TRUE}
+```{r ,eval=FALSE}
 # define the reference genome fasta file
 REF_GENOME <- "hg19.fa"
 # define the output directory for the Rsubread index
-RSUBREAD_INDEX_PATH <- "data/RNAseq/ref_data"
+RSUBREAD_INDEX_PATH <- "/mnt/RNAseqCourse/ref_data"
 # define the basename for the index
 RSUBREAD_INDEX_BASE <- "hg19"
 # check what is in the reference directory
@@ -146,15 +124,15 @@ The code below will be used to map the reads for a specific library against the 
 
 
 ```{r ,eval=FALSE}
+# list files in the raw data directory
+dir(RNAseqDATADIR)
 # define the fastq file with forward reads
-inputfilefwd <- file.path(RNASeqDATADIR,"ERR420388_subsamp_1.fastq.gz")
+inputfilefwd <- file.path(RNAseqDATADIR,"ERR420388_subsamp_1.fastq.gz")
 # define the fastq file with reverse reads
-inputfilervs <- file.path(RNASeqDATADIR,"ERR420388_subsamp_2.fastq.gz")
-# define the output SAM file name 
-outputsamfile <- file.path(RNASeqDIR,"ERR420388.sam")
+inputfilervs <- file.path(RNAseqDATADIR,"ERR420388_subsamp_2.fastq.gz")
 
 # run the align command to map the reads
-align(index=file.path(RSUBREAD_INDEX_PATH,RSUBREAD_INDEX_BASE), readfile1=inputfilefwd, readfile2=inputfilervs, output_file=outputsamfile, output_format="SAM")
+align(index=file.path(RSUBREAD_INDEX_PATH,RSUBREAD_INDEX_BASE), readfile1=inputfilefwd, readfile2=inputfilervs, output_file="ERR420388.sam", output_format="SAM")
 ```
 
 
@@ -166,6 +144,8 @@ align(index=file.path(RSUBREAD_INDEX_PATH,RSUBREAD_INDEX_BASE), readfile1=inputf
 The function *propmapped* returns the proportion of mapped reads in the output SAM file: total number of input reads, number of mapped reads and proportion of mapped reads. Let's have a look at a small SAM file as an example:
 
 ```{r ,eval=FALSE,results='hide'}
+# define the path to SAM file  
+outputsamfile <- "/mnt/RNAseqCourse/mapping/ERR420388.sam"
 propmapped(outputsamfile)
 ```
 
@@ -205,7 +185,7 @@ For the purpose of this course the read summarisation step has already been perf
 
 
 ```{r ,eval=TRUE}
-MAPPINGDIR <- file.path(HOMEDIR,"data/RNAseq/mapping")
+MAPPINGDIR <- "/mnt/RNAseqCourse/mapping"
 # load the counts previously calculated
 load(file.path(MAPPINGDIR,"RawCounts.RData"))
 # check the presence of read counts for the 8 libraries
@@ -221,7 +201,7 @@ You can then print out these counts in a text file for future reference.
 
 ```{r ,eval=TRUE}
 # print out counts table for every sample
-write.table(counts$counts,file=file.path(RNASeqDIR,"raw_read_counts.txt"),sep="\t", quote=F,append=F)
+write.table(counts$counts,file="~/raw_read_counts.txt",sep="\t", quote=F,append=F)
 ```
 
 
@@ -250,7 +230,7 @@ The experiment design file corresponding to this study has been downloaded from 
 
 ```{r ,eval=TRUE}
 # define the experiment design file (tab separated text file is best)
-EXPMT_DESIGN_FILE <- file.path(RNASeqDATADIR,'experiment_design.txt')
+EXPMT_DESIGN_FILE <- file.path(RNAseqDATADIR,'experiment_design.txt')
 # read the experiment design file and save it into memory
 experiment_design<-read.table(EXPMT_DESIGN_FILE,header=T,sep="\t")
 #
@@ -283,7 +263,7 @@ Density plots of log-intensity distribution of each library can be superposed on
 
 ```{r ,eval=FALSE}
 # density plot of raw read counts (log10)
-png(file=file.path(RNASeqDIR,"Raw_read_counts_per_gene.density.png"))
+png(file="~/Raw_read_counts_per_gene.density.png")
 logcounts <- log(counts$counts[,1],10) 
 d <- density(logcounts)
 plot(d,xlim=c(1,8),main="",ylim=c(0,.45),xlab="Raw read counts per gene (log10)", ylab="Density")
@@ -303,7 +283,7 @@ Boxplots of the raw read counts after log10 transformation.
 
 ```{r ,eval=FALSE}
 ## box plots of raw read counts (log10)
-png(file=file.path(RNASeqDIR,"Raw_read_counts_per_gene.boxplot.png"))
+png(file="~/Raw_read_counts_per_gene.boxplot.png")
 logcounts <- log(counts$counts,10)
 boxplot(logcounts, main="", xlab="", ylab="Raw read counts per gene (log10)",axes=FALSE)
 axis(2)
@@ -324,7 +304,7 @@ select = order(rowMeans(counts$counts), decreasing=TRUE)[1:100]
 highexprgenes_counts <- counts$counts[select,]
 
 # heatmap with sample name on X-axis
-png(file=file.path(RNASeqDIR,"High_expr_genes.heatmap.png"))
+png(file="~/High_expr_genes.heatmap.png")
 heatmap(highexprgenes_counts, col=topo.colors(50), margin=c(10,6))
 dev.off()
 ```
@@ -338,7 +318,7 @@ To understand what biological effect lies under this clustering, one can use the
 # heatmap with condition group as labels
 colnames(highexprgenes_counts)<- group
 # plot
-png(file=file.path(RNASeqDIR,"High_exprs_genes.heatmap.group.png"))
+png(file="~/High_exprs_genes.heatmap.group.png")
 heatmap(highexprgenes_counts, col = topo.colors(50), margin=c(10,6))
 dev.off()
 ```
@@ -356,80 +336,83 @@ dev.off()
 
 #### Principal Component Analysis
 
-A Principal Component Analysis (PCA) can also be performed with these data using the *mixOmics* package (Le Cao et al. 2009). The proportion of explained variance histogram will show how much of the variability in the data is explained by each components. 
+A Principal Component Analysis (PCA) can also be performed with these data using the *cmdscale* function (from the *stats* package) which performs a classical multidimensional scaling of a data matrix. 
+
+
+Reads counts need to be transposed before being analysed with the *cmdscale* functions, i.e. genes should be in columns and samples should be in rows. This is the code for transposing and checking the data before further steps:
 
 ```{r ,eval=TRUE}
-library(mixOmics)
-```
-
-
-Reads counts need to be transposed before being analysed with the mixomics functions, i.e. genes should be in columns and samples should be in rows. This is the code for transposing and checking the data before further steps:
-
-```{r ,eval=TRUE}
-# select data for the 100 most highly expressed genes
+# select data for the 1000 most highly expressed genes
 select = order(rowMeans(counts$counts), decreasing=TRUE)[1:100]
 highexprgenes_counts <- counts$counts[select,]
 # annotate the data with condition group as labels
 colnames(highexprgenes_counts)<- group
 # transpose the data to have variables (genes) as columns
-data_for_mixOmics <- t(highexprgenes_counts)
-dim(data_for_mixOmics)
+data_for_PCA <- t(highexprgenes_counts)
+dim(data_for_PCA)
 ```
 
 
-The proportion of explained variance helps you determine how many components can explain the variability in your dataset and thus how many dimensions you should be looking at.
+The *cmdscale* function will calculate a matrix of dissimilarities from your transposed data and will also provide information about the proportion of explained variance by calculating Eigen values.
+
 ```{r ,eval=TRUE,results='hide',fig.show='hide'}
-tune = tune.pca(data_for_mixOmics, center = TRUE, scale = TRUE)
+## calculate MDS (matrix of dissimilarities)
+mds <- cmdscale(dist(data_for_PCA), k=3, eig=TRUE)  
+# k = the maximum dimension of the space which the data are to be represented in
+# eig = indicates whether eigenvalues should be returned
 ```
 
-The variable tune\$prop.var indicates the proportion of explained variance for the first 10 principal components:
+The variable mds\$eig provides the Eigen values for the first 8 principal components:
+
 ```{r ,eval=TRUE}
-tune$prop.var
+mds$eig
 ```
 
-Plotting this variable makes it easier to visualise and will allow future reference:
+Plotting this variable as a percentage will help you determine how many components can explain the variability in your dataset and thus how many dimensions you should be looking at.
 
 ```{r ,eval=FALSE}
-png(file=file.path(RNASeqDIR,"Proportion_of_explained_variance.png"))
-barplot(tune$prop.var, main="Proportion of explained variance for all components",
-  ylab="%", xlab="Principal Components") 
+# transform the Eigen values into percentage
+eig_pc <- mds$eig * 100 / max(mds$eig)
+# plot the PCA
+png(file="~/PCA_PropExplainedVariance.png")
+plot(eig_pc,
+     type="h", lwd=15, las=1,
+     xlab="Dimensions", 
+     ylab="Proportion of explained variance", y.axis=NULL,
+     col="darkgrey")
 dev.off()
 ```
 
 
-<img src="fig/RNAseq/Proportion_of_explained_variance.png" alt="prop" />
+<img src="fig/RNAseq/PCA_PropExplainedVariance.png" alt="prop" />
 
 
-In most cases, the first 2 or 3 components explain more than half the variability in the dataset and can be used for plotting. The *pca* function will perform a principal components analysis on the given data matrix.The *plotIndiv* function will provide scatter plots for individuals representation. 
+In most cases, the first 2 components explain more than half the variability in the dataset and can be used for plotting. The *cmdscale* function run with default parameters will perform a principal components analysis on the given data matrix and the *plot* function will provide scatter plots for individuals representation. 
 
 ```{r ,eval=TRUE}
-#run PCA
-result <- pca(data_for_mixOmics, ncomp = 3, center = TRUE, scale = TRUE) 
+## calculate MDS
+mds <- cmdscale(dist(data_for_PCA)) # Performs MDS analysis 
 ```
+
 
 ```{r ,eval=FALSE}
 #Samples representation
-png(file=file.path(RNASeqDIR,"PCA_Dim1vsDim2.png"))
-plotIndiv(result, comp = c(1, 2), ind.names = TRUE) 
-dev.off()
-png(file=file.path(RNASeqDIR,"PCA_Dim1vsDim3.png"))
-plotIndiv(result, comp = c(1, 3), ind.names = TRUE) 
-dev.off()
-png(file=file.path(RNASeqDIR,"PCA_Dim2vsDim3.png"))
-plotIndiv(result, comp = c(2, 3), ind.names = TRUE) 
+png(file="~/PCA_Dim1vsDim2.png")
+plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
+text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 dev.off()
 ```
 
 
-<img src="fig/RNAseq/PCA_Dim1vsDim2.png" alt="PCA1" />
+<img src="fig/RNAseq/PCA_Dim1vsDim2.group.png" alt="PCA1" />
 
 The PCA plot of the first two components show a clear separation of the Brain and Liver samples across the 1st dimension. Within each sample group we can also notice a split between the 4 samples of each group, which seem to cluster in pair. This observation can be explained by another factor of variability in the data, commonly batch effect or another biological biais such as age or sex.
 
 
 > ## Exercise: PCA {.challenge}
-> Produce a PCA plot from the read counts of the 50 most highly expressed genes and change the labels until you can identify the reason for the split between samples from the same tissue. 
+> Produce a PCA plot from the read counts of the 500 most highly expressed genes and change the labels until you can identify the reason for the split between samples from the same tissue. 
 >
-> * Get the read counts for the 50 most highly expressed genes
+> * Get the read counts for the 500 most highly expressed genes
 > * Transpose this matrix of read counts
 > * Check the number of dimensions explaining the variability in the dataset
 > * Run the PCA with an appropriate number of components
@@ -495,7 +478,7 @@ y <- voom(mycounts,design,lib.size=colSums(mycounts)*nf)
 counts.voom <- y$E
 
 # save normalised expression data into output dir
-write.table(counts.voom,file=file.path(RNASeqDIR,"counts.voom.txt"),row.names=T,quote=F,sep="\t")
+write.table(counts.voom,file="~/counts.voom.txt",row.names=T,quote=F,sep="\t")
 
 # fit linear model for each gene given a series of libraries
 fit <- lmFit(y,design)
@@ -540,7 +523,7 @@ limma.res.pval.FC <- limma.res.pval[which(abs(limma.res.pval$logFC)>myfc),]
 dim(limma.res.pval.FC)
 
 # write limma output table for significant genes into a tab delimited file
-filename = paste(RNASeqDIR,"/","DEgenes_",mycoef,"_pval",mypval,"_logFC",myfc,".txt",sep="")
+filename = paste("~/DEgenes_",mycoef,"_pval",mypval,"_logFC",myfc,".txt",sep="")
 write.table(limma.res.pval.FC,file=filename,row.names=T,quote=F,sep="\t")
 ```
 
@@ -568,7 +551,7 @@ The annotation of EntrezGene IDs from RNAseq data can be done using the BioMart 
 ```{r, eval=TRUE}
 # get the Ensembl annotation for human genome
 library(biomaRt)
-mart<- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
+mart<- useDataset("hsapiens_gene_ensembl", useMart("ENSEMBL_MART_ENSEMBL",host="www.ensembl.org"))
 
 # get entrez gene IDs from limma output table
 entrez_genes <- as.character(rownames(limma.res.pval.FC))
@@ -670,9 +653,9 @@ The Gene Ontology enrichment result can be saved in a text file or an html file 
 
 ```{r, eval=TRUE}
 # Create text report of the significantly over-represented GO terms
-write.table(GOannot.table,file=file.path(RNASeqDIR,"GOterms_OverRep_BP.txt"),sep="\t",row.names=F)
+write.table(GOannot.table,file="~/GOterms_OverRep_BP.txt",sep="\t",row.names=F)
 # Create html report of all over-represented GO terms
-htmlReport(hg, file=file.path(RNASeqDIR,"GOterms_OverRep_BP.html"))
+htmlReport(hg, file="~/GOterms_OverRep_BP.html")
 ```
 
 
@@ -691,7 +674,7 @@ Other softwares can be used to investigate over-represented pathways, such as Ge
 
 You can save an image of your RNAseq analysis before moving on to the next part of this course.
 ```{r, eval=TRUE}
-RDataFile <- file.path(RNASeqDIR,"RNAseq_DE_analysis_with_R.RData")
+RDataFile <- "~/RNAseq_DE_analysis_with_R.RData"
 save.image(RDataFile)
 ```
 

@@ -13,7 +13,7 @@ This document provides solutions to the exercises given in the 'RNAseq DE analys
 > ## Exercise: Heatmap  {.challenge}
 > Produce a heatmap for the 50 most highly expressed genes and annotate the samples with with their age.
 >
-> * Subset the read counts object for the 30 most highly expressed genes
+> * Subset the read counts object for the 50 most highly expressed genes
 > * Annotate the samples in the subset with their age (check order with design!)
 > * Plot a heatmap with this subset of data, scaling genes and ordering both genes and samples
 
@@ -51,9 +51,9 @@ heatmap(highexprgenes_counts, col=topo.colors(50), margin=c(10,6))
 ## Principal Component Analysis
 
 > ## Exercise: PCA {.challenge}
-> Produce a PCA plot from the read counts of the 50 most highly expressed genes and change the labels until you can identify the reason for the split between samples from the same tissue. 
+> Produce a PCA plot from the read counts of the 500 most highly expressed genes and change the labels until you can identify the reason for the split between samples from the same tissue. 
 >
-> * Get the read counts for the 50 most highly expressed genes
+> * Get the read counts for the 500 most highly expressed genes
 > * Transpose this matrix of read counts
 > * Check the number of dimensions explaining the variability in the dataset
 > * Run the PCA with an appropriate number of components
@@ -64,92 +64,40 @@ heatmap(highexprgenes_counts, col=topo.colors(50), margin=c(10,6))
 Solution:
 
 ```r
-library(mixOmics)
-```
-
-```
-## Loading required package: MASS
-## Loading required package: lattice
-```
-
-```
-## Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display
-```
-
-```
-## Warning in fun(libname, pkgname): error in rgl_init
-```
-
-```r
-# Get the read counts for the 50 most highly expressed genes
-select = order(rowMeans(counts$counts), decreasing=TRUE)[1:50]
+# select data for the 1000 most highly expressed genes
+select = order(rowMeans(counts$counts), decreasing=TRUE)[1:500]
 highexprgenes_counts <- counts$counts[select,]
 
-# Transpose this matrix of read counts
-data_for_mixOmics <- t(highexprgenes_counts)
+# transpose the data to have variables (genes) as columns
+data_for_PCA <- t(highexprgenes_counts)
 
-# Check the number of dimensions explaining the variability in the dataset
-tune = tune.pca(data_for_mixOmics, center = TRUE, scale = TRUE)
-```
+# Run the PCA with an appropriate number of components
+mds <- cmdscale(dist(data_for_PCA))
 
-```
-## Eigenvalues for the first  8 principal components: 
-##          PC1          PC2          PC3          PC4          PC5 
-## 3.287836e+01 1.507356e+01 2.030841e+00 1.555950e-02 8.432604e-04 
-##          PC6          PC7          PC8 
-## 5.918977e-04 2.454588e-04 1.570937e-31 
-## 
-## Proportion of explained variance for the first  8 principal components: 
-##          PC1          PC2          PC3          PC4          PC5 
-## 6.575673e-01 3.014711e-01 4.061682e-02 3.111900e-04 1.686521e-05 
-##          PC6          PC7          PC8 
-## 1.183795e-05 4.909175e-06 3.141875e-33 
-## 
-## Cumulative proportion explained variance for the first  8 principal components: 
-##       PC1       PC2       PC3       PC4       PC5       PC6       PC7 
-## 0.6575673 0.9590384 0.9996552 0.9999664 0.9999833 0.9999951 1.0000000 
-##       PC8 
-## 1.0000000
+# Plot the PCA
+plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
+text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
 ![plot of chunk PCA](figure/PCA-1.png) 
 
 ```r
-tune$prop.var
-```
-
-```
-##          PC1          PC2          PC3          PC4          PC5 
-## 6.575673e-01 3.014711e-01 4.061682e-02 3.111900e-04 1.686521e-05 
-##          PC6          PC7          PC8 
-## 1.183795e-05 4.909175e-06 3.141875e-33
-```
-
-```r
-# Run the PCA with an appropriate number of components
-result <- pca(data_for_mixOmics, ncomp = 3, center = TRUE, scale = TRUE) 
-plotIndiv(result, comp = c(1, 2), ind.names = TRUE) 
+# Annotate the samples with their age & re-run the PCA & plot the main components
+rownames(mds) <- experiment_design.ord$age
+plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
+text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
 ![plot of chunk PCA](figure/PCA-2.png) 
 
 ```r
-# Annotate the samples with their age \& re-run the PCA \& plot the main components
-rownames(data_for_mixOmics)<- experiment_design.ord$age
-result <- pca(data_for_mixOmics, ncomp = 3, center = TRUE, scale = TRUE) 
-plotIndiv(result, comp = c(1, 2), ind.names = TRUE) 
+# Annotate the samples with other clinical data & re-run the PCA & plot the main components until you can separate the samples within each tissue group
+rownames(mds)<- experiment_design.ord$technical_replicate_group
+plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
+text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
 ![plot of chunk PCA](figure/PCA-3.png) 
-
-```r
-# Annotate the samples with other clinical data \& re-run the PCA \& plot the main components until you can separate the samples within each tissue group
-rownames(data_for_mixOmics)<- experiment_design.ord$technical_replicate_group
-result <- pca(data_for_mixOmics, ncomp = 3, center = TRUE, scale = TRUE) 
-plotIndiv(result, comp = c(1, 2), ind.names = TRUE) 
-```
-
-![plot of chunk PCA](figure/PCA-4.png) 
 
 
 ## Differential Expression
@@ -303,7 +251,7 @@ library(GOstats)
 ##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
 ##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
 ##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
-##     table, tapply, union, unique, unlist, unsplit
+##     table, tapply, union, unique, unlist
 ## 
 ## Welcome to Bioconductor
 ## 
@@ -312,26 +260,9 @@ library(GOstats)
 ##     'citation("Biobase")', and for packages 'citation("pkgname")'.
 ## 
 ## Loading required package: Category
-## Loading required package: stats4
-## Loading required package: Matrix
 ## Loading required package: AnnotationDbi
 ## Loading required package: GenomeInfoDb
-## Loading required package: S4Vectors
-## Loading required package: IRanges
-## 
-## Attaching package: 'IRanges'
-## 
-## The following object is masked from 'package:Matrix':
-## 
-##     expand
-## 
-## 
-## Attaching package: 'AnnotationDbi'
-## 
-## The following object is masked from 'package:MASS':
-## 
-##     select
-## 
+## Loading required package: Matrix
 ## Loading required package: GO.db
 ## Loading required package: DBI
 ## 
@@ -365,6 +296,24 @@ params <- new("GOHyperGParams",annotation="org.Hs.eg",geneIds=entrezgeneids,univ
 ```r
 # Run the test and adjust the pvalues in the output object
 hg <- hyperGTest(params)
+```
+
+```
+## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'pos'
+## argument
+```
+
+```
+## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'envir'
+## argument
+```
+
+```
+## Warning in .local(name, pos, envir, all.names, pattern): ignoring
+## 'all.names' argument
+```
+
+```r
 hg.pv <- pvalues(hg)
 hg.pv.fdr <- p.adjust(hg.pv,'fdr')
 
@@ -377,7 +326,7 @@ length(GOterms.sig )
 ```
 
 ```
-## [1] 430
+## [1] 383
 ```
 
 ```r
@@ -385,12 +334,12 @@ head(GOterms.sig)
 ```
 
 ```
-## [1] "signaling receptor activity"              
-## [2] "transmembrane signaling receptor activity"
-## [3] "signal transducer activity"               
-## [4] "molecular transducer activity"            
-## [5] "receptor activity"                        
-## [6] "receptor binding"
+## [1] "signaling receptor activity"                    
+## [2] "transmembrane signaling receptor activity"      
+## [3] "signal transducer activity"                     
+## [4] "molecular transducer activity"                  
+## [5] "receptor activity"                              
+## [6] "extracellular ligand-gated ion channel activity"
 ```
 
 
@@ -402,7 +351,7 @@ sessionInfo()
 ```
 
 ```
-## R version 3.2.1 (2015-06-18)
+## R version 3.2.2 (2015-08-14)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 14.04.2 LTS
 ## 
@@ -415,26 +364,22 @@ sessionInfo()
 ## [11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] stats4    parallel  methods   stats     graphics  grDevices utils    
-## [8] datasets  base     
+## [1] parallel  methods   stats     graphics  grDevices utils     datasets 
+## [8] base     
 ## 
 ## other attached packages:
-##  [1] org.Hs.eg.db_3.1.2   GOstats_2.34.0       graph_1.46.0        
-##  [4] Category_2.34.2      GO.db_3.1.2          RSQLite_1.0.0       
-##  [7] DBI_0.3.1            AnnotationDbi_1.30.1 GenomeInfoDb_1.4.1  
-## [10] IRanges_2.2.5        S4Vectors_0.6.1      Matrix_1.2-1        
-## [13] Biobase_2.28.0       BiocGenerics_0.14.0  limma_3.24.12       
-## [16] mixOmics_5.0-4       lattice_0.20-31      MASS_7.3-41         
+##  [1] org.Hs.eg.db_2.14.0  GOstats_2.30.0       graph_1.42.0        
+##  [4] Category_2.30.0      GO.db_2.14.0         RSQLite_1.0.0       
+##  [7] DBI_0.3.1            Matrix_1.2-2         AnnotationDbi_1.26.1
+## [10] GenomeInfoDb_1.0.2   Biobase_2.24.0       BiocGenerics_0.10.0 
+## [13] limma_3.20.9        
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.11.6            RGCCA_2.0              formatR_1.2           
-##  [4] RColorBrewer_1.1-2     plyr_1.8.3             tools_3.2.1           
-##  [7] annotate_1.46.0        evaluate_0.7           gtable_0.1.2          
-## [10] igraph_1.0.1           genefilter_1.50.0      stringr_1.0.0         
-## [13] knitr_1.10.5           grid_3.2.1             GSEABase_1.30.2       
-## [16] survival_2.38-2        XML_3.98-1.2           rgl_0.95.1247         
-## [19] RBGL_1.44.0            pheatmap_1.0.2         magrittr_1.5          
-## [22] splines_3.2.1          scales_0.2.5           AnnotationForge_1.10.1
-## [25] colorspace_1.2-6       xtable_1.7-4           stringi_0.5-5         
-## [28] munsell_0.4.2
+##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
+##  [4] IRanges_1.22.10       xtable_1.8-0          lattice_0.20-33      
+##  [7] stringr_1.0.0         tools_3.2.2           grid_3.2.2           
+## [10] AnnotationForge_1.6.1 genefilter_1.46.1     survival_2.38-3      
+## [13] RBGL_1.40.1           GSEABase_1.26.0       formatR_1.2.1        
+## [16] evaluate_0.8          stringi_1.0-1         stats4_3.2.2         
+## [19] XML_3.98-1.3          annotate_1.42.1
 ```

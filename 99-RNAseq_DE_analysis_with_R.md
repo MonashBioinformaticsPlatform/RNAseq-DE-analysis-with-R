@@ -2,7 +2,7 @@
 output: html_document
 ---
 
-# RNA-seq: differential gene expression analysis
+# RNA-seq: differential gene expression analysis  
 
 > ## Learning Objectives {.objectives}
 > This course is an introduction to differential expression analysis from RNAseq data. It will take you from the raw fastq files all the way to the list of differentially expressed genes, via the mapping of the reads to a reference genome and statistical analysis using the limma package.
@@ -34,7 +34,7 @@ biocLite()
 > All packages required for this course have already been installed on our training server so you won't need to run this part today.
 
 
-### Data pre-processing
+### Data pre-processing  
 
 To start with, delete all previously saved R objects and define your working directory for the RNAseq data analysis.
 
@@ -42,43 +42,32 @@ To start with, delete all previously saved R objects and define your working dir
 ```r
 # Delete all previously saved R objects
 rm(list=ls())
-# Get your home directory
-HOMEDIR <- getwd()
-# define your working directory for the RNAseq data analysis
-RNASeqDIR <- file.path(HOMEDIR,"RNAseq")
-# create the directory if it does not exist yet
-command <- paste("mkdir",RNASeqDIR)
-system(command)
 ```
-
-
-
 
 The data considered for the RNAseq part of the course have been downloaded from ArrayExpress (<http://www.ebi.ac.uk/arrayexpress>) and correspond to 8 RNA sequencing libraries from Human brain and liver.
 
-Raw sequencing data are usually available in FASTQ format which is a well defined text-based format for storing both biological sequences (usually nucleotide sequences) and their corresponding quality scores. The raw data from this study have been downloaded (8Gb / fastq file) into the shared directory "/data/RNAseq/raw_data".
+Raw sequencing data are usually available in FASTQ format which is a well defined text-based format for storing both biological sequences (usually nucleotide sequences) and their corresponding quality scores. The raw data from this study have been downloaded (8Gb / fastq file) into the shared directory "~/data/RNAseq/raw_data".
 
 
 
 ```r
 # define shared directory for RNAseq data
-RNASeqDATADIR <- file.path(HOMEDIR,"data/RNAseq/raw_data")
+RNAseqDATADIR <- "/mnt/RNAseqCourse/raw_data"
 #list the fastq files in the raw data directory
-dir(RNASeqDATADIR)
+dir(RNAseqDATADIR)
 ```
 
 ```
 ##  [1] "ERR420386_1.fastq.gz"         "ERR420386_2.fastq.gz"        
-##  [3] "ERR420386_subsamp_1.fastq.gz" "ERR420386_subsamp_2.fastq.gz"
-##  [5] "ERR420387_1.fastq.gz"         "ERR420387_2.fastq.gz"        
-##  [7] "ERR420388_1.fastq.gz"         "ERR420388_2.fastq.gz"        
+##  [3] "ERR420387_1.fastq.gz"         "ERR420387_2.fastq.gz"        
+##  [5] "ERR420388_1.fastq.gz"         "ERR420388_2.fastq.gz"        
+##  [7] "ERR420388_mini_1.fastq.gz"    "ERR420388_mini_2.fastq.gz"   
 ##  [9] "ERR420388_subsamp_1.fastq.gz" "ERR420388_subsamp_2.fastq.gz"
 ## [11] "ERR420389_1.fastq.gz"         "ERR420389_2.fastq.gz"        
 ## [13] "ERR420390_1.fastq.gz"         "ERR420390_2.fastq.gz"        
 ## [15] "ERR420391_2.fastq.gz"         "ERR420392_1.fastq.gz"        
 ## [17] "ERR420392_2.fastq.gz"         "ERR420393_1.fastq.gz"        
-## [19] "ERR420393_2.fastq.gz"         "experiment_design.txt"       
-## [21] "subsample"
+## [19] "ERR420393_2.fastq.gz"         "experiment_design.txt"
 ```
 
 
@@ -127,15 +116,11 @@ Rsubread provides reference genome indices for the most common organisms: human 
 # define the reference genome fasta file
 REF_GENOME <- "hg19.fa"
 # define the output directory for the Rsubread index
-RSUBREAD_INDEX_PATH <- "data/RNAseq/ref_data"
+RSUBREAD_INDEX_PATH <- "/mnt/RNAseqCourse/ref_data"
 # define the basename for the index
 RSUBREAD_INDEX_BASE <- "hg19"
 # check what is in the reference directory
 dir(RSUBREAD_INDEX_PATH)
-```
-
-```
-## character(0)
 ```
 
 
@@ -160,15 +145,15 @@ The code below will be used to map the reads for a specific library against the 
 
 
 ```r
+# list files in the raw data directory
+dir(RNAseqDATADIR)
 # define the fastq file with forward reads
-inputfilefwd <- file.path(RNASeqDATADIR,"ERR420388_subsamp_1.fastq.gz")
+inputfilefwd <- file.path(RNAseqDATADIR,"ERR420388_subsamp_1.fastq.gz")
 # define the fastq file with reverse reads
-inputfilervs <- file.path(RNASeqDATADIR,"ERR420388_subsamp_2.fastq.gz")
-# define the output SAM file name 
-outputsamfile <- file.path(RNASeqDIR,"ERR420388.sam")
+inputfilervs <- file.path(RNAseqDATADIR,"ERR420388_subsamp_2.fastq.gz")
 
 # run the align command to map the reads
-align(index=file.path(RSUBREAD_INDEX_PATH,RSUBREAD_INDEX_BASE), readfile1=inputfilefwd, readfile2=inputfilervs, output_file=outputsamfile, output_format="SAM")
+align(index=file.path(RSUBREAD_INDEX_PATH,RSUBREAD_INDEX_BASE), readfile1=inputfilefwd, readfile2=inputfilervs, output_file="ERR420388.sam", output_format="SAM")
 ```
 
 
@@ -181,6 +166,8 @@ The function *propmapped* returns the proportion of mapped reads in the output S
 
 
 ```r
+# define the path to SAM file  
+outputsamfile <- "/mnt/RNAseqCourse/mapping/ERR420388.sam"
 propmapped(outputsamfile)
 ```
 
@@ -221,7 +208,7 @@ For the purpose of this course the read summarisation step has already been perf
 
 
 ```r
-MAPPINGDIR <- file.path(HOMEDIR,"data/RNAseq/mapping")
+MAPPINGDIR <- "/mnt/RNAseqCourse/mapping"
 # load the counts previously calculated
 load(file.path(MAPPINGDIR,"RawCounts.RData"))
 # check the presence of read counts for the 8 libraries
@@ -257,7 +244,7 @@ You can then print out these counts in a text file for future reference.
 
 ```r
 # print out counts table for every sample
-write.table(counts$counts,file=file.path(RNASeqDIR,"raw_read_counts.txt"),sep="\t", quote=F,append=F)
+write.table(counts$counts,file="~/raw_read_counts.txt",sep="\t", quote=F,append=F)
 ```
 
 
@@ -287,7 +274,7 @@ The experiment design file corresponding to this study has been downloaded from 
 
 ```r
 # define the experiment design file (tab separated text file is best)
-EXPMT_DESIGN_FILE <- file.path(RNASeqDATADIR,'experiment_design.txt')
+EXPMT_DESIGN_FILE <- file.path(RNAseqDATADIR,'experiment_design.txt')
 # read the experiment design file and save it into memory
 experiment_design<-read.table(EXPMT_DESIGN_FILE,header=T,sep="\t")
 #
@@ -358,7 +345,7 @@ Density plots of log-intensity distribution of each library can be superposed on
 
 ```r
 # density plot of raw read counts (log10)
-png(file=file.path(RNASeqDIR,"Raw_read_counts_per_gene.density.png"))
+png(file="~/Raw_read_counts_per_gene.density.png")
 logcounts <- log(counts$counts[,1],10) 
 d <- density(logcounts)
 plot(d,xlim=c(1,8),main="",ylim=c(0,.45),xlab="Raw read counts per gene (log10)", ylab="Density")
@@ -379,7 +366,7 @@ Boxplots of the raw read counts after log10 transformation.
 
 ```r
 ## box plots of raw read counts (log10)
-png(file=file.path(RNASeqDIR,"Raw_read_counts_per_gene.boxplot.png"))
+png(file="~/Raw_read_counts_per_gene.boxplot.png")
 logcounts <- log(counts$counts,10)
 boxplot(logcounts, main="", xlab="", ylab="Raw read counts per gene (log10)",axes=FALSE)
 axis(2)
@@ -401,7 +388,7 @@ select = order(rowMeans(counts$counts), decreasing=TRUE)[1:100]
 highexprgenes_counts <- counts$counts[select,]
 
 # heatmap with sample name on X-axis
-png(file=file.path(RNASeqDIR,"High_expr_genes.heatmap.png"))
+png(file="~/High_expr_genes.heatmap.png")
 heatmap(highexprgenes_counts, col=topo.colors(50), margin=c(10,6))
 dev.off()
 ```
@@ -416,7 +403,7 @@ To understand what biological effect lies under this clustering, one can use the
 # heatmap with condition group as labels
 colnames(highexprgenes_counts)<- group
 # plot
-png(file=file.path(RNASeqDIR,"High_exprs_genes.heatmap.group.png"))
+png(file="~/High_exprs_genes.heatmap.group.png")
 heatmap(highexprgenes_counts, col = topo.colors(50), margin=c(10,6))
 dev.off()
 ```
@@ -434,39 +421,21 @@ dev.off()
 
 #### Principal Component Analysis
 
-A Principal Component Analysis (PCA) can also be performed with these data using the *mixOmics* package (Le Cao et al. 2009). The proportion of explained variance histogram will show how much of the variability in the data is explained by each components. 
+A Principal Component Analysis (PCA) can also be performed with these data using the *cmdscale* function (from the *stats* package) which performs a classical multidimensional scaling of a data matrix. 
+
+
+Reads counts need to be transposed before being analysed with the *cmdscale* functions, i.e. genes should be in columns and samples should be in rows. This is the code for transposing and checking the data before further steps:
 
 
 ```r
-library(mixOmics)
-```
-
-```
-## Loading required package: MASS
-## Loading required package: lattice
-```
-
-```
-## Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display
-```
-
-```
-## Warning in fun(libname, pkgname): error in rgl_init
-```
-
-
-Reads counts need to be transposed before being analysed with the mixomics functions, i.e. genes should be in columns and samples should be in rows. This is the code for transposing and checking the data before further steps:
-
-
-```r
-# select data for the 100 most highly expressed genes
+# select data for the 1000 most highly expressed genes
 select = order(rowMeans(counts$counts), decreasing=TRUE)[1:100]
 highexprgenes_counts <- counts$counts[select,]
 # annotate the data with condition group as labels
 colnames(highexprgenes_counts)<- group
 # transpose the data to have variables (genes) as columns
-data_for_mixOmics <- t(highexprgenes_counts)
-dim(data_for_mixOmics)
+data_for_PCA <- t(highexprgenes_counts)
+dim(data_for_PCA)
 ```
 
 ```
@@ -474,71 +443,76 @@ dim(data_for_mixOmics)
 ```
 
 
-The proportion of explained variance helps you determine how many components can explain the variability in your dataset and thus how many dimensions you should be looking at.
-
-```r
-tune = tune.pca(data_for_mixOmics, center = TRUE, scale = TRUE)
-```
-
-The variable tune\$prop.var indicates the proportion of explained variance for the first 10 principal components:
-
-```r
-tune$prop.var
-```
-
-```
-##          PC1          PC2          PC3          PC4          PC5 
-## 6.897782e-01 2.290147e-01 8.083108e-02 2.861016e-04 4.381712e-05 
-##          PC6          PC7          PC8 
-## 2.851356e-05 1.758815e-05 1.314748e-32
-```
-
-Plotting this variable makes it easier to visualise and will allow future reference:
+The *cmdscale* function will calculate a matrix of dissimilarities from your transposed data and will also provide information about the proportion of explained variance by calculating Eigen values.
 
 
 ```r
-png(file=file.path(RNASeqDIR,"Proportion_of_explained_variance.png"))
-barplot(tune$prop.var, main="Proportion of explained variance for all components",
-  ylab="%", xlab="Principal Components") 
+## calculate MDS (matrix of dissimilarities)
+mds <- cmdscale(dist(data_for_PCA), k=3, eig=TRUE)  
+# k = the maximum dimension of the space which the data are to be represented in
+# eig = indicates whether eigenvalues should be returned
+```
+
+The variable mds\$eig provides the Eigen values for the first 8 principal components:
+
+
+```r
+mds$eig
+```
+
+```
+## [1] 9.490938e+13 1.099639e+13 1.125271e+11 1.026586e+10 1.500500e+07
+## [6] 6.240239e+06 3.206875e+06 2.285361e-03
+```
+
+Plotting this variable as a percentage will help you determine how many components can explain the variability in your dataset and thus how many dimensions you should be looking at.
+
+
+```r
+# transform the Eigen values into percentage
+eig_pc <- mds$eig * 100 / max(mds$eig)
+# plot the PCA
+png(file="~/PCA_PropExplainedVariance.png")
+plot(eig_pc,
+     type="h", lwd=15, las=1,
+     xlab="Dimensions", 
+     ylab="Proportion of explained variance", y.axis=NULL,
+     col="darkgrey")
 dev.off()
 ```
 
 
-<img src="fig/RNAseq/Proportion_of_explained_variance.png" alt="prop" />
+<img src="fig/RNAseq/PCA_PropExplainedVariance.png" alt="prop" />
 
 
-In most cases, the first 2 or 3 components explain more than half the variability in the dataset and can be used for plotting. The *pca* function will perform a principal components analysis on the given data matrix.The *plotIndiv* function will provide scatter plots for individuals representation. 
+In most cases, the first 2 components explain more than half the variability in the dataset and can be used for plotting. The *cmdscale* function run with default parameters will perform a principal components analysis on the given data matrix and the *plot* function will provide scatter plots for individuals representation. 
 
 
 ```r
-#run PCA
-result <- pca(data_for_mixOmics, ncomp = 3, center = TRUE, scale = TRUE) 
+## calculate MDS
+mds <- cmdscale(dist(data_for_PCA)) # Performs MDS analysis 
 ```
+
 
 
 ```r
 #Samples representation
-png(file=file.path(RNASeqDIR,"PCA_Dim1vsDim2.png"))
-plotIndiv(result, comp = c(1, 2), ind.names = TRUE) 
-dev.off()
-png(file=file.path(RNASeqDIR,"PCA_Dim1vsDim3.png"))
-plotIndiv(result, comp = c(1, 3), ind.names = TRUE) 
-dev.off()
-png(file=file.path(RNASeqDIR,"PCA_Dim2vsDim3.png"))
-plotIndiv(result, comp = c(2, 3), ind.names = TRUE) 
+png(file="~/PCA_Dim1vsDim2.png")
+plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
+text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 dev.off()
 ```
 
 
-<img src="fig/RNAseq/PCA_Dim1vsDim2.png" alt="PCA1" />
+<img src="fig/RNAseq/PCA_Dim1vsDim2.group.png" alt="PCA1" />
 
 The PCA plot of the first two components show a clear separation of the Brain and Liver samples across the 1st dimension. Within each sample group we can also notice a split between the 4 samples of each group, which seem to cluster in pair. This observation can be explained by another factor of variability in the data, commonly batch effect or another biological biais such as age or sex.
 
 
 > ## Exercise: PCA {.challenge}
-> Produce a PCA plot from the read counts of the 50 most highly expressed genes and change the labels until you can identify the reason for the split between samples from the same tissue. 
+> Produce a PCA plot from the read counts of the 500 most highly expressed genes and change the labels until you can identify the reason for the split between samples from the same tissue. 
 >
-> * Get the read counts for the 50 most highly expressed genes
+> * Get the read counts for the 500 most highly expressed genes
 > * Transpose this matrix of read counts
 > * Check the number of dimensions explaining the variability in the dataset
 > * Run the PCA with an appropriate number of components
@@ -668,7 +642,7 @@ y <- voom(mycounts,design,lib.size=colSums(mycounts)*nf)
 counts.voom <- y$E
 
 # save normalised expression data into output dir
-write.table(counts.voom,file=file.path(RNASeqDIR,"counts.voom.txt"),row.names=T,quote=F,sep="\t")
+write.table(counts.voom,file="~/counts.voom.txt",row.names=T,quote=F,sep="\t")
 
 # fit linear model for each gene given a series of libraries
 fit <- lmFit(y,design)
@@ -762,7 +736,7 @@ dim(limma.res.pval.FC)
 
 ```r
 # write limma output table for significant genes into a tab delimited file
-filename = paste(RNASeqDIR,"/","DEgenes_",mycoef,"_pval",mypval,"_logFC",myfc,".txt",sep="")
+filename = paste("~/DEgenes_",mycoef,"_pval",mypval,"_logFC",myfc,".txt",sep="")
 write.table(limma.res.pval.FC,file=filename,row.names=T,quote=F,sep="\t")
 ```
 
@@ -791,7 +765,7 @@ The annotation of EntrezGene IDs from RNAseq data can be done using the BioMart 
 ```r
 # get the Ensembl annotation for human genome
 library(biomaRt)
-mart<- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
+mart<- useDataset("hsapiens_gene_ensembl", useMart("ENSEMBL_MART_ENSEMBL",host="www.ensembl.org"))
 
 # get entrez gene IDs from limma output table
 entrez_genes <- as.character(rownames(limma.res.pval.FC))
@@ -815,7 +789,7 @@ dim(detags.IDs)
 ```
 
 ```
-## [1] 2876    3
+## [1] 2878    3
 ```
 
 ```r
@@ -953,9 +927,9 @@ library(GOstats)
 ## 
 ## Attaching package: 'AnnotationDbi'
 ## 
-## The following object is masked from 'package:MASS':
+## The following object is masked from 'package:GenomeInfoDb':
 ## 
-##     select
+##     species
 ## 
 ## Loading required package: GO.db
 ## Loading required package: DBI
@@ -1015,15 +989,33 @@ params <- new("GOHyperGParams",annotation="org.Hs.eg",geneIds=entrezgeneids,univ
 ```r
 #  Run the test
 hg <- hyperGTest(params)
+```
+
+```
+## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'pos'
+## argument
+```
+
+```
+## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'envir'
+## argument
+```
+
+```
+## Warning in .local(name, pos, envir, all.names, pattern): ignoring
+## 'all.names' argument
+```
+
+```r
 # Check results
 hg
 ```
 
 ```
 ## Gene to GO BP  test for over-representation 
-## 8507 GO BP ids tested (3335 have p < 0.05)
-## Selected gene set size: 1527 
-##     Gene universe size: 11966 
+## 8107 GO BP ids tested (3220 have p < 0.05)
+## Selected gene set size: 1519 
+##     Gene universe size: 11814 
 ##     Annotation package: org.Hs.eg
 ```
 
@@ -1043,7 +1035,7 @@ length(sigGO.ID)
 ```
 
 ```
-## [1] 2430
+## [1] 2331
 ```
 
 ```r
@@ -1056,17 +1048,17 @@ head(GOannot.table)
 
 ```
 ##       GOBPID    Pvalue OddsRatio ExpCount Count Size
-## 1 GO:0042221 9.18e-105      3.58      341   695 2671
-## 2 GO:0050896  7.96e-93      3.19      701  1070 5491
-## 3 GO:0044707  4.09e-79      2.84      547   884 4288
-## 4 GO:0032501  1.10e-78      2.83      563   900 4412
-## 5 GO:0044699  5.55e-68      4.94     1213  1441 9503
-## 6 GO:0010033  1.50e-67      3.06      246   499 1927
+## 1 GO:0042221 2.09e-101      3.56      327   670 2540
+## 2 GO:0050896  6.84e-92      3.18      700  1066 5443
+## 3 GO:0032501  1.59e-80      2.88      554   893 4305
+## 4 GO:0044707  1.82e-80      2.88      538   876 4183
+## 5 GO:0044699  1.54e-76      5.74     1202  1443 9349
+## 6 GO:0010033  5.18e-68      3.12      237   487 1840
 ##                                    Term
 ## 1                  response to chemical
 ## 2                  response to stimulus
-## 3 single-multicellular organism process
-## 4      multicellular organismal process
+## 3      multicellular organismal process
+## 4 single-multicellular organism process
 ## 5               single-organism process
 ## 6         response to organic substance
 ```
@@ -1077,9 +1069,9 @@ The Gene Ontology enrichment result can be saved in a text file or an html file 
 
 ```r
 # Create text report of the significantly over-represented GO terms
-write.table(GOannot.table,file=file.path(RNASeqDIR,"GOterms_OverRep_BP.txt"),sep="\t",row.names=F)
+write.table(GOannot.table,file="~/GOterms_OverRep_BP.txt",sep="\t",row.names=F)
 # Create html report of all over-represented GO terms
-htmlReport(hg, file=file.path(RNASeqDIR,"GOterms_OverRep_BP.html"))
+htmlReport(hg, file="~/GOterms_OverRep_BP.html")
 ```
 
 
@@ -1099,7 +1091,7 @@ Other softwares can be used to investigate over-represented pathways, such as Ge
 You can save an image of your RNAseq analysis before moving on to the next part of this course.
 
 ```r
-RDataFile <- file.path(RNASeqDIR,"RNAseq_DE_analysis_with_R.RData")
+RDataFile <- "~/RNAseq_DE_analysis_with_R.RData"
 save.image(RDataFile)
 ```
 
@@ -1115,7 +1107,7 @@ sessionInfo()
 ```
 
 ```
-## R version 3.2.1 (2015-06-18)
+## R version 3.2.2 (2015-08-14)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 14.04.2 LTS
 ## 
@@ -1132,25 +1124,21 @@ sessionInfo()
 ## [8] datasets  base     
 ## 
 ## other attached packages:
-##  [1] xtable_1.7-4         org.Hs.eg.db_3.1.2   GOstats_2.34.0      
-##  [4] graph_1.46.0         Category_2.34.2      GO.db_3.1.2         
-##  [7] RSQLite_1.0.0        DBI_0.3.1            AnnotationDbi_1.30.1
-## [10] GenomeInfoDb_1.4.1   IRanges_2.2.5        S4Vectors_0.6.1     
-## [13] Matrix_1.2-1         Biobase_2.28.0       BiocGenerics_0.14.0 
-## [16] biomaRt_2.24.0       edgeR_3.10.2         limma_3.24.12       
-## [19] mixOmics_5.0-4       lattice_0.20-31      MASS_7.3-41         
-## [22] Rsubread_1.18.0     
+##  [1] xtable_1.8-0         org.Hs.eg.db_3.0.0   GOstats_2.32.0      
+##  [4] graph_1.44.1         Category_2.32.0      GO.db_3.0.0         
+##  [7] RSQLite_1.0.0        DBI_0.3.1            AnnotationDbi_1.28.2
+## [10] GenomeInfoDb_1.2.5   IRanges_2.0.1        S4Vectors_0.4.0     
+## [13] Matrix_1.2-3         Biobase_2.26.0       BiocGenerics_0.12.1 
+## [16] biomaRt_2.22.0       edgeR_3.8.6          limma_3.22.7        
+## [19] Rsubread_1.16.1     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.11.6            RGCCA_2.0              formatR_1.2           
-##  [4] RColorBrewer_1.1-2     plyr_1.8.3             bitops_1.0-6          
-##  [7] tools_3.2.1            annotate_1.46.0        evaluate_0.7          
-## [10] gtable_0.1.2           igraph_1.0.1           genefilter_1.50.0     
-## [13] stringr_1.0.0          knitr_1.10.5           grid_3.2.1            
-## [16] GSEABase_1.30.2        survival_2.38-2        RBGL_1.44.0           
-## [19] XML_3.98-1.2           rgl_0.95.1247          pheatmap_1.0.2        
-## [22] magrittr_1.5           splines_3.2.1          scales_0.2.5          
-## [25] AnnotationForge_1.10.1 colorspace_1.2-6       stringi_0.5-5         
-## [28] RCurl_1.95-4.6         munsell_0.4.2
+##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
+##  [4] lattice_0.20-33       stringr_1.0.0         tools_3.2.2          
+##  [7] grid_3.2.2            AnnotationForge_1.8.2 genefilter_1.48.1    
+## [10] survival_2.38-3       RBGL_1.42.0           GSEABase_1.28.0      
+## [13] formatR_1.2.1         bitops_1.0-6          RCurl_1.95-4.7       
+## [16] evaluate_0.8          stringi_1.0-1         XML_3.98-1.3         
+## [19] annotate_1.44.0
 ```
 
