@@ -9,15 +9,6 @@ This document provides solutions to the exercises given in the 'RNAseq DE analys
 ## Clustering
 
 
-```
-## Warning in readChar(con, 5L, useBytes = TRUE): cannot open compressed file
-## '/home/roxane/RNAseq_DE_analysis_with_R.RData', probable reason 'No such
-## file or directory'
-```
-
-```
-## Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection
-```
 
 > ## Exercise: Heatmap  {.challenge}
 > Produce a heatmap for the 50 most highly expressed genes and annotate the samples with with their age.
@@ -32,35 +23,21 @@ Solution:
 ```r
 # Subset the read counts object for the 30 most highly expressed genes
 select = order(rowMeans(counts$counts), decreasing=TRUE)[1:50]
-```
-
-```
-## Error in is.data.frame(x): object 'counts' not found
-```
-
-```r
 highexprgenes_counts <- counts$counts[select,]
-```
 
-```
-## Error in eval(expr, envir, enclos): object 'counts' not found
-```
-
-```r
 # Annotate the samples in the subset with their age (check order with design!)
 colnames(highexprgenes_counts)<- experiment_design.ord$age
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'experiment_design.ord' not found
-```
-
-```r
 head(highexprgenes_counts)
 ```
 
 ```
-## Error in head(highexprgenes_counts): object 'highexprgenes_counts' not found
+##              26      26      30      30      30      26       26      30
+## 4550   12559197 7221252 3612091 3696466 5332585 7045283 12201302 5190887
+## 4549    2635341 1542503  880852  900136 1256473 1506197  2564452 1226882
+## 213         711     633 1554756 1591787 1992909     541      560 1939249
+## 378706    87658 2085194 1200456 1212964   62432 2063356    86078   61130
+## 6029      44288 1461296  723247  726382   18142 1449540    43866   17747
+## 125050    80094  740715  588378  595398   54657  726225    78199   53896
 ```
 
 ```r
@@ -68,9 +45,7 @@ head(highexprgenes_counts)
 heatmap(highexprgenes_counts, col=topo.colors(50), margin=c(10,6))
 ```
 
-```
-## Error in heatmap(highexprgenes_counts, col = topo.colors(50), margin = c(10, : object 'highexprgenes_counts' not found
-```
+![plot of chunk Heatmap](figure/Heatmap-1.png) 
 
 
 ## Principal Component Analysis
@@ -91,104 +66,38 @@ Solution:
 ```r
 # select data for the 1000 most highly expressed genes
 select = order(rowMeans(counts$counts), decreasing=TRUE)[1:500]
-```
-
-```
-## Error in is.data.frame(x): object 'counts' not found
-```
-
-```r
 highexprgenes_counts <- counts$counts[select,]
-```
 
-```
-## Error in eval(expr, envir, enclos): object 'counts' not found
-```
-
-```r
 # transpose the data to have variables (genes) as columns
 data_for_PCA <- t(highexprgenes_counts)
-```
 
-```
-## Error in t(highexprgenes_counts): object 'highexprgenes_counts' not found
-```
-
-```r
 # Run the PCA with an appropriate number of components
 mds <- cmdscale(dist(data_for_PCA))
-```
 
-```
-## Error in as.matrix(x): object 'data_for_PCA' not found
-```
-
-```r
 # Plot the PCA
 plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
-```
-
-```
-## Error in plot(mds[, 1], -mds[, 2], type = "n", xlab = "Dimension 1", ylab = "Dimension 2", : object 'mds' not found
-```
-
-```r
 text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
-```
-## Error in text(mds[, 1], -mds[, 2], rownames(mds), cex = 0.8): object 'mds' not found
-```
+![plot of chunk PCA](figure/PCA-1.png) 
 
 ```r
 # Annotate the samples with their age & re-run the PCA & plot the main components
 rownames(mds) <- experiment_design.ord$age
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'experiment_design.ord' not found
-```
-
-```r
 plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
-```
-
-```
-## Error in plot(mds[, 1], -mds[, 2], type = "n", xlab = "Dimension 1", ylab = "Dimension 2", : object 'mds' not found
-```
-
-```r
 text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
-```
-## Error in text(mds[, 1], -mds[, 2], rownames(mds), cex = 0.8): object 'mds' not found
-```
+![plot of chunk PCA](figure/PCA-2.png) 
 
 ```r
 # Annotate the samples with other clinical data & re-run the PCA & plot the main components until you can separate the samples within each tissue group
 rownames(mds)<- experiment_design.ord$technical_replicate_group
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'experiment_design.ord' not found
-```
-
-```r
 plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="")
-```
-
-```
-## Error in plot(mds[, 1], -mds[, 2], type = "n", xlab = "Dimension 1", ylab = "Dimension 2", : object 'mds' not found
-```
-
-```r
 text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
-```
-## Error in text(mds[, 1], -mds[, 2], rownames(mds), cex = 0.8): object 'mds' not found
-```
+![plot of chunk PCA](figure/PCA-3.png) 
 
 
 ## Differential Expression
@@ -218,98 +127,56 @@ library(limma)
 ```r
 # Create a new design matrix for limma with the technical replicate groups
 techgroup<-factor(experiment_design.ord$technical_replicate_group)
-```
-
-```
-## Error in factor(experiment_design.ord$technical_replicate_group): object 'experiment_design.ord' not found
-```
-
-```r
 design <- model.matrix(~0+techgroup)
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'techgroup' not found
-```
-
-```r
 colnames(design)<- gsub("techgroup","",colnames(design))
-```
-
-```
-## Error in is.data.frame(x): object 'design' not found
-```
-
-```r
 design
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'design' not found
+##   group_1 group_2 group_3 group_4
+## 1       0       1       0       0
+## 2       1       0       0       0
+## 3       0       0       0       1
+## 4       0       0       0       1
+## 5       0       0       1       0
+## 6       1       0       0       0
+## 7       0       1       0       0
+## 8       0       0       1       0
+## attr(,"assign")
+## [1] 1 1 1 1
+## attr(,"contrasts")
+## attr(,"contrasts")$techgroup
+## [1] "contr.treatment"
 ```
 
 ```r
 # Re-normalise the read counts with 'voom' function with new design matrix
 y <- voom(mycounts,design,lib.size=colSums(mycounts)*nf)
-```
-
-```
-## Error in is(counts, "DGEList"): object 'mycounts' not found
-```
-
-```r
 counts.voom <- y$E
-```
 
-```
-## Error in eval(expr, envir, enclos): object 'y' not found
-```
-
-```r
 # Fit a linear model on these normalised data
 fit <- lmFit(y,design)
-```
 
-```
-## Error in is(object, "list"): object 'y' not found
-```
-
-```r
 # Make the contrast matrix corresponding to the new set of parameters
 cont.matrix <- makeContrasts(group_2-group_1,levels=design)
-```
-
-```
-## Error in is.factor(levels): object 'design' not found
-```
-
-```r
 cont.matrix 
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'cont.matrix' not found
+##          Contrasts
+## Levels    group_2 - group_1
+##   group_1                -1
+##   group_2                 1
+##   group_3                 0
+##   group_4                 0
 ```
 
 ```r
 # Fit the contrast matrix to the linear model
 fit <- contrasts.fit(fit, cont.matrix)
-```
 
-```
-## Error in NCOL(fit$coefficients): object 'fit' not found
-```
-
-```r
 # Compute moderated t-statistics of differential expression 
 fit <- eBayes(fit)
-```
-
-```
-## Error in ebayes(fit = fit, proportion = proportion, stdev.coef.lim = stdev.coef.lim, : object 'fit' not found
-```
-
-```r
 options(digits=3)
 
 # Get the output table for the 10 most significant DE genes for this comparison
@@ -317,7 +184,7 @@ dim(topTable(fit,coef="group_2 - group_1",p.val=0.01,n=Inf))
 ```
 
 ```
-## Error in is(fit, "MArrayLM"): object 'fit' not found
+## [1] 9652    6
 ```
 
 ```r
@@ -325,7 +192,17 @@ topTable(fit,coef="group_2 - group_1",p.val=0.01)
 ```
 
 ```
-## Error in is(fit, "MArrayLM"): object 'fit' not found
+##         logFC AveExpr     t  P.Value adj.P.Val     B
+## 125050 -3.598   13.36 -1219 6.95e-58  1.04e-53 123.0
+## 378706 -4.964   14.07  -842 4.15e-54  3.12e-50 114.4
+## 6029   -5.432   13.07  -500 8.61e-49  4.31e-45 102.0
+## 4514    0.761   12.20   271 1.44e-42  5.42e-39  86.5
+## 26871  -2.795   10.87  -187 8.96e-39  2.69e-35  78.7
+## 6023   -4.752   10.00  -168 1.16e-37  2.90e-34  76.5
+## 6043   -2.923    8.73  -164 2.02e-37  4.34e-34  75.9
+## 5354    0.576    5.73   158 4.82e-37  9.05e-34  74.3
+## 692148  0.733   10.39   146 3.15e-36  5.26e-33  72.6
+## 652965 -2.864    7.83  -137 1.36e-35  2.04e-32  71.6
 ```
 
 
@@ -347,33 +224,90 @@ library(GOstats)
 ```
 
 ```
-## Error in library(GOstats): there is no package called 'GOstats'
+## Loading required package: Biobase
+## Loading required package: BiocGenerics
+## Loading required package: parallel
+## 
+## Attaching package: 'BiocGenerics'
+## 
+## The following objects are masked from 'package:parallel':
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB
+## 
+## The following object is masked from 'package:limma':
+## 
+##     plotMA
+## 
+## The following object is masked from 'package:stats':
+## 
+##     xtabs
+## 
+## The following objects are masked from 'package:base':
+## 
+##     anyDuplicated, append, as.data.frame, as.vector, cbind,
+##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
+##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
+##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
+##     table, tapply, union, unique, unlist, unsplit
+## 
+## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     'browseVignettes()'. To cite Bioconductor, see
+##     'citation("Biobase")', and for packages 'citation("pkgname")'.
+## 
+## Loading required package: Category
+## Loading required package: stats4
+## Loading required package: Matrix
+## Loading required package: AnnotationDbi
+## Loading required package: GenomeInfoDb
+## Loading required package: S4Vectors
+## Loading required package: IRanges
+## 
+## Attaching package: 'IRanges'
+## 
+## The following object is masked from 'package:Matrix':
+## 
+##     expand
+## 
+## 
+## Attaching package: 'AnnotationDbi'
+## 
+## The following object is masked from 'package:GenomeInfoDb':
+## 
+##     species
+## 
+## Loading required package: GO.db
+## Loading required package: DBI
+## 
+## Loading required package: graph
+## 
+## Attaching package: 'GOstats'
+## 
+## The following object is masked from 'package:AnnotationDbi':
+## 
+##     makeGOGraph
 ```
 
 ```r
 # Get your list of DE genes (Entrez Gene IDs)
 entrezgeneids <- as.character(rownames(limma.res.pval.FC))
-```
-
-```
-## Error in rownames(limma.res.pval.FC): object 'limma.res.pval.FC' not found
-```
-
-```r
 universeids <- rownames(mycounts)
-```
 
-```
-## Error in rownames(mycounts): object 'mycounts' not found
-```
-
-```r
 # Set the new parameters for the hypergeometric test
 params <- new("GOHyperGParams",annotation="org.Hs.eg",geneIds=entrezgeneids,universeGeneIds=universeids,ontology="MF",pvalueCutoff=0.01,testDirection="over")
 ```
 
 ```
-## Error in getClass(Class, where = topenv(parent.frame())): "GOHyperGParams" is not a defined class
+## Loading required package: org.Hs.eg.db
+```
+
+```
+## Warning in makeValidParams(.Object): removing geneIds not in
+## universeGeneIds
 ```
 
 ```r
@@ -382,56 +316,34 @@ hg <- hyperGTest(params)
 ```
 
 ```
-## Error in eval(expr, envir, enclos): could not find function "hyperGTest"
+## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'pos'
+## argument
+```
+
+```
+## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'envir'
+## argument
+```
+
+```
+## Warning in .local(name, pos, envir, all.names, pattern): ignoring
+## 'all.names' argument
 ```
 
 ```r
 hg.pv <- pvalues(hg)
-```
-
-```
-## Error in eval(expr, envir, enclos): could not find function "pvalues"
-```
-
-```r
 hg.pv.fdr <- p.adjust(hg.pv,'fdr')
-```
 
-```
-## Error in p.adjust(hg.pv, "fdr"): object 'hg.pv' not found
-```
-
-```r
 # Identify the significant GO terms at pvalue 0.01
 sigGO.ID <- names(hg.pv.fdr[hg.pv.fdr < hgCutoff])
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'hg.pv.fdr' not found
-```
-
-```r
 df <- summary(hg)
-```
-
-```
-## Error in summary(hg): object 'hg' not found
-```
-
-```r
 GOterms.sig <- df[df[,1] %in% sigGO.ID,"Term"]
-```
 
-```
-## Error in df[, 1]: object of type 'closure' is not subsettable
-```
-
-```r
 length(GOterms.sig )
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'GOterms.sig' not found
+## [1] 400
 ```
 
 ```r
@@ -439,7 +351,12 @@ head(GOterms.sig)
 ```
 
 ```
-## Error in head(GOterms.sig): object 'GOterms.sig' not found
+## [1] "signaling receptor activity"                    
+## [2] "transmembrane signaling receptor activity"      
+## [3] "signal transducer activity"                     
+## [4] "molecular transducer activity"                  
+## [5] "receptor activity"                              
+## [6] "extracellular ligand-gated ion channel activity"
 ```
 
 
@@ -451,24 +368,34 @@ sessionInfo()
 ```
 
 ```
-## R version 3.2.0 (2015-04-16)
+## R version 3.2.2 (2015-08-14)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 14.04.1 LTS
+## Running under: Ubuntu 14.04.2 LTS
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
-##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
-##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+##  [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+##  [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
 ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## [11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] methods   stats     graphics  grDevices utils     datasets  base     
+## [1] stats4    parallel  methods   stats     graphics  grDevices utils    
+## [8] datasets  base     
 ## 
 ## other attached packages:
-## [1] limma_3.16.7
+##  [1] org.Hs.eg.db_3.0.0   GOstats_2.32.0       graph_1.44.1        
+##  [4] Category_2.32.0      GO.db_3.0.0          RSQLite_1.0.0       
+##  [7] DBI_0.3.1            AnnotationDbi_1.28.2 GenomeInfoDb_1.2.5  
+## [10] IRanges_2.0.1        S4Vectors_0.4.0      Matrix_1.2-3        
+## [13] Biobase_2.26.0       BiocGenerics_0.12.1  limma_3.22.7        
 ## 
 ## loaded via a namespace (and not attached):
-## [1] formatR_1.4   tools_3.2.0   knitr_1.13    stringr_0.6.2 evaluate_0.9
+##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
+##  [4] xtable_1.8-0          lattice_0.20-33       stringr_1.0.0        
+##  [7] tools_3.2.2           grid_3.2.2            AnnotationForge_1.8.2
+## [10] genefilter_1.48.1     survival_2.38-3       RBGL_1.42.0          
+## [13] GSEABase_1.28.0       formatR_1.2.1         evaluate_0.8         
+## [16] stringi_1.0-1         XML_3.98-1.3          annotate_1.44.0
 ```

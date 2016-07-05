@@ -29,10 +29,6 @@
           <h1 id="rnaseq-de-analysis-with-r---solutions">RNAseq DE analysis with R - Solutions</h1>
 <p>This document provides solutions to the exercises given in the ‘RNAseq DE analysis with R’ course.</p>
 <h2 id="clustering">Clustering</h2>
-<pre><code>## Warning in readChar(con, 5L, useBytes = TRUE): cannot open compressed file
-## &#39;/home/roxane/RNAseq_DE_analysis_with_R.RData&#39;, probable reason &#39;No such
-## file or directory&#39;</code></pre>
-<pre><code>## Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pencil"></span>Exercise: Heatmap</h2>
@@ -48,18 +44,24 @@
 </section>
 <p>Solution:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Subset the read counts object for the 30 most highly expressed genes</span>
-select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">50</span>]</code></pre>
-<pre><code>## Error in is.data.frame(x): object &#39;counts&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;counts&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Annotate the samples in the subset with their age (check order with design!)</span>
-<span class="kw">colnames</span>(highexprgenes_counts)&lt;-<span class="st"> </span>experiment_design.ord$age</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;experiment_design.ord&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(highexprgenes_counts)</code></pre>
-<pre><code>## Error in head(highexprgenes_counts): object &#39;highexprgenes_counts&#39; not found</code></pre>
+select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">50</span>]
+highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]
+
+<span class="co"># Annotate the samples in the subset with their age (check order with design!)</span>
+<span class="kw">colnames</span>(highexprgenes_counts)&lt;-<span class="st"> </span>experiment_design.ord$age
+<span class="kw">head</span>(highexprgenes_counts)</code></pre>
+<pre><code>##              26      26      30      30      30      26       26      30
+## 4550   12559197 7221252 3612091 3696466 5332585 7045283 12201302 5190887
+## 4549    2635341 1542503  880852  900136 1256473 1506197  2564452 1226882
+## 213         711     633 1554756 1591787 1992909     541      560 1939249
+## 378706    87658 2085194 1200456 1212964   62432 2063356    86078   61130
+## 6029      44288 1461296  723247  726382   18142 1449540    43866   17747
+## 125050    80094  740715  588378  595398   54657  726225    78199   53896</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Plot a heatmap with this subset of data, scaling genes and ordering both genes and samples</span>
 <span class="kw">heatmap</span>(highexprgenes_counts, <span class="dt">col=</span><span class="kw">topo.colors</span>(<span class="dv">50</span>), <span class="dt">margin=</span><span class="kw">c</span>(<span class="dv">10</span>,<span class="dv">6</span>))</code></pre>
-<pre><code>## Error in heatmap(highexprgenes_counts, col = topo.colors(50), margin = c(10, : object &#39;highexprgenes_counts&#39; not found</code></pre>
+<div class="figure">
+<img src="figure/Heatmap-1.png" alt="plot of chunk Heatmap" /><p class="caption">plot of chunk Heatmap</p>
+</div>
 <h2 id="principal-component-analysis">Principal Component Analysis</h2>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
@@ -79,35 +81,35 @@ select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">
 </section>
 <p>Solution:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># select data for the 1000 most highly expressed genes</span>
-select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">500</span>]</code></pre>
-<pre><code>## Error in is.data.frame(x): object &#39;counts&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;counts&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># transpose the data to have variables (genes) as columns</span>
-data_for_PCA &lt;-<span class="st"> </span><span class="kw">t</span>(highexprgenes_counts)</code></pre>
-<pre><code>## Error in t(highexprgenes_counts): object &#39;highexprgenes_counts&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Run the PCA with an appropriate number of components</span>
-mds &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(<span class="kw">dist</span>(data_for_PCA))</code></pre>
-<pre><code>## Error in as.matrix(x): object &#39;data_for_PCA&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Plot the PCA</span>
-<span class="kw">plot</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Dimension 1&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Dimension 2&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</code></pre>
-<pre><code>## Error in plot(mds[, 1], -mds[, 2], type = &quot;n&quot;, xlab = &quot;Dimension 1&quot;, ylab = &quot;Dimension 2&quot;, : object &#39;mds&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">text</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="kw">rownames</span>(mds), <span class="dt">cex=</span><span class="fl">0.8</span>) </code></pre>
-<pre><code>## Error in text(mds[, 1], -mds[, 2], rownames(mds), cex = 0.8): object &#39;mds&#39; not found</code></pre>
+select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">500</span>]
+highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]
+
+<span class="co"># transpose the data to have variables (genes) as columns</span>
+data_for_PCA &lt;-<span class="st"> </span><span class="kw">t</span>(highexprgenes_counts)
+
+<span class="co"># Run the PCA with an appropriate number of components</span>
+mds &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(<span class="kw">dist</span>(data_for_PCA))
+
+<span class="co"># Plot the PCA</span>
+<span class="kw">plot</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Dimension 1&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Dimension 2&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)
+<span class="kw">text</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="kw">rownames</span>(mds), <span class="dt">cex=</span><span class="fl">0.8</span>) </code></pre>
+<div class="figure">
+<img src="figure/PCA-1.png" alt="plot of chunk PCA" /><p class="caption">plot of chunk PCA</p>
+</div>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Annotate the samples with their age &amp; re-run the PCA &amp; plot the main components</span>
-<span class="kw">rownames</span>(mds) &lt;-<span class="st"> </span>experiment_design.ord$age</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;experiment_design.ord&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Dimension 1&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Dimension 2&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</code></pre>
-<pre><code>## Error in plot(mds[, 1], -mds[, 2], type = &quot;n&quot;, xlab = &quot;Dimension 1&quot;, ylab = &quot;Dimension 2&quot;, : object &#39;mds&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">text</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="kw">rownames</span>(mds), <span class="dt">cex=</span><span class="fl">0.8</span>) </code></pre>
-<pre><code>## Error in text(mds[, 1], -mds[, 2], rownames(mds), cex = 0.8): object &#39;mds&#39; not found</code></pre>
+<span class="kw">rownames</span>(mds) &lt;-<span class="st"> </span>experiment_design.ord$age
+<span class="kw">plot</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Dimension 1&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Dimension 2&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)
+<span class="kw">text</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="kw">rownames</span>(mds), <span class="dt">cex=</span><span class="fl">0.8</span>) </code></pre>
+<div class="figure">
+<img src="figure/PCA-2.png" alt="plot of chunk PCA" /><p class="caption">plot of chunk PCA</p>
+</div>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Annotate the samples with other clinical data &amp; re-run the PCA &amp; plot the main components until you can separate the samples within each tissue group</span>
-<span class="kw">rownames</span>(mds)&lt;-<span class="st"> </span>experiment_design.ord$technical_replicate_group</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;experiment_design.ord&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Dimension 1&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Dimension 2&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</code></pre>
-<pre><code>## Error in plot(mds[, 1], -mds[, 2], type = &quot;n&quot;, xlab = &quot;Dimension 1&quot;, ylab = &quot;Dimension 2&quot;, : object &#39;mds&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">text</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="kw">rownames</span>(mds), <span class="dt">cex=</span><span class="fl">0.8</span>) </code></pre>
-<pre><code>## Error in text(mds[, 1], -mds[, 2], rownames(mds), cex = 0.8): object &#39;mds&#39; not found</code></pre>
+<span class="kw">rownames</span>(mds)&lt;-<span class="st"> </span>experiment_design.ord$technical_replicate_group
+<span class="kw">plot</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Dimension 1&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Dimension 2&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)
+<span class="kw">text</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="kw">rownames</span>(mds), <span class="dt">cex=</span><span class="fl">0.8</span>) </code></pre>
+<div class="figure">
+<img src="figure/PCA-3.png" alt="plot of chunk PCA" /><p class="caption">plot of chunk PCA</p>
+</div>
 <h2 id="differential-expression">Differential Expression</h2>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
@@ -130,40 +132,62 @@ mds &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(<span class="
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(limma)</code></pre>
 <pre><code>## Loading required package: methods</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create a new design matrix for limma with the technical replicate groups</span>
-techgroup&lt;-<span class="kw">factor</span>(experiment_design.ord$technical_replicate_group)</code></pre>
-<pre><code>## Error in factor(experiment_design.ord$technical_replicate_group): object &#39;experiment_design.ord&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">design &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(~<span class="dv">0</span>+techgroup)</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;techgroup&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colnames</span>(design)&lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;techgroup&quot;</span>,<span class="st">&quot;&quot;</span>,<span class="kw">colnames</span>(design))</code></pre>
-<pre><code>## Error in is.data.frame(x): object &#39;design&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">design</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;design&#39; not found</code></pre>
+techgroup&lt;-<span class="kw">factor</span>(experiment_design.ord$technical_replicate_group)
+design &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(~<span class="dv">0</span>+techgroup)
+<span class="kw">colnames</span>(design)&lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;techgroup&quot;</span>,<span class="st">&quot;&quot;</span>,<span class="kw">colnames</span>(design))
+design</code></pre>
+<pre><code>##   group_1 group_2 group_3 group_4
+## 1       0       1       0       0
+## 2       1       0       0       0
+## 3       0       0       0       1
+## 4       0       0       0       1
+## 5       0       0       1       0
+## 6       1       0       0       0
+## 7       0       1       0       0
+## 8       0       0       1       0
+## attr(,&quot;assign&quot;)
+## [1] 1 1 1 1
+## attr(,&quot;contrasts&quot;)
+## attr(,&quot;contrasts&quot;)$techgroup
+## [1] &quot;contr.treatment&quot;</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Re-normalise the read counts with &#39;voom&#39; function with new design matrix</span>
-y &lt;-<span class="st"> </span><span class="kw">voom</span>(mycounts,design,<span class="dt">lib.size=</span><span class="kw">colSums</span>(mycounts)*nf)</code></pre>
-<pre><code>## Error in is(counts, &quot;DGEList&quot;): object &#39;mycounts&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">counts.voom &lt;-<span class="st"> </span>y$E</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;y&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Fit a linear model on these normalised data</span>
-fit &lt;-<span class="st"> </span><span class="kw">lmFit</span>(y,design)</code></pre>
-<pre><code>## Error in is(object, &quot;list&quot;): object &#39;y&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Make the contrast matrix corresponding to the new set of parameters</span>
-cont.matrix &lt;-<span class="st"> </span><span class="kw">makeContrasts</span>(group_2-group_1,<span class="dt">levels=</span>design)</code></pre>
-<pre><code>## Error in is.factor(levels): object &#39;design&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">cont.matrix </code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;cont.matrix&#39; not found</code></pre>
+y &lt;-<span class="st"> </span><span class="kw">voom</span>(mycounts,design,<span class="dt">lib.size=</span><span class="kw">colSums</span>(mycounts)*nf)
+counts.voom &lt;-<span class="st"> </span>y$E
+
+<span class="co"># Fit a linear model on these normalised data</span>
+fit &lt;-<span class="st"> </span><span class="kw">lmFit</span>(y,design)
+
+<span class="co"># Make the contrast matrix corresponding to the new set of parameters</span>
+cont.matrix &lt;-<span class="st"> </span><span class="kw">makeContrasts</span>(group_2-group_1,<span class="dt">levels=</span>design)
+cont.matrix </code></pre>
+<pre><code>##          Contrasts
+## Levels    group_2 - group_1
+##   group_1                -1
+##   group_2                 1
+##   group_3                 0
+##   group_4                 0</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Fit the contrast matrix to the linear model</span>
-fit &lt;-<span class="st"> </span><span class="kw">contrasts.fit</span>(fit, cont.matrix)</code></pre>
-<pre><code>## Error in NCOL(fit$coefficients): object &#39;fit&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Compute moderated t-statistics of differential expression </span>
-fit &lt;-<span class="st"> </span><span class="kw">eBayes</span>(fit)</code></pre>
-<pre><code>## Error in ebayes(fit = fit, proportion = proportion, stdev.coef.lim = stdev.coef.lim, : object &#39;fit&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">digits=</span><span class="dv">3</span>)
+fit &lt;-<span class="st"> </span><span class="kw">contrasts.fit</span>(fit, cont.matrix)
+
+<span class="co"># Compute moderated t-statistics of differential expression </span>
+fit &lt;-<span class="st"> </span><span class="kw">eBayes</span>(fit)
+<span class="kw">options</span>(<span class="dt">digits=</span><span class="dv">3</span>)
 
 <span class="co"># Get the output table for the 10 most significant DE genes for this comparison</span>
 <span class="kw">dim</span>(<span class="kw">topTable</span>(fit,<span class="dt">coef=</span><span class="st">&quot;group_2 - group_1&quot;</span>,<span class="dt">p.val=</span><span class="fl">0.01</span>,<span class="dt">n=</span><span class="ot">Inf</span>))</code></pre>
-<pre><code>## Error in is(fit, &quot;MArrayLM&quot;): object &#39;fit&#39; not found</code></pre>
+<pre><code>## [1] 9652    6</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">topTable</span>(fit,<span class="dt">coef=</span><span class="st">&quot;group_2 - group_1&quot;</span>,<span class="dt">p.val=</span><span class="fl">0.01</span>)</code></pre>
-<pre><code>## Error in is(fit, &quot;MArrayLM&quot;): object &#39;fit&#39; not found</code></pre>
+<pre><code>##         logFC AveExpr     t  P.Value adj.P.Val     B
+## 125050 -3.598   13.36 -1219 6.95e-58  1.04e-53 123.0
+## 378706 -4.964   14.07  -842 4.15e-54  3.12e-50 114.4
+## 6029   -5.432   13.07  -500 8.61e-49  4.31e-45 102.0
+## 4514    0.761   12.20   271 1.44e-42  5.42e-39  86.5
+## 26871  -2.795   10.87  -187 8.96e-39  2.69e-35  78.7
+## 6023   -4.752   10.00  -168 1.16e-37  2.90e-34  76.5
+## 6043   -2.923    8.73  -164 2.02e-37  4.34e-34  75.9
+## 5354    0.576    5.73   158 4.82e-37  9.05e-34  74.3
+## 692148  0.733   10.39   146 3.15e-36  5.26e-33  72.6
+## 652965 -2.864    7.83  -137 1.36e-35  2.04e-32  71.6</code></pre>
 <h2 id="gene-ontology">Gene Ontology</h2>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
@@ -181,55 +205,138 @@ fit &lt;-<span class="st"> </span><span class="kw">eBayes</span>(fit)</code></pr
 </section>
 <p>Solution:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(GOstats)</code></pre>
-<pre><code>## Error in library(GOstats): there is no package called &#39;GOstats&#39;</code></pre>
+<pre><code>## Loading required package: Biobase
+## Loading required package: BiocGenerics
+## Loading required package: parallel
+## 
+## Attaching package: &#39;BiocGenerics&#39;
+## 
+## The following objects are masked from &#39;package:parallel&#39;:
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB
+## 
+## The following object is masked from &#39;package:limma&#39;:
+## 
+##     plotMA
+## 
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     xtabs
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, append, as.data.frame, as.vector, cbind,
+##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
+##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
+##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
+##     table, tapply, union, unique, unlist, unsplit
+## 
+## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.
+## 
+## Loading required package: Category
+## Loading required package: stats4
+## Loading required package: Matrix
+## Loading required package: AnnotationDbi
+## Loading required package: GenomeInfoDb
+## Loading required package: S4Vectors
+## Loading required package: IRanges
+## 
+## Attaching package: &#39;IRanges&#39;
+## 
+## The following object is masked from &#39;package:Matrix&#39;:
+## 
+##     expand
+## 
+## 
+## Attaching package: &#39;AnnotationDbi&#39;
+## 
+## The following object is masked from &#39;package:GenomeInfoDb&#39;:
+## 
+##     species
+## 
+## Loading required package: GO.db
+## Loading required package: DBI
+## 
+## Loading required package: graph
+## 
+## Attaching package: &#39;GOstats&#39;
+## 
+## The following object is masked from &#39;package:AnnotationDbi&#39;:
+## 
+##     makeGOGraph</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get your list of DE genes (Entrez Gene IDs)</span>
-entrezgeneids &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">rownames</span>(limma.res.pval.FC))</code></pre>
-<pre><code>## Error in rownames(limma.res.pval.FC): object &#39;limma.res.pval.FC&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">universeids &lt;-<span class="st"> </span><span class="kw">rownames</span>(mycounts)</code></pre>
-<pre><code>## Error in rownames(mycounts): object &#39;mycounts&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Set the new parameters for the hypergeometric test</span>
+entrezgeneids &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">rownames</span>(limma.res.pval.FC))
+universeids &lt;-<span class="st"> </span><span class="kw">rownames</span>(mycounts)
+
+<span class="co"># Set the new parameters for the hypergeometric test</span>
 params &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;GOHyperGParams&quot;</span>,<span class="dt">annotation=</span><span class="st">&quot;org.Hs.eg&quot;</span>,<span class="dt">geneIds=</span>entrezgeneids,<span class="dt">universeGeneIds=</span>universeids,<span class="dt">ontology=</span><span class="st">&quot;MF&quot;</span>,<span class="dt">pvalueCutoff=</span><span class="fl">0.01</span>,<span class="dt">testDirection=</span><span class="st">&quot;over&quot;</span>)</code></pre>
-<pre><code>## Error in getClass(Class, where = topenv(parent.frame())): &quot;GOHyperGParams&quot; is not a defined class</code></pre>
+<pre><code>## Loading required package: org.Hs.eg.db</code></pre>
+<pre><code>## Warning in makeValidParams(.Object): removing geneIds not in
+## universeGeneIds</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Run the test and adjust the pvalues in the output object</span>
 hg &lt;-<span class="st"> </span><span class="kw">hyperGTest</span>(params)</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): could not find function &quot;hyperGTest&quot;</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">hg.pv &lt;-<span class="st"> </span><span class="kw">pvalues</span>(hg)</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): could not find function &quot;pvalues&quot;</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">hg.pv.fdr &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(hg.pv,<span class="st">&#39;fdr&#39;</span>)</code></pre>
-<pre><code>## Error in p.adjust(hg.pv, &quot;fdr&quot;): object &#39;hg.pv&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Identify the significant GO terms at pvalue 0.01</span>
-sigGO.ID &lt;-<span class="st"> </span><span class="kw">names</span>(hg.pv.fdr[hg.pv.fdr &lt;<span class="st"> </span>hgCutoff])</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;hg.pv.fdr&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw">summary</span>(hg)</code></pre>
-<pre><code>## Error in summary(hg): object &#39;hg&#39; not found</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">GOterms.sig &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %in%<span class="st"> </span>sigGO.ID,<span class="st">&quot;Term&quot;</span>]</code></pre>
-<pre><code>## Error in df[, 1]: object of type &#39;closure&#39; is not subsettable</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(GOterms.sig )</code></pre>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;GOterms.sig&#39; not found</code></pre>
+<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring &#39;pos&#39;
+## argument</code></pre>
+<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring &#39;envir&#39;
+## argument</code></pre>
+<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring
+## &#39;all.names&#39; argument</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">hg.pv &lt;-<span class="st"> </span><span class="kw">pvalues</span>(hg)
+hg.pv.fdr &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(hg.pv,<span class="st">&#39;fdr&#39;</span>)
+
+<span class="co"># Identify the significant GO terms at pvalue 0.01</span>
+sigGO.ID &lt;-<span class="st"> </span><span class="kw">names</span>(hg.pv.fdr[hg.pv.fdr &lt;<span class="st"> </span>hgCutoff])
+df &lt;-<span class="st"> </span><span class="kw">summary</span>(hg)
+GOterms.sig &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %in%<span class="st"> </span>sigGO.ID,<span class="st">&quot;Term&quot;</span>]
+
+<span class="kw">length</span>(GOterms.sig )</code></pre>
+<pre><code>## [1] 400</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(GOterms.sig)</code></pre>
-<pre><code>## Error in head(GOterms.sig): object &#39;GOterms.sig&#39; not found</code></pre>
+<pre><code>## [1] &quot;signaling receptor activity&quot;                    
+## [2] &quot;transmembrane signaling receptor activity&quot;      
+## [3] &quot;signal transducer activity&quot;                     
+## [4] &quot;molecular transducer activity&quot;                  
+## [5] &quot;receptor activity&quot;                              
+## [6] &quot;extracellular ligand-gated ion channel activity&quot;</code></pre>
 <h2 id="r-environment">R environment</h2>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre>
-<pre><code>## R version 3.2.0 (2015-04-16)
+<pre><code>## R version 3.2.2 (2015-08-14)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 14.04.1 LTS
+## Running under: Ubuntu 14.04.2 LTS
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
-##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
-##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+##  [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+##  [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
 ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## [11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] methods   stats     graphics  grDevices utils     datasets  base     
+## [1] stats4    parallel  methods   stats     graphics  grDevices utils    
+## [8] datasets  base     
 ## 
 ## other attached packages:
-## [1] limma_3.16.7
+##  [1] org.Hs.eg.db_3.0.0   GOstats_2.32.0       graph_1.44.1        
+##  [4] Category_2.32.0      GO.db_3.0.0          RSQLite_1.0.0       
+##  [7] DBI_0.3.1            AnnotationDbi_1.28.2 GenomeInfoDb_1.2.5  
+## [10] IRanges_2.0.1        S4Vectors_0.4.0      Matrix_1.2-3        
+## [13] Biobase_2.26.0       BiocGenerics_0.12.1  limma_3.22.7        
 ## 
 ## loaded via a namespace (and not attached):
-## [1] formatR_1.4   tools_3.2.0   knitr_1.13    stringr_0.6.2 evaluate_0.9</code></pre>
+##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
+##  [4] xtable_1.8-0          lattice_0.20-33       stringr_1.0.0        
+##  [7] tools_3.2.2           grid_3.2.2            AnnotationForge_1.8.2
+## [10] genefilter_1.48.1     survival_2.38-3       RBGL_1.42.0          
+## [13] GSEABase_1.28.0       formatR_1.2.1         evaluate_0.8         
+## [16] stringi_1.0-1         XML_3.98-1.3          annotate_1.44.0</code></pre>
         </div>
       </div>
       </article>
