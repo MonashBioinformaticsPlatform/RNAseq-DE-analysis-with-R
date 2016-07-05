@@ -3,13 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="generator" content="pandoc">
-    <title>Software Carpentry: </title>
+    <title>RNAseq Using R </title>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
     <link rel="stylesheet" type="text/css" href="css/swc.css" />
-    <link rel="alternate" type="application/rss+xml" title="Software Carpentry Blog" href="http://software-carpentry.org/feed.xml"/>
     <meta charset="UTF-8" />
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -18,9 +17,9 @@
   </head>
   <body class="lesson">
     <div class="container card">
-      <div class="banner">
-        <a href="http://software-carpentry.org" title="Software Carpentry">
-          <img alt="Software Carpentry banner" src="img/software-carpentry-banner.png" />
+      <div class="banner" align="right" style="margin-top: 5px">
+        <a href="http://monash.edu/bioinformatics" title="Monash Bioinformatics Platform">
+            <div style="margin-right: 5px;" class="label swc-blue-bg">Monash Bioinformatics Platform</div>
         </a>
       </div>
       <article>
@@ -34,12 +33,12 @@
 </div>
 <div class="panel-body">
 <p>This course is an introduction to differential expression analysis from RNAseq data. It will take you from the raw fastq files all the way to the list of differentially expressed genes, via the mapping of the reads to a reference genome and statistical analysis using the limma package.</p>
-<p>The Monash Bioinformatics Platform thanks and acknowledges QFAB (<a href="http://www.qfab.org">http://www.qfab.org</a>) for original materials in this section.</p>
+<p>The Monash Bioinformatics Platform thanks and acknowledges QFAB (<a href="http://www.qfab.org" class="uri">http://www.qfab.org</a>) for original materials in this section.</p>
 </div>
 </section>
 <h3 id="install-and-load-packages">Install and load packages</h3>
-<p>Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <a href="http://cran.us.r-project.org/">http://cran.us.r-project.org/</a>). To install one of these packages, you would use <code>install.packages(&quot;packagename&quot;)</code>. You only need to install a package once, then load it each time using <code>library(packagename)</code>.</p>
-<p>Bioconductor packages work a bit differently, and are not hosted on CRAN. Go to <a href="http://bioconductor.org/">http://bioconductor.org/</a> to learn more about the Bioconductor project. To use any Bioconductor package, you’ll need a few “core” Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You’ll need internet connectivity to do this, and it’ll take a few minutes, but it only needs to be done once.</p>
+<p>Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <a href="http://cran.us.r-project.org/" class="uri">http://cran.us.r-project.org/</a>). To install one of these packages, you would use <code>install.packages(&quot;packagename&quot;)</code>. You only need to install a package once, then load it each time using <code>library(packagename)</code>.</p>
+<p>Bioconductor packages work a bit differently, and are not hosted on CRAN. Go to <a href="http://bioconductor.org/" class="uri">http://bioconductor.org/</a> to learn more about the Bioconductor project. To use any Bioconductor package, you’ll need a few “core” Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You’ll need internet connectivity to do this, and it’ll take a few minutes, but it only needs to be done once.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Download the installer script</span>
 <span class="kw">source</span>(<span class="st">&quot;http://bioconductor.org/biocLite.R&quot;</span>)
 
@@ -59,25 +58,16 @@
 <p>To start with, delete all previously saved R objects and define your working directory for the RNAseq data analysis.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Delete all previously saved R objects</span>
 <span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">ls</span>())</code></pre>
-<p>The data considered for the RNAseq part of the course have been downloaded from ArrayExpress (<a href="http://www.ebi.ac.uk/arrayexpress">http://www.ebi.ac.uk/arrayexpress</a>) and correspond to 8 RNA sequencing libraries from Human brain and liver.</p>
+<p>The data considered for the RNAseq part of the course have been downloaded from ArrayExpress (<a href="http://www.ebi.ac.uk/arrayexpress" class="uri">http://www.ebi.ac.uk/arrayexpress</a>) and correspond to 8 RNA sequencing libraries from Human brain and liver.</p>
 <p>Raw sequencing data are usually available in FASTQ format which is a well defined text-based format for storing both biological sequences (usually nucleotide sequences) and their corresponding quality scores. The raw data from this study have been downloaded (8Gb / fastq file) into the shared directory “~/data/RNAseq/raw_data”.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define shared directory for RNAseq data</span>
 RNAseqDATADIR &lt;-<span class="st"> &quot;/mnt/RNAseqCourse/raw_data&quot;</span>
 <span class="co">#list the fastq files in the raw data directory</span>
 <span class="kw">dir</span>(RNAseqDATADIR)</code></pre>
-<pre><code>##  [1] &quot;ERR420386_1.fastq.gz&quot;         &quot;ERR420386_2.fastq.gz&quot;        
-##  [3] &quot;ERR420387_1.fastq.gz&quot;         &quot;ERR420387_2.fastq.gz&quot;        
-##  [5] &quot;ERR420388_1.fastq.gz&quot;         &quot;ERR420388_2.fastq.gz&quot;        
-##  [7] &quot;ERR420388_mini_1.fastq.gz&quot;    &quot;ERR420388_mini_2.fastq.gz&quot;   
-##  [9] &quot;ERR420388_subsamp_1.fastq.gz&quot; &quot;ERR420388_subsamp_2.fastq.gz&quot;
-## [11] &quot;ERR420389_1.fastq.gz&quot;         &quot;ERR420389_2.fastq.gz&quot;        
-## [13] &quot;ERR420390_1.fastq.gz&quot;         &quot;ERR420390_2.fastq.gz&quot;        
-## [15] &quot;ERR420391_2.fastq.gz&quot;         &quot;ERR420392_1.fastq.gz&quot;        
-## [17] &quot;ERR420392_2.fastq.gz&quot;         &quot;ERR420393_1.fastq.gz&quot;        
-## [19] &quot;ERR420393_2.fastq.gz&quot;         &quot;experiment_design.txt&quot;</code></pre>
+<pre><code>## character(0)</code></pre>
 <p>The first step in a RNAseq analysis is to run a quick quality check on your data, this will give you an idea of the quality of your raw data in terms of number of reads per library, read length, average quality score along the reads, GC content, sequence duplication level, adaptors that might have not been removed correctly from the data etc.</p>
-<p>The fastQC tool is quick and easy to run and can be downloaded from here: <a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/">http://www.bioinformatics.babraham.ac.uk/projects/fastqc/</a>.</p>
-<p>To ensure highest quality of the sequences for subsequent mapping and differential expression analysis steps, the reads can also be trimmed using the Trimmomatic tool (Lohse et al. 2012, <a href="http://www.usadellab.org/cms/?page=trimmomatic">http://www.usadellab.org/cms/?page=trimmomatic</a>).</p>
+<p>The fastQC tool is quick and easy to run and can be downloaded from here: <a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/" class="uri">http://www.bioinformatics.babraham.ac.uk/projects/fastqc/</a>.</p>
+<p>To ensure highest quality of the sequences for subsequent mapping and differential expression analysis steps, the reads can also be trimmed using the Trimmomatic tool (Lohse et al. 2012, <a href="http://www.usadellab.org/cms/?page=trimmomatic" class="uri">http://www.usadellab.org/cms/?page=trimmomatic</a>).</p>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pushpin"></span>NOTE</h2>
@@ -90,6 +80,7 @@ RNAseqDATADIR &lt;-<span class="st"> &quot;/mnt/RNAseqCourse/raw_data&quot;</spa
 <h3 id="mapping-reads-to-a-reference-genome">Mapping reads to a reference genome</h3>
 <p>Once the reads have been quality checked and trimmed, the next step is to map the reads to the reference genome (in our case the human genome “hg19”). This can be done with the Bioconductor package <em>Rsubread</em> (Y et al. 2013).</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Rsubread)</code></pre>
+<pre><code>## Error in library(Rsubread): there is no package called &#39;Rsubread&#39;</code></pre>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pushpin"></span>NOTE</h2>
@@ -168,25 +159,20 @@ mycounts$stat</code></pre>
 <p>For the purpose of this course the read summarisation step has already been performed for all libraries. You will need to load the corresponding RData file to get these read counts.</p>
 <pre class="sourceCode r"><code class="sourceCode r">MAPPINGDIR &lt;-<span class="st"> &quot;/mnt/RNAseqCourse/mapping&quot;</span>
 <span class="co"># load the counts previously calculated</span>
-<span class="kw">load</span>(<span class="kw">file.path</span>(MAPPINGDIR,<span class="st">&quot;RawCounts.RData&quot;</span>))
-<span class="co"># check the presence of read counts for the 8 libraries</span>
+<span class="kw">load</span>(<span class="kw">file.path</span>(MAPPINGDIR,<span class="st">&quot;RawCounts.RData&quot;</span>))</code></pre>
+<pre><code>## Warning in readChar(con, 5L, useBytes = TRUE): cannot open compressed file
+## &#39;/mnt/RNAseqCourse/mapping/RawCounts.RData&#39;, probable reason &#39;No such file
+## or directory&#39;</code></pre>
+<pre><code>## Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check the presence of read counts for the 8 libraries</span>
 <span class="kw">summary</span>(counts)</code></pre>
-<pre><code>##            Length Class      Mode     
-## counts     205616 -none-     numeric  
-## annotation      2 data.frame list     
-## targets         8 -none-     character</code></pre>
+<pre><code>## Error in summary(counts): object &#39;counts&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r">counts$targets</code></pre>
-<pre><code>## [1] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420386.sam&quot;
-## [2] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420387.sam&quot;
-## [3] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420388.sam&quot;
-## [4] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420389.sam&quot;
-## [5] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420390.sam&quot;
-## [6] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420391.sam&quot;
-## [7] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420392.sam&quot;
-## [8] &quot;/data/Intro_to_R/RNAseq/mapping/ERR420393.sam&quot;</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;counts&#39; not found</code></pre>
 <p>You can then print out these counts in a text file for future reference.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># print out counts table for every sample</span>
 <span class="kw">write.table</span>(counts$counts,<span class="dt">file=</span><span class="st">&quot;~/raw_read_counts.txt&quot;</span>,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote=</span>F,<span class="dt">append=</span>F)</code></pre>
+<pre><code>## Error in is.data.frame(x): object &#39;counts&#39; not found</code></pre>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pushpin"></span>NOTE:</h2>
@@ -195,7 +181,7 @@ mycounts$stat</code></pre>
 <p>To save disk space on your machine, remember to convert your SAM files to BAM format using samtools and to compress the fastq files. This can be done out of Rstudio, in a shell window:</p>
 <p><code>samtools view -Shb myfile.sam -o myfile.bam</code></p>
 <p><code>gzip myfile.fq</code></p>
-<p>Visualisation of the BAM files you created can also be done via a genome browser such as IGV (<a href="http://www.broadinstitute.org/igv/">http://www.broadinstitute.org/igv/</a>) after sorting and indexing of those files.</p>
+<p>Visualisation of the BAM files you created can also be done via a genome browser such as IGV (<a href="http://www.broadinstitute.org/igv/" class="uri">http://www.broadinstitute.org/igv/</a>) after sorting and indexing of those files.</p>
 </div>
 </aside>
 <h3 id="qc-and-stats">QC and stats</h3>
@@ -206,43 +192,33 @@ mycounts$stat</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define the experiment design file (tab separated text file is best)</span>
 EXPMT_DESIGN_FILE &lt;-<span class="st"> </span><span class="kw">file.path</span>(RNAseqDATADIR,<span class="st">&#39;experiment_design.txt&#39;</span>)
 <span class="co"># read the experiment design file and save it into memory</span>
-experiment_design&lt;-<span class="kw">read.table</span>(EXPMT_DESIGN_FILE,<span class="dt">header=</span>T,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)
-<span class="co">#</span>
+experiment_design&lt;-<span class="kw">read.table</span>(EXPMT_DESIGN_FILE,<span class="dt">header=</span>T,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</code></pre>
+<pre><code>## Warning in file(file, &quot;rt&quot;): cannot open file
+## &#39;/mnt/RNAseqCourse/raw_data/experiment_design.txt&#39;: No such file or
+## directory</code></pre>
+<pre><code>## Error in file(file, &quot;rt&quot;): cannot open the connection</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#</span>
 <span class="co"># set the rownames to the sampleID to allow for ordering</span>
-<span class="kw">rownames</span>(experiment_design) &lt;-<span class="st"> </span>experiment_design$SampleID
-<span class="co"># order the design following the counts sample order</span>
-experiment_design.ord &lt;-<span class="st"> </span>experiment_design[<span class="kw">colnames</span>(counts$counts),]
-<span class="co"># look at the design</span>
+<span class="kw">rownames</span>(experiment_design) &lt;-<span class="st"> </span>experiment_design$SampleID</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;experiment_design&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># order the design following the counts sample order</span>
+experiment_design.ord &lt;-<span class="st"> </span>experiment_design[<span class="kw">colnames</span>(counts$counts),]</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;experiment_design&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># look at the design</span>
 experiment_design.ord</code></pre>
-<pre><code>##            SampleID    Source_Name     organism  sex age tissue
-## ERR420386 ERR420386 brain_sample_1 Homo_sapiens male  26  brain
-## ERR420387 ERR420387 brain_sample_1 Homo_sapiens male  26  brain
-## ERR420388 ERR420388 liver_sample_1 Homo_sapiens male  30  liver
-## ERR420389 ERR420389 liver_sample_1 Homo_sapiens male  30  liver
-## ERR420390 ERR420390 liver_sample_1 Homo_sapiens male  30  liver
-## ERR420391 ERR420391 brain_sample_1 Homo_sapiens male  26  brain
-## ERR420392 ERR420392 brain_sample_1 Homo_sapiens male  26  brain
-## ERR420393 ERR420393 liver_sample_1 Homo_sapiens male  30  liver
-##           Extract_Name Material_Type Assay_Name technical_replicate_group
-## ERR420386       GCCAAT           RNA     Assay4                   group_2
-## ERR420387       ACAGTG           RNA     Assay2                   group_1
-## ERR420388       GTGAAA           RNA     Assay7                   group_4
-## ERR420389       GTGAAA           RNA     Assay8                   group_4
-## ERR420390       CTTGTA           RNA     Assay6                   group_3
-## ERR420391       ACAGTG           RNA     Assay1                   group_1
-## ERR420392       GCCAAT           RNA     Assay3                   group_2
-## ERR420393       CTTGTA           RNA     Assay5                   group_3</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;experiment_design.ord&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># list the ordered samples for future use</span>
-samples &lt;-<span class="st"> </span><span class="kw">as.character</span>(experiment_design.ord$SampleID)
-<span class="co"># create factors for future plotting</span>
-group&lt;-<span class="kw">factor</span>(experiment_design.ord$tissue)
-group</code></pre>
-<pre><code>## [1] brain brain liver liver liver brain brain liver
-## Levels: brain liver</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">age&lt;-<span class="kw">factor</span>(experiment_design.ord$age)
-age</code></pre>
-<pre><code>## [1] 26 26 30 30 30 26 26 30
-## Levels: 26 30</code></pre>
+samples &lt;-<span class="st"> </span><span class="kw">as.character</span>(experiment_design.ord$SampleID)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;experiment_design.ord&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create factors for future plotting</span>
+group&lt;-<span class="kw">factor</span>(experiment_design.ord$tissue)</code></pre>
+<pre><code>## Error in factor(experiment_design.ord$tissue): object &#39;experiment_design.ord&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">group</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;group&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">age&lt;-<span class="kw">factor</span>(experiment_design.ord$age)</code></pre>
+<pre><code>## Error in factor(experiment_design.ord$age): object &#39;experiment_design.ord&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">age</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;age&#39; not found</code></pre>
 <h4 id="basic-qc-plots">Basic QC plots</h4>
 <p>Density plots of log-intensity distribution of each library can be superposed on a single graph for a better comparison between libraries and for identification of libraries with weird distribution. On the boxplots the density distributions of raw log-intensities are not expected to be identical but still not totally different.</p>
 <aside class="callout panel panel-info">
@@ -277,20 +253,24 @@ logcounts &lt;-<span class="st"> </span><span class="kw">log</span>(counts$count
 <p><img src="fig/RNAseq/Raw_read_counts_per_gene.boxplot.png" alt="boxplotlog10" /></p>
 <p>In order to investigate the relationship between samples, hierarchical clustering can be performed using the <em>heatmap</em> function from the <em>stats</em> package. In this example <em>heatmap</em> calculates a matrix of euclidean distances from the mapped read counts for the 100 most highly expressed genes.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># select data for the 100 most highly expressed genes</span>
-select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">100</span>]
-highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]
-
-<span class="co"># heatmap with sample name on X-axis</span>
+select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">100</span>]</code></pre>
+<pre><code>## Error in is.data.frame(x): object &#39;counts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;counts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># heatmap with sample name on X-axis</span>
 <span class="kw">png</span>(<span class="dt">file=</span><span class="st">&quot;~/High_expr_genes.heatmap.png&quot;</span>)
-<span class="kw">heatmap</span>(highexprgenes_counts, <span class="dt">col=</span><span class="kw">topo.colors</span>(<span class="dv">50</span>), <span class="dt">margin=</span><span class="kw">c</span>(<span class="dv">10</span>,<span class="dv">6</span>))
-<span class="kw">dev.off</span>()</code></pre>
+<span class="kw">heatmap</span>(highexprgenes_counts, <span class="dt">col=</span><span class="kw">topo.colors</span>(<span class="dv">50</span>), <span class="dt">margin=</span><span class="kw">c</span>(<span class="dv">10</span>,<span class="dv">6</span>))</code></pre>
+<pre><code>## Error in heatmap(highexprgenes_counts, col = topo.colors(50), margin = c(10, : object &#39;highexprgenes_counts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dev.off</span>()</code></pre>
 <p>You will notice that the samples clustering does not follow the original order in the data matrix (alphabetical order “ERR420386” to “ERR420393”). They have been re-ordered according to the similarity of the 100 genes expression profiles. To understand what biological effect lies under this clustering, one can use the samples annotation for labeling (samples group, age, sex etc).</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># heatmap with condition group as labels</span>
-<span class="kw">colnames</span>(highexprgenes_counts)&lt;-<span class="st"> </span>group
-<span class="co"># plot</span>
+<span class="kw">colnames</span>(highexprgenes_counts)&lt;-<span class="st"> </span>group</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;group&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot</span>
 <span class="kw">png</span>(<span class="dt">file=</span><span class="st">&quot;~/High_exprs_genes.heatmap.group.png&quot;</span>)
-<span class="kw">heatmap</span>(highexprgenes_counts, <span class="dt">col =</span> <span class="kw">topo.colors</span>(<span class="dv">50</span>), <span class="dt">margin=</span><span class="kw">c</span>(<span class="dv">10</span>,<span class="dv">6</span>))
-<span class="kw">dev.off</span>()</code></pre>
+<span class="kw">heatmap</span>(highexprgenes_counts, <span class="dt">col =</span> <span class="kw">topo.colors</span>(<span class="dv">50</span>), <span class="dt">margin=</span><span class="kw">c</span>(<span class="dv">10</span>,<span class="dv">6</span>))</code></pre>
+<pre><code>## Error in heatmap(highexprgenes_counts, col = topo.colors(50), margin = c(10, : object &#39;highexprgenes_counts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dev.off</span>()</code></pre>
 <p><img src="fig/RNAseq/High_expr_genes.heatmap.group.png" alt="heatmap" /></p>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
@@ -309,23 +289,27 @@ highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]
 <p>A Principal Component Analysis (PCA) can also be performed with these data using the <em>cmdscale</em> function (from the <em>stats</em> package) which performs a classical multidimensional scaling of a data matrix.</p>
 <p>Reads counts need to be transposed before being analysed with the <em>cmdscale</em> functions, i.e. genes should be in columns and samples should be in rows. This is the code for transposing and checking the data before further steps:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># select data for the 1000 most highly expressed genes</span>
-select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">100</span>]
-highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]
-<span class="co"># annotate the data with condition group as labels</span>
-<span class="kw">colnames</span>(highexprgenes_counts)&lt;-<span class="st"> </span>group
-<span class="co"># transpose the data to have variables (genes) as columns</span>
-data_for_PCA &lt;-<span class="st"> </span><span class="kw">t</span>(highexprgenes_counts)
-<span class="kw">dim</span>(data_for_PCA)</code></pre>
-<pre><code>## [1]   8 100</code></pre>
+select =<span class="st"> </span><span class="kw">order</span>(<span class="kw">rowMeans</span>(counts$counts), <span class="dt">decreasing=</span><span class="ot">TRUE</span>)[<span class="dv">1</span>:<span class="dv">100</span>]</code></pre>
+<pre><code>## Error in is.data.frame(x): object &#39;counts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">highexprgenes_counts &lt;-<span class="st"> </span>counts$counts[select,]</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;counts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># annotate the data with condition group as labels</span>
+<span class="kw">colnames</span>(highexprgenes_counts)&lt;-<span class="st"> </span>group</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;group&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># transpose the data to have variables (genes) as columns</span>
+data_for_PCA &lt;-<span class="st"> </span><span class="kw">t</span>(highexprgenes_counts)</code></pre>
+<pre><code>## Error in t(highexprgenes_counts): object &#39;highexprgenes_counts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(data_for_PCA)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;data_for_PCA&#39; not found</code></pre>
 <p>The <em>cmdscale</em> function will calculate a matrix of dissimilarities from your transposed data and will also provide information about the proportion of explained variance by calculating Eigen values.</p>
 <pre class="sourceCode r"><code class="sourceCode r">## calculate MDS (matrix of dissimilarities)
-mds &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(<span class="kw">dist</span>(data_for_PCA), <span class="dt">k=</span><span class="dv">3</span>, <span class="dt">eig=</span><span class="ot">TRUE</span>)  
-<span class="co"># k = the maximum dimension of the space which the data are to be represented in</span>
+mds &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(<span class="kw">dist</span>(data_for_PCA), <span class="dt">k=</span><span class="dv">3</span>, <span class="dt">eig=</span><span class="ot">TRUE</span>)  </code></pre>
+<pre><code>## Error in as.matrix(x): object &#39;data_for_PCA&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># k = the maximum dimension of the space which the data are to be represented in</span>
 <span class="co"># eig = indicates whether eigenvalues should be returned</span></code></pre>
 <p>The variable mds$eig provides the Eigen values for the first 8 principal components:</p>
 <pre class="sourceCode r"><code class="sourceCode r">mds$eig</code></pre>
-<pre><code>## [1] 9.490938e+13 1.099639e+13 1.125271e+11 1.026586e+10 1.500500e+07
-## [6] 6.240239e+06 3.206875e+06 2.285361e-03</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;mds&#39; not found</code></pre>
 <p>Plotting this variable as a percentage will help you determine how many components can explain the variability in your dataset and thus how many dimensions you should be looking at.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># transform the Eigen values into percentage</span>
 eig_pc &lt;-<span class="st"> </span>mds$eig *<span class="st"> </span><span class="dv">100</span> /<span class="st"> </span><span class="kw">max</span>(mds$eig)
@@ -341,6 +325,7 @@ eig_pc &lt;-<span class="st"> </span>mds$eig *<span class="st"> </span><span cla
 <p>In most cases, the first 2 components explain more than half the variability in the dataset and can be used for plotting. The <em>cmdscale</em> function run with default parameters will perform a principal components analysis on the given data matrix and the <em>plot</em> function will provide scatter plots for individuals representation.</p>
 <pre class="sourceCode r"><code class="sourceCode r">## calculate MDS
 mds &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(<span class="kw">dist</span>(data_for_PCA)) <span class="co"># Performs MDS analysis </span></code></pre>
+<pre><code>## Error in as.matrix(x): object &#39;data_for_PCA&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Samples representation</span>
 <span class="kw">png</span>(<span class="dt">file=</span><span class="st">&quot;~/PCA_Dim1vsDim2.png&quot;</span>)
 <span class="kw">plot</span>(mds[,<span class="dv">1</span>], -mds[,<span class="dv">2</span>], <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Dimension 1&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Dimension 2&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>)
@@ -368,88 +353,75 @@ mds &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(<span class="
 <p>Before proceeding with differential expression analysis, it is useful to filter out very lowly expressed genes. This will help increasing the statistical power of the analysi while keeping genes of interest. A common way to do this is by filtering out genes having less than 1 count-per-million reads (cpm) in half the samples. The “edgeR” library provides the <em>cpm</em> function which can be used here.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load required libraries</span>
 <span class="kw">library</span>(edgeR)</code></pre>
-<pre><code>## Loading required package: limma
-## Loading required package: methods</code></pre>
+<pre><code>## Loading required package: methods</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get the expression counts from previous alignment step</span>
-mycounts &lt;-<span class="st"> </span>counts$counts
-<span class="kw">dim</span>(mycounts)</code></pre>
-<pre><code>## [1] 25702     8</code></pre>
+mycounts &lt;-<span class="st"> </span>counts$counts</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;counts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(mycounts)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;mycounts&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r">mycounts[<span class="dv">1</span>:<span class="dv">5</span>,<span class="dv">1</span>:<span class="dv">3</span>]</code></pre>
-<pre><code>##    ERR420386 ERR420387 ERR420388
-## 1          2        56      5461
-## 2       3723      2270     27665
-## 9         14         3       148
-## 10         1         1       373
-## 12        42        34     20969</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;mycounts&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># filtering</span>
 <span class="co">#Keep genes with least 1 count-per-million reads (cpm) in at least 4 samples</span>
-isexpr &lt;-<span class="st"> </span><span class="kw">rowSums</span>(<span class="kw">cpm</span>(mycounts)&gt;<span class="dv">1</span>) &gt;=<span class="st"> </span><span class="dv">4</span>
-<span class="kw">table</span>(isexpr)</code></pre>
-<pre><code>## isexpr
-## FALSE  TRUE 
-## 10686 15016</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">mycounts &lt;-<span class="st"> </span>mycounts[isexpr,]
-genes &lt;-<span class="st"> </span><span class="kw">rownames</span>(mycounts)
-
-<span class="kw">dim</span>(mycounts)</code></pre>
-<pre><code>## [1] 15016     8</code></pre>
+isexpr &lt;-<span class="st"> </span><span class="kw">rowSums</span>(<span class="kw">cpm</span>(mycounts)&gt;<span class="dv">1</span>) &gt;=<span class="st"> </span><span class="dv">4</span></code></pre>
+<pre><code>## Error in cpm(mycounts): object &#39;mycounts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(isexpr)</code></pre>
+<pre><code>## Error in table(isexpr): object &#39;isexpr&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">mycounts &lt;-<span class="st"> </span>mycounts[isexpr,]</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;mycounts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">genes &lt;-<span class="st"> </span><span class="kw">rownames</span>(mycounts)</code></pre>
+<pre><code>## Error in rownames(mycounts): object &#39;mycounts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(mycounts)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;mycounts&#39; not found</code></pre>
 <p>The <em>limma</em> package (since version 3.16.0) offers the <em>voom</em> function that will normalise read counts and apply a linear model to the normalised data before computing moderated t-statistics of differential expression.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load required libraries</span>
 <span class="kw">library</span>(limma)
 
 <span class="co"># check your samples grouping</span>
 experiment_design.ord[<span class="kw">colnames</span>(mycounts),]$tissue ==<span class="st"> </span>group</code></pre>
-<pre><code>## [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;experiment_design.ord&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create design matrix for limma</span>
-design &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(~<span class="dv">0</span>+group)
-<span class="co"># substitute &quot;group&quot; from the design column names</span>
-<span class="kw">colnames</span>(design)&lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;group&quot;</span>,<span class="st">&quot;&quot;</span>,<span class="kw">colnames</span>(design))
-<span class="co"># check your design matrix</span>
+design &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(~<span class="dv">0</span>+group)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;group&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># substitute &quot;group&quot; from the design column names</span>
+<span class="kw">colnames</span>(design)&lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;group&quot;</span>,<span class="st">&quot;&quot;</span>,<span class="kw">colnames</span>(design))</code></pre>
+<pre><code>## Error in is.data.frame(x): object &#39;design&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check your design matrix</span>
 design</code></pre>
-<pre><code>##   brain liver
-## 1     1     0
-## 2     1     0
-## 3     0     1
-## 4     0     1
-## 5     0     1
-## 6     1     0
-## 7     1     0
-## 8     0     1
-## attr(,&quot;assign&quot;)
-## [1] 1 1
-## attr(,&quot;contrasts&quot;)
-## attr(,&quot;contrasts&quot;)$group
-## [1] &quot;contr.treatment&quot;</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;design&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># calculate normalization factors between libraries</span>
-nf &lt;-<span class="st"> </span><span class="kw">calcNormFactors</span>(mycounts)
-<span class="co">#</span>
+nf &lt;-<span class="st"> </span><span class="kw">calcNormFactors</span>(mycounts)</code></pre>
+<pre><code>## Error in is(object, &quot;DGEList&quot;): object &#39;mycounts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#</span>
 <span class="co"># normalise the read counts with &#39;voom&#39; function</span>
-y &lt;-<span class="st"> </span><span class="kw">voom</span>(mycounts,design,<span class="dt">lib.size=</span><span class="kw">colSums</span>(mycounts)*nf)
-<span class="co"># extract the normalised read counts</span>
-counts.voom &lt;-<span class="st"> </span>y$E
-
-<span class="co"># save normalised expression data into output dir</span>
-<span class="kw">write.table</span>(counts.voom,<span class="dt">file=</span><span class="st">&quot;~/counts.voom.txt&quot;</span>,<span class="dt">row.names=</span>T,<span class="dt">quote=</span>F,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)
-
-<span class="co"># fit linear model for each gene given a series of libraries</span>
-fit &lt;-<span class="st"> </span><span class="kw">lmFit</span>(y,design)
-<span class="co"># construct the contrast matrix corresponding to specified contrasts of a set of parameters</span>
-cont.matrix &lt;-<span class="st"> </span><span class="kw">makeContrasts</span>(liver-brain,<span class="dt">levels=</span>design)
-cont.matrix </code></pre>
-<pre><code>##        Contrasts
-## Levels  liver - brain
-##   brain            -1
-##   liver             1</code></pre>
+y &lt;-<span class="st"> </span><span class="kw">voom</span>(mycounts,design,<span class="dt">lib.size=</span><span class="kw">colSums</span>(mycounts)*nf)</code></pre>
+<pre><code>## Error in is(counts, &quot;DGEList&quot;): object &#39;mycounts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># extract the normalised read counts</span>
+counts.voom &lt;-<span class="st"> </span>y$E</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;y&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># save normalised expression data into output dir</span>
+<span class="kw">write.table</span>(counts.voom,<span class="dt">file=</span><span class="st">&quot;~/counts.voom.txt&quot;</span>,<span class="dt">row.names=</span>T,<span class="dt">quote=</span>F,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</code></pre>
+<pre><code>## Error in is.data.frame(x): object &#39;counts.voom&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># fit linear model for each gene given a series of libraries</span>
+fit &lt;-<span class="st"> </span><span class="kw">lmFit</span>(y,design)</code></pre>
+<pre><code>## Error in is(object, &quot;list&quot;): object &#39;y&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># construct the contrast matrix corresponding to specified contrasts of a set of parameters</span>
+cont.matrix &lt;-<span class="st"> </span><span class="kw">makeContrasts</span>(liver-brain,<span class="dt">levels=</span>design)</code></pre>
+<pre><code>## Error in is.factor(levels): object &#39;design&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">cont.matrix </code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;cont.matrix&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute estimated coefficients and standard errors for a given set of contrasts</span>
-fit &lt;-<span class="st"> </span><span class="kw">contrasts.fit</span>(fit, cont.matrix)
-
-<span class="co"># compute moderated t-statistics of differential expression by empirical Bayes moderation of the standard errors</span>
-fit &lt;-<span class="st"> </span><span class="kw">eBayes</span>(fit)
-<span class="kw">options</span>(<span class="dt">digits=</span><span class="dv">3</span>)
+fit &lt;-<span class="st"> </span><span class="kw">contrasts.fit</span>(fit, cont.matrix)</code></pre>
+<pre><code>## Error in NCOL(fit$coefficients): object &#39;fit&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute moderated t-statistics of differential expression by empirical Bayes moderation of the standard errors</span>
+fit &lt;-<span class="st"> </span><span class="kw">eBayes</span>(fit)</code></pre>
+<pre><code>## Error in ebayes(fit = fit, proportion = proportion, stdev.coef.lim = stdev.coef.lim, : object &#39;fit&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">digits=</span><span class="dv">3</span>)
 
 <span class="co"># check the output fit</span>
 <span class="kw">dim</span>(fit)</code></pre>
-<pre><code>## [1] 15016     1</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;fit&#39; not found</code></pre>
 <p>The<em>topTable</em> function summarises the output from limma in a table format. Significant DE genes for a particular comparison can be identified by selecting genes with a p-value smaller than a chosen cut-off value and/or a fold change greater than a chosen value in this table. By default the table will be sorted by increasing adjusted p-value, showing the most significant DE genes at the top.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set adjusted pvalue threshold and log fold change threshold</span>
 mypval=<span class="fl">0.01</span>
@@ -457,35 +429,28 @@ myfc=<span class="dv">3</span>
 
 <span class="co"># get the coefficient name for the comparison  of interest</span>
 <span class="kw">colnames</span>(fit$coefficients)</code></pre>
-<pre><code>## [1] &quot;liver - brain&quot;</code></pre>
+<pre><code>## Error in is.data.frame(x): object &#39;fit&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r">mycoef=<span class="st">&quot;liver - brain&quot;</span>
 <span class="co"># get the output table for the 10 most significant DE genes for this comparison</span>
 <span class="kw">topTable</span>(fit,<span class="dt">coef=</span>mycoef)</code></pre>
-<pre><code>##      logFC AveExpr    t  P.Value adj.P.Val    B
-## 5265 10.45    7.33 86.7 1.89e-13  1.37e-09 18.6
-## 3240 11.28    7.62 89.4 1.46e-13  1.37e-09 18.5
-## 2335  6.82    8.56 67.2 1.53e-12  2.93e-09 18.4
-## 213  11.77   10.69 69.3 1.19e-12  2.93e-09 18.3
-## 338  11.51    8.31 70.4 1.04e-12  2.93e-09 18.0
-## 2243 11.56    7.17 80.0 3.64e-13  1.37e-09 17.7
-## 716   7.49    6.75 61.0 3.38e-12  4.22e-09 17.7
-## 229  10.90    6.45 82.0 2.98e-13  1.37e-09 17.4
-## 1571  9.64    6.62 63.8 2.33e-12  3.18e-09 17.3
-## 125  11.54    7.08 64.3 2.19e-12  3.18e-09 16.9</code></pre>
+<pre><code>## Error in is(fit, &quot;MArrayLM&quot;): object &#39;fit&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get the full table (&quot;n = number of genes in the fit&quot;)</span>
-limma.res &lt;-<span class="st"> </span><span class="kw">topTable</span>(fit,<span class="dt">coef=</span>mycoef,<span class="dt">n=</span><span class="kw">dim</span>(fit)[<span class="dv">1</span>])
-
-<span class="co"># get significant DE genes only (adjusted p-value &lt; mypval)</span>
-limma.res.pval &lt;-<span class="st"> </span><span class="kw">topTable</span>(fit,<span class="dt">coef=</span>mycoef,<span class="dt">n=</span><span class="kw">dim</span>(fit)[<span class="dv">1</span>],<span class="dt">p.val=</span>mypval)
-<span class="kw">dim</span>(limma.res.pval)</code></pre>
-<pre><code>## [1] 8183    6</code></pre>
+limma.res &lt;-<span class="st"> </span><span class="kw">topTable</span>(fit,<span class="dt">coef=</span>mycoef,<span class="dt">n=</span><span class="kw">dim</span>(fit)[<span class="dv">1</span>])</code></pre>
+<pre><code>## Error in is(fit, &quot;MArrayLM&quot;): object &#39;fit&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get significant DE genes only (adjusted p-value &lt; mypval)</span>
+limma.res.pval &lt;-<span class="st"> </span><span class="kw">topTable</span>(fit,<span class="dt">coef=</span>mycoef,<span class="dt">n=</span><span class="kw">dim</span>(fit)[<span class="dv">1</span>],<span class="dt">p.val=</span>mypval)</code></pre>
+<pre><code>## Error in is(fit, &quot;MArrayLM&quot;): object &#39;fit&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(limma.res.pval)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;limma.res.pval&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get significant DE genes with low adjusted p-value high fold change</span>
-limma.res.pval.FC &lt;-<span class="st"> </span>limma.res.pval[<span class="kw">which</span>(<span class="kw">abs</span>(limma.res.pval$logFC)&gt;myfc),]
-<span class="kw">dim</span>(limma.res.pval.FC)</code></pre>
-<pre><code>## [1] 3044    6</code></pre>
+limma.res.pval.FC &lt;-<span class="st"> </span>limma.res.pval[<span class="kw">which</span>(<span class="kw">abs</span>(limma.res.pval$logFC)&gt;myfc),]</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;limma.res.pval&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(limma.res.pval.FC)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;limma.res.pval.FC&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># write limma output table for significant genes into a tab delimited file</span>
 filename =<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;~/DEgenes_&quot;</span>,mycoef,<span class="st">&quot;_pval&quot;</span>,mypval,<span class="st">&quot;_logFC&quot;</span>,myfc,<span class="st">&quot;.txt&quot;</span>,<span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
 <span class="kw">write.table</span>(limma.res.pval.FC,<span class="dt">file=</span>filename,<span class="dt">row.names=</span>T,<span class="dt">quote=</span>F,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</code></pre>
+<pre><code>## Error in is.data.frame(x): object &#39;limma.res.pval.FC&#39; not found</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pencil"></span>Exercise: Limma</h2>
@@ -510,203 +475,96 @@ filename =<span class="st"> </span><span class="kw">paste</span>(<span class="st
 mart&lt;-<span class="st"> </span><span class="kw">useDataset</span>(<span class="st">&quot;hsapiens_gene_ensembl&quot;</span>, <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,<span class="dt">host=</span><span class="st">&quot;www.ensembl.org&quot;</span>))
 
 <span class="co"># get entrez gene IDs from limma output table</span>
-entrez_genes &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">rownames</span>(limma.res.pval.FC))
-<span class="kw">length</span>(entrez_genes)</code></pre>
-<pre><code>## [1] 3044</code></pre>
+entrez_genes &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">rownames</span>(limma.res.pval.FC))</code></pre>
+<pre><code>## Error in rownames(limma.res.pval.FC): object &#39;limma.res.pval.FC&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(entrez_genes)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;entrez_genes&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># interrogate the BioMart database to get gene symbol and description for these genes </span>
 detags.IDs &lt;-<span class="st"> </span><span class="kw">getBM</span>(
  <span class="dt">filters=</span> <span class="st">&quot;entrezgene&quot;</span>,
  <span class="dt">attributes=</span> <span class="kw">c</span>(<span class="st">&quot;entrezgene&quot;</span>,<span class="st">&quot;hgnc_symbol&quot;</span>,<span class="st">&quot;description&quot;</span>),
  <span class="dt">values=</span> entrez_genes,
  <span class="dt">mart=</span> mart
-)
-
-<span class="kw">dim</span>(detags.IDs)</code></pre>
-<pre><code>## [1] 2878    3</code></pre>
+)</code></pre>
+<pre><code>## Error in getBM(filters = &quot;entrezgene&quot;, attributes = c(&quot;entrezgene&quot;, &quot;hgnc_symbol&quot;, : object &#39;entrez_genes&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(detags.IDs)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;detags.IDs&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(detags.IDs)</code></pre>
-<pre><code>##   entrezgene hgnc_symbol
-## 1         10        NAT2
-## 2      10000        AKT3
-## 3  100033415  SNORD116-3
-## 4  100033421  SNORD116-9
-## 5  100033427 SNORD116-15
-## 6  100033442  SNORD115-5
-##                                                                                description
-## 1 N-acetyltransferase 2 (arylamine N-acetyltransferase) [Source:HGNC Symbol;Acc:HGNC:7646]
-## 2          v-akt murine thymoma viral oncogene homolog 3 [Source:HGNC Symbol;Acc:HGNC:393]
-## 3                   small nucleolar RNA, C/D box 116-3 [Source:HGNC Symbol;Acc:HGNC:33069]
-## 4                   small nucleolar RNA, C/D box 116-9 [Source:HGNC Symbol;Acc:HGNC:33075]
-## 5                  small nucleolar RNA, C/D box 116-15 [Source:HGNC Symbol;Acc:HGNC:33081]
-## 6                   small nucleolar RNA, C/D box 115-5 [Source:HGNC Symbol;Acc:HGNC:33024]</code></pre>
+<pre><code>## Error in head(detags.IDs): object &#39;detags.IDs&#39; not found</code></pre>
 <p>In many cases, several annotations ar available per entrez gene ID. This results in duplicate entries in the output table from <em>getBM</em>. The simplest way to deal with this issue is to remove duplicates, although they can also be concatenated in some ways.</p>
 <p>Once the annotation has been obtained for all DE genes, this table can be merged with the output table from limma for a complete result and an easier interpretation.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># remove duplicates</span>
-detags.IDs.matrix&lt;-detags.IDs[-<span class="kw">which</span>(<span class="kw">duplicated</span>(detags.IDs$entrezgene)),]
-<span class="co"># select genes of interest only</span>
-<span class="kw">rownames</span>(detags.IDs.matrix)&lt;-detags.IDs.matrix$entrezgene
-entrez_genes.annot &lt;-<span class="st"> </span>detags.IDs.matrix[<span class="kw">as.character</span>(entrez_genes),]
-<span class="co"># join the two tables</span>
-<span class="kw">rownames</span>(limma.res.pval.FC) &lt;-<span class="st"> </span>limma.res.pval.FC$ID
-limma.res.pval.FC.annot &lt;-<span class="st"> </span><span class="kw">cbind</span>(entrez_genes.annot,limma.res.pval.FC)
-<span class="co"># check the annotated table</span>
+detags.IDs.matrix&lt;-detags.IDs[-<span class="kw">which</span>(<span class="kw">duplicated</span>(detags.IDs$entrezgene)),]</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;detags.IDs&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># select genes of interest only</span>
+<span class="kw">rownames</span>(detags.IDs.matrix)&lt;-detags.IDs.matrix$entrezgene</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;detags.IDs.matrix&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">entrez_genes.annot &lt;-<span class="st"> </span>detags.IDs.matrix[<span class="kw">as.character</span>(entrez_genes),]</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;detags.IDs.matrix&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># join the two tables</span>
+<span class="kw">rownames</span>(limma.res.pval.FC) &lt;-<span class="st"> </span>limma.res.pval.FC$ID</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;limma.res.pval.FC&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">limma.res.pval.FC.annot &lt;-<span class="st"> </span><span class="kw">cbind</span>(entrez_genes.annot,limma.res.pval.FC)</code></pre>
+<pre><code>## Error in cbind(entrez_genes.annot, limma.res.pval.FC): object &#39;entrez_genes.annot&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check the annotated table</span>
 <span class="kw">head</span>(limma.res.pval.FC.annot)</code></pre>
-<pre><code>##      entrezgene hgnc_symbol
-## 5265       5265    SERPINA1
-## 3240       3240          HP
-## 2335       2335         FN1
-## 213         213         ALB
-## 338         338        APOB
-## 2243       2243         FGA
-##                                                                                                                 description
-## 5265 serpin peptidase inhibitor, clade A (alpha-1 antiproteinase, antitrypsin), member 1 [Source:HGNC Symbol;Acc:HGNC:8941]
-## 3240                                                                         haptoglobin [Source:HGNC Symbol;Acc:HGNC:5141]
-## 2335                                                                       fibronectin 1 [Source:HGNC Symbol;Acc:HGNC:3778]
-## 213                                                                               albumin [Source:HGNC Symbol;Acc:HGNC:399]
-## 338                                                                      apolipoprotein B [Source:HGNC Symbol;Acc:HGNC:603]
-## 2243                                                              fibrinogen alpha chain [Source:HGNC Symbol;Acc:HGNC:3661]
-##      logFC AveExpr    t  P.Value adj.P.Val    B
-## 5265 10.45    7.33 86.7 1.89e-13  1.37e-09 18.6
-## 3240 11.28    7.62 89.4 1.46e-13  1.37e-09 18.5
-## 2335  6.82    8.56 67.2 1.53e-12  2.93e-09 18.4
-## 213  11.77   10.69 69.3 1.19e-12  2.93e-09 18.3
-## 338  11.51    8.31 70.4 1.04e-12  2.93e-09 18.0
-## 2243 11.56    7.17 80.0 3.64e-13  1.37e-09 17.7</code></pre>
+<pre><code>## Error in head(limma.res.pval.FC.annot): object &#39;limma.res.pval.FC.annot&#39; not found</code></pre>
 <h3 id="gene-set-enrichment">Gene Set Enrichment</h3>
 <p>Gene Ontology (GO) enrichment is a method for investigating sets of genes using the Gene Ontology system of classification, in which genes are assigned to a particular set of terms for three major domains: cellular component, biological process and molecular function.</p>
 <p>The <em>GOstats</em> package can test for both over and under representation of GO terms using the Hypergeometric test. The output of the analysis is typically a ranked list of GO terms, each associated with a p-value.</p>
 <p>The Hypergeometric test will require both a list of selected genes (i.e. your DE genes) and a “universe” list (e.g. all genes annotated in the genome you are working with), all represented by their “EntrezGene” ID.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the library</span>
 <span class="kw">library</span>(GOstats)</code></pre>
-<pre><code>## Loading required package: Biobase
-## Loading required package: BiocGenerics
-## Loading required package: parallel
-## 
-## Attaching package: &#39;BiocGenerics&#39;
-## 
-## The following objects are masked from &#39;package:parallel&#39;:
-## 
-##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
-##     clusterExport, clusterMap, parApply, parCapply, parLapply,
-##     parLapplyLB, parRapply, parSapply, parSapplyLB
-## 
-## The following object is masked from &#39;package:limma&#39;:
-## 
-##     plotMA
-## 
-## The following object is masked from &#39;package:stats&#39;:
-## 
-##     xtabs
-## 
-## The following objects are masked from &#39;package:base&#39;:
-## 
-##     anyDuplicated, append, as.data.frame, as.vector, cbind,
-##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
-##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
-##     table, tapply, union, unique, unlist, unsplit
-## 
-## Welcome to Bioconductor
-## 
-##     Vignettes contain introductory material; view with
-##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
-##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.
-## 
-## Loading required package: Category
-## Loading required package: stats4
-## Loading required package: Matrix
-## Loading required package: AnnotationDbi
-## Loading required package: GenomeInfoDb
-## Loading required package: S4Vectors
-## Loading required package: IRanges
-## 
-## Attaching package: &#39;IRanges&#39;
-## 
-## The following object is masked from &#39;package:Matrix&#39;:
-## 
-##     expand
-## 
-## 
-## Attaching package: &#39;AnnotationDbi&#39;
-## 
-## The following object is masked from &#39;package:GenomeInfoDb&#39;:
-## 
-##     species
-## 
-## Loading required package: GO.db
-## Loading required package: DBI
-## 
-## Loading required package: graph
-## 
-## Attaching package: &#39;GOstats&#39;
-## 
-## The following object is masked from &#39;package:AnnotationDbi&#39;:
-## 
-##     makeGOGraph</code></pre>
+<pre><code>## Error in library(GOstats): there is no package called &#39;GOstats&#39;</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Define list of genes of interest (DE genes - EntrezGene IDs)</span>
-entrezgeneids &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">rownames</span>(limma.res.pval.FC))
-<span class="kw">length</span>(entrezgeneids)</code></pre>
-<pre><code>## [1] 3044</code></pre>
+entrezgeneids &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">rownames</span>(limma.res.pval.FC))</code></pre>
+<pre><code>## Error in rownames(limma.res.pval.FC): object &#39;limma.res.pval.FC&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(entrezgeneids)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;entrezgeneids&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Define the universe</span>
-universeids &lt;-<span class="st"> </span><span class="kw">rownames</span>(mycounts)
-<span class="kw">length</span>(universeids)</code></pre>
-<pre><code>## [1] 15016</code></pre>
+universeids &lt;-<span class="st"> </span><span class="kw">rownames</span>(mycounts)</code></pre>
+<pre><code>## Error in rownames(mycounts): object &#39;mycounts&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(universeids)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;universeids&#39; not found</code></pre>
 <p>Before running the hypergeometric test with the <em>hyperGTest</em> function, you need to define the parameters for the test (gene lists, ontology, test direction) as well as the annotation database to be used. The ontology to be tested can be any of the three GO domains: biological process (“BP”), cellular component (“CC”) or molecular function (“MF”).</p>
 <p>In the example below we will test for over-represented biological processes in our list of differentially expressed genes.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define the p-value cut off for the hypergeometric test</span>
 hgCutoff &lt;-<span class="st"> </span><span class="fl">0.05</span>
 params &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;GOHyperGParams&quot;</span>,<span class="dt">annotation=</span><span class="st">&quot;org.Hs.eg&quot;</span>,<span class="dt">geneIds=</span>entrezgeneids,<span class="dt">universeGeneIds=</span>universeids,<span class="dt">ontology=</span><span class="st">&quot;BP&quot;</span>,<span class="dt">pvalueCutoff=</span>hgCutoff,<span class="dt">testDirection=</span><span class="st">&quot;over&quot;</span>)</code></pre>
-<pre><code>## Loading required package: org.Hs.eg.db</code></pre>
-<pre><code>## Warning in makeValidParams(.Object): removing geneIds not in
-## universeGeneIds</code></pre>
+<pre><code>## Error in getClass(Class, where = topenv(parent.frame())): &quot;GOHyperGParams&quot; is not a defined class</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co">#  Run the test</span>
 hg &lt;-<span class="st"> </span><span class="kw">hyperGTest</span>(params)</code></pre>
-<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring &#39;pos&#39;
-## argument</code></pre>
-<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring &#39;envir&#39;
-## argument</code></pre>
-<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring
-## &#39;all.names&#39; argument</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): could not find function &quot;hyperGTest&quot;</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check results</span>
 hg</code></pre>
-<pre><code>## Gene to GO BP  test for over-representation 
-## 8107 GO BP ids tested (3220 have p &lt; 0.05)
-## Selected gene set size: 1519 
-##     Gene universe size: 11814 
-##     Annotation package: org.Hs.eg</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;hg&#39; not found</code></pre>
 <p>You can get the output table from the test for significant GO terms only by adjusting the pvalues with the <em>p.adjust</em> function.</p>
 <pre class="sourceCode r"><code class="sourceCode r">## Get the p-values of the test
-hg.pv &lt;-<span class="st"> </span><span class="kw">pvalues</span>(hg)
-## Adjust p-values for multiple test (FDR)
-hg.pv.fdr &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(hg.pv,<span class="st">&#39;fdr&#39;</span>)
-## select the GO terms with adjusted p-value less than the cut off
-sigGO.ID &lt;-<span class="st"> </span><span class="kw">names</span>(hg.pv.fdr[hg.pv.fdr &lt;<span class="st"> </span>hgCutoff])
-<span class="kw">length</span>(sigGO.ID)</code></pre>
-<pre><code>## [1] 2331</code></pre>
+hg.pv &lt;-<span class="st"> </span><span class="kw">pvalues</span>(hg)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): could not find function &quot;pvalues&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">## Adjust p-values for multiple test (FDR)
+hg.pv.fdr &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(hg.pv,<span class="st">&#39;fdr&#39;</span>)</code></pre>
+<pre><code>## Error in p.adjust(hg.pv, &quot;fdr&quot;): object &#39;hg.pv&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">## select the GO terms with adjusted p-value less than the cut off
+sigGO.ID &lt;-<span class="st"> </span><span class="kw">names</span>(hg.pv.fdr[hg.pv.fdr &lt;<span class="st"> </span>hgCutoff])</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;hg.pv.fdr&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(sigGO.ID)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;sigGO.ID&#39; not found</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get table from HyperG test result</span>
-df &lt;-<span class="st"> </span><span class="kw">summary</span>(hg)
-<span class="co"># keep only significant GO terms in the table</span>
-GOannot.table &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %in%<span class="st"> </span>sigGO.ID,]
-<span class="kw">head</span>(GOannot.table)</code></pre>
-<pre><code>##       GOBPID    Pvalue OddsRatio ExpCount Count Size
-## 1 GO:0042221 2.09e-101      3.56      327   670 2540
-## 2 GO:0050896  6.84e-92      3.18      700  1066 5443
-## 3 GO:0032501  1.59e-80      2.88      554   893 4305
-## 4 GO:0044707  1.82e-80      2.88      538   876 4183
-## 5 GO:0044699  1.54e-76      5.74     1202  1443 9349
-## 6 GO:0010033  5.18e-68      3.12      237   487 1840
-##                                    Term
-## 1                  response to chemical
-## 2                  response to stimulus
-## 3      multicellular organismal process
-## 4 single-multicellular organism process
-## 5               single-organism process
-## 6         response to organic substance</code></pre>
+df &lt;-<span class="st"> </span><span class="kw">summary</span>(hg)</code></pre>
+<pre><code>## Error in summary(hg): object &#39;hg&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># keep only significant GO terms in the table</span>
+GOannot.table &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %in%<span class="st"> </span>sigGO.ID,]</code></pre>
+<pre><code>## Error in df[, 1]: object of type &#39;closure&#39; is not subsettable</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(GOannot.table)</code></pre>
+<pre><code>## Error in head(GOannot.table): object &#39;GOannot.table&#39; not found</code></pre>
 <p>The Gene Ontology enrichment result can be saved in a text file or an html file for future reference.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create text report of the significantly over-represented GO terms</span>
-<span class="kw">write.table</span>(GOannot.table,<span class="dt">file=</span><span class="st">&quot;~/GOterms_OverRep_BP.txt&quot;</span>,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>,<span class="dt">row.names=</span>F)
-<span class="co"># Create html report of all over-represented GO terms</span>
+<span class="kw">write.table</span>(GOannot.table,<span class="dt">file=</span><span class="st">&quot;~/GOterms_OverRep_BP.txt&quot;</span>,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>,<span class="dt">row.names=</span>F)</code></pre>
+<pre><code>## Error in is.data.frame(x): object &#39;GOannot.table&#39; not found</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create html report of all over-represented GO terms</span>
 <span class="kw">htmlReport</span>(hg, <span class="dt">file=</span><span class="st">&quot;~/GOterms_OverRep_BP.html&quot;</span>)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): could not find function &quot;htmlReport&quot;</code></pre>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pencil"></span>Exercise: GOstats</h2>
@@ -721,58 +579,43 @@ GOannot.table &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %i
 </ul>
 </div>
 </section>
-<p>Other softwares can be used to investigate over-represented pathways, such as GeneGO (<a href="https://portal.genego.com/">https://portal.genego.com/</a>) and Ingenuity (<a href="http://www.ingenuity.com/products/ipa">http://www.ingenuity.com/products/ipa</a>). The advantage of these softwares is that they maintain curated and up-to-date extensive databases. They also provide intuitive visualisation and network modelling tools.</p>
+<p>Other softwares can be used to investigate over-represented pathways, such as GeneGO (<a href="https://portal.genego.com/" class="uri">https://portal.genego.com/</a>) and Ingenuity (<a href="http://www.ingenuity.com/products/ipa" class="uri">http://www.ingenuity.com/products/ipa</a>). The advantage of these softwares is that they maintain curated and up-to-date extensive databases. They also provide intuitive visualisation and network modelling tools.</p>
 <p>You can save an image of your RNAseq analysis before moving on to the next part of this course.</p>
 <pre class="sourceCode r"><code class="sourceCode r">RDataFile &lt;-<span class="st"> &quot;~/RNAseq_DE_analysis_with_R.RData&quot;</span>
 <span class="kw">save.image</span>(RDataFile)</code></pre>
 <h3 id="record-package-and-version-info-with-sessioninfo">Record package and version info with <code>sessionInfo()</code></h3>
 <p>The <em>sessionInfo</em> function prints version information about R and any attached packages. It’s a good practice to always run this command at the end of your R session and record it for the sake of reproducibility in the future.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre>
-<pre><code>## R version 3.2.2 (2015-08-14)
+<pre><code>## R version 3.2.0 (2015-04-16)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 14.04.2 LTS
+## Running under: Ubuntu 14.04.1 LTS
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
-##  [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
-##  [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
 ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] stats4    parallel  methods   stats     graphics  grDevices utils    
-## [8] datasets  base     
+## [1] methods   stats     graphics  grDevices utils     datasets  base     
 ## 
 ## other attached packages:
-##  [1] xtable_1.8-0         org.Hs.eg.db_3.0.0   GOstats_2.32.0      
-##  [4] graph_1.44.1         Category_2.32.0      GO.db_3.0.0         
-##  [7] RSQLite_1.0.0        DBI_0.3.1            AnnotationDbi_1.28.2
-## [10] GenomeInfoDb_1.2.5   IRanges_2.0.1        S4Vectors_0.4.0     
-## [13] Matrix_1.2-3         Biobase_2.26.0       BiocGenerics_0.12.1 
-## [16] biomaRt_2.22.0       edgeR_3.8.6          limma_3.22.7        
-## [19] Rsubread_1.16.1     
+## [1] biomaRt_2.18.0 edgeR_3.4.2    limma_3.16.7  
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
-##  [4] lattice_0.20-33       stringr_1.0.0         tools_3.2.2          
-##  [7] grid_3.2.2            AnnotationForge_1.8.2 genefilter_1.48.1    
-## [10] survival_2.38-3       RBGL_1.42.0           GSEABase_1.28.0      
-## [13] formatR_1.2.1         bitops_1.0-6          RCurl_1.95-4.7       
-## [16] evaluate_0.8          stringi_1.0-1         XML_3.98-1.3         
-## [19] annotate_1.44.0</code></pre>
+## [1] formatR_1.4    tools_3.2.0    RCurl_1.95-4.1 knitr_1.13    
+## [5] stringr_0.6.2  XML_3.98-1.1   evaluate_0.9</code></pre>
         </div>
       </div>
       </article>
       <div class="footer">
-        <a class="label swc-blue-bg" href="http://software-carpentry.org">Software Carpentry</a>
-        <a class="label swc-blue-bg" href="https://github.com/swcarpentry/r-novice-inflammation">Source</a>
-        <a class="label swc-blue-bg" href="mailto:admin@software-carpentry.org">Contact</a>
-        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+        <a class="label swc-blue-bg" href="https://github.com/MonashBioinformaticsPlatform/RNAseq-DE-analysis-with-R">Source</a>
       </div>
     </div>
     <!-- Javascript placed at the end of the document so the pages load faster -->
-    <script src="http://software-carpentry.org/v5/js/jquery-1.9.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
   </body>
 </html>

@@ -58,16 +58,7 @@ dir(RNAseqDATADIR)
 ```
 
 ```
-##  [1] "ERR420386_1.fastq.gz"         "ERR420386_2.fastq.gz"        
-##  [3] "ERR420387_1.fastq.gz"         "ERR420387_2.fastq.gz"        
-##  [5] "ERR420388_1.fastq.gz"         "ERR420388_2.fastq.gz"        
-##  [7] "ERR420388_mini_1.fastq.gz"    "ERR420388_mini_2.fastq.gz"   
-##  [9] "ERR420388_subsamp_1.fastq.gz" "ERR420388_subsamp_2.fastq.gz"
-## [11] "ERR420389_1.fastq.gz"         "ERR420389_2.fastq.gz"        
-## [13] "ERR420390_1.fastq.gz"         "ERR420390_2.fastq.gz"        
-## [15] "ERR420391_2.fastq.gz"         "ERR420392_1.fastq.gz"        
-## [17] "ERR420392_2.fastq.gz"         "ERR420393_1.fastq.gz"        
-## [19] "ERR420393_2.fastq.gz"         "experiment_design.txt"
+## character(0)
 ```
 
 
@@ -93,6 +84,10 @@ Once the reads have been quality checked and trimmed, the next step is to map th
 
 ```r
 library(Rsubread)
+```
+
+```
+## Error in library(Rsubread): there is no package called 'Rsubread'
 ```
 
 
@@ -211,15 +206,25 @@ For the purpose of this course the read summarisation step has already been perf
 MAPPINGDIR <- "/mnt/RNAseqCourse/mapping"
 # load the counts previously calculated
 load(file.path(MAPPINGDIR,"RawCounts.RData"))
+```
+
+```
+## Warning in readChar(con, 5L, useBytes = TRUE): cannot open compressed file
+## '/mnt/RNAseqCourse/mapping/RawCounts.RData', probable reason 'No such file
+## or directory'
+```
+
+```
+## Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection
+```
+
+```r
 # check the presence of read counts for the 8 libraries
 summary(counts)
 ```
 
 ```
-##            Length Class      Mode     
-## counts     205616 -none-     numeric  
-## annotation      2 data.frame list     
-## targets         8 -none-     character
+## Error in summary(counts): object 'counts' not found
 ```
 
 
@@ -229,14 +234,7 @@ counts$targets
 ```
 
 ```
-## [1] "/data/Intro_to_R/RNAseq/mapping/ERR420386.sam"
-## [2] "/data/Intro_to_R/RNAseq/mapping/ERR420387.sam"
-## [3] "/data/Intro_to_R/RNAseq/mapping/ERR420388.sam"
-## [4] "/data/Intro_to_R/RNAseq/mapping/ERR420389.sam"
-## [5] "/data/Intro_to_R/RNAseq/mapping/ERR420390.sam"
-## [6] "/data/Intro_to_R/RNAseq/mapping/ERR420391.sam"
-## [7] "/data/Intro_to_R/RNAseq/mapping/ERR420392.sam"
-## [8] "/data/Intro_to_R/RNAseq/mapping/ERR420393.sam"
+## Error in eval(expr, envir, enclos): object 'counts' not found
 ```
 
 You can then print out these counts in a text file for future reference.
@@ -245,6 +243,10 @@ You can then print out these counts in a text file for future reference.
 ```r
 # print out counts table for every sample
 write.table(counts$counts,file="~/raw_read_counts.txt",sep="\t", quote=F,append=F)
+```
+
+```
+## Error in is.data.frame(x): object 'counts' not found
 ```
 
 
@@ -277,57 +279,86 @@ The experiment design file corresponding to this study has been downloaded from 
 EXPMT_DESIGN_FILE <- file.path(RNAseqDATADIR,'experiment_design.txt')
 # read the experiment design file and save it into memory
 experiment_design<-read.table(EXPMT_DESIGN_FILE,header=T,sep="\t")
+```
+
+```
+## Warning in file(file, "rt"): cannot open file
+## '/mnt/RNAseqCourse/raw_data/experiment_design.txt': No such file or
+## directory
+```
+
+```
+## Error in file(file, "rt"): cannot open the connection
+```
+
+```r
 #
 # set the rownames to the sampleID to allow for ordering
 rownames(experiment_design) <- experiment_design$SampleID
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'experiment_design' not found
+```
+
+```r
 # order the design following the counts sample order
 experiment_design.ord <- experiment_design[colnames(counts$counts),]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'experiment_design' not found
+```
+
+```r
 # look at the design
 experiment_design.ord
 ```
 
 ```
-##            SampleID    Source_Name     organism  sex age tissue
-## ERR420386 ERR420386 brain_sample_1 Homo_sapiens male  26  brain
-## ERR420387 ERR420387 brain_sample_1 Homo_sapiens male  26  brain
-## ERR420388 ERR420388 liver_sample_1 Homo_sapiens male  30  liver
-## ERR420389 ERR420389 liver_sample_1 Homo_sapiens male  30  liver
-## ERR420390 ERR420390 liver_sample_1 Homo_sapiens male  30  liver
-## ERR420391 ERR420391 brain_sample_1 Homo_sapiens male  26  brain
-## ERR420392 ERR420392 brain_sample_1 Homo_sapiens male  26  brain
-## ERR420393 ERR420393 liver_sample_1 Homo_sapiens male  30  liver
-##           Extract_Name Material_Type Assay_Name technical_replicate_group
-## ERR420386       GCCAAT           RNA     Assay4                   group_2
-## ERR420387       ACAGTG           RNA     Assay2                   group_1
-## ERR420388       GTGAAA           RNA     Assay7                   group_4
-## ERR420389       GTGAAA           RNA     Assay8                   group_4
-## ERR420390       CTTGTA           RNA     Assay6                   group_3
-## ERR420391       ACAGTG           RNA     Assay1                   group_1
-## ERR420392       GCCAAT           RNA     Assay3                   group_2
-## ERR420393       CTTGTA           RNA     Assay5                   group_3
+## Error in eval(expr, envir, enclos): object 'experiment_design.ord' not found
 ```
 
 ```r
 # list the ordered samples for future use
 samples <- as.character(experiment_design.ord$SampleID)
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'experiment_design.ord' not found
+```
+
+```r
 # create factors for future plotting
 group<-factor(experiment_design.ord$tissue)
+```
+
+```
+## Error in factor(experiment_design.ord$tissue): object 'experiment_design.ord' not found
+```
+
+```r
 group
 ```
 
 ```
-## [1] brain brain liver liver liver brain brain liver
-## Levels: brain liver
+## Error in eval(expr, envir, enclos): object 'group' not found
 ```
 
 ```r
 age<-factor(experiment_design.ord$age)
+```
+
+```
+## Error in factor(experiment_design.ord$age): object 'experiment_design.ord' not found
+```
+
+```r
 age
 ```
 
 ```
-## [1] 26 26 30 30 30 26 26 30
-## Levels: 26 30
+## Error in eval(expr, envir, enclos): object 'age' not found
 ```
 
 
@@ -385,11 +416,31 @@ In order to investigate the relationship between samples, hierarchical clusterin
 ```r
 # select data for the 100 most highly expressed genes
 select = order(rowMeans(counts$counts), decreasing=TRUE)[1:100]
-highexprgenes_counts <- counts$counts[select,]
+```
 
+```
+## Error in is.data.frame(x): object 'counts' not found
+```
+
+```r
+highexprgenes_counts <- counts$counts[select,]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'counts' not found
+```
+
+```r
 # heatmap with sample name on X-axis
 png(file="~/High_expr_genes.heatmap.png")
 heatmap(highexprgenes_counts, col=topo.colors(50), margin=c(10,6))
+```
+
+```
+## Error in heatmap(highexprgenes_counts, col = topo.colors(50), margin = c(10, : object 'highexprgenes_counts' not found
+```
+
+```r
 dev.off()
 ```
 
@@ -402,9 +453,23 @@ To understand what biological effect lies under this clustering, one can use the
 ```r
 # heatmap with condition group as labels
 colnames(highexprgenes_counts)<- group
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'group' not found
+```
+
+```r
 # plot
 png(file="~/High_exprs_genes.heatmap.group.png")
 heatmap(highexprgenes_counts, col = topo.colors(50), margin=c(10,6))
+```
+
+```
+## Error in heatmap(highexprgenes_counts, col = topo.colors(50), margin = c(10, : object 'highexprgenes_counts' not found
+```
+
+```r
 dev.off()
 ```
 
@@ -430,16 +495,44 @@ Reads counts need to be transposed before being analysed with the *cmdscale* fun
 ```r
 # select data for the 1000 most highly expressed genes
 select = order(rowMeans(counts$counts), decreasing=TRUE)[1:100]
+```
+
+```
+## Error in is.data.frame(x): object 'counts' not found
+```
+
+```r
 highexprgenes_counts <- counts$counts[select,]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'counts' not found
+```
+
+```r
 # annotate the data with condition group as labels
 colnames(highexprgenes_counts)<- group
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'group' not found
+```
+
+```r
 # transpose the data to have variables (genes) as columns
 data_for_PCA <- t(highexprgenes_counts)
+```
+
+```
+## Error in t(highexprgenes_counts): object 'highexprgenes_counts' not found
+```
+
+```r
 dim(data_for_PCA)
 ```
 
 ```
-## [1]   8 100
+## Error in eval(expr, envir, enclos): object 'data_for_PCA' not found
 ```
 
 
@@ -449,6 +542,13 @@ The *cmdscale* function will calculate a matrix of dissimilarities from your tra
 ```r
 ## calculate MDS (matrix of dissimilarities)
 mds <- cmdscale(dist(data_for_PCA), k=3, eig=TRUE)  
+```
+
+```
+## Error in as.matrix(x): object 'data_for_PCA' not found
+```
+
+```r
 # k = the maximum dimension of the space which the data are to be represented in
 # eig = indicates whether eigenvalues should be returned
 ```
@@ -461,8 +561,7 @@ mds$eig
 ```
 
 ```
-## [1] 9.490938e+13 1.099639e+13 1.125271e+11 1.026586e+10 1.500500e+07
-## [6] 6.240239e+06 3.206875e+06 2.285361e-03
+## Error in eval(expr, envir, enclos): object 'mds' not found
 ```
 
 Plotting this variable as a percentage will help you determine how many components can explain the variability in your dataset and thus how many dimensions you should be looking at.
@@ -491,6 +590,10 @@ In most cases, the first 2 components explain more than half the variability in 
 ```r
 ## calculate MDS
 mds <- cmdscale(dist(data_for_PCA)) # Performs MDS analysis 
+```
+
+```
+## Error in as.matrix(x): object 'data_for_PCA' not found
 ```
 
 
@@ -536,19 +639,29 @@ library(edgeR)
 ```
 
 ```
-## Loading required package: limma
 ## Loading required package: methods
+```
+
+```
+## Loading required package: limma
 ```
 
 
 ```r
 # get the expression counts from previous alignment step
 mycounts <- counts$counts
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'counts' not found
+```
+
+```r
 dim(mycounts)
 ```
 
 ```
-## [1] 25702     8
+## Error in eval(expr, envir, enclos): object 'mycounts' not found
 ```
 
 ```r
@@ -556,36 +669,49 @@ mycounts[1:5,1:3]
 ```
 
 ```
-##    ERR420386 ERR420387 ERR420388
-## 1          2        56      5461
-## 2       3723      2270     27665
-## 9         14         3       148
-## 10         1         1       373
-## 12        42        34     20969
+## Error in eval(expr, envir, enclos): object 'mycounts' not found
 ```
 
 ```r
 # filtering
 #Keep genes with least 1 count-per-million reads (cpm) in at least 4 samples
 isexpr <- rowSums(cpm(mycounts)>1) >= 4
+```
+
+```
+## Error in cpm(mycounts): object 'mycounts' not found
+```
+
+```r
 table(isexpr)
 ```
 
 ```
-## isexpr
-## FALSE  TRUE 
-## 10686 15016
+## Error in table(isexpr): object 'isexpr' not found
 ```
 
 ```r
 mycounts <- mycounts[isexpr,]
-genes <- rownames(mycounts)
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'mycounts' not found
+```
+
+```r
+genes <- rownames(mycounts)
+```
+
+```
+## Error in rownames(mycounts): object 'mycounts' not found
+```
+
+```r
 dim(mycounts)
 ```
 
 ```
-## [1] 15016     8
+## Error in eval(expr, envir, enclos): object 'mycounts' not found
 ```
 
 
@@ -603,67 +729,118 @@ experiment_design.ord[colnames(mycounts),]$tissue == group
 ```
 
 ```
-## [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+## Error in eval(expr, envir, enclos): object 'experiment_design.ord' not found
 ```
 
 ```r
 # create design matrix for limma
 design <- model.matrix(~0+group)
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'group' not found
+```
+
+```r
 # substitute "group" from the design column names
 colnames(design)<- gsub("group","",colnames(design))
+```
+
+```
+## Error in is.data.frame(x): object 'design' not found
+```
+
+```r
 # check your design matrix
 design
 ```
 
 ```
-##   brain liver
-## 1     1     0
-## 2     1     0
-## 3     0     1
-## 4     0     1
-## 5     0     1
-## 6     1     0
-## 7     1     0
-## 8     0     1
-## attr(,"assign")
-## [1] 1 1
-## attr(,"contrasts")
-## attr(,"contrasts")$group
-## [1] "contr.treatment"
+## Error in eval(expr, envir, enclos): object 'design' not found
 ```
 
 ```r
 # calculate normalization factors between libraries
 nf <- calcNormFactors(mycounts)
+```
+
+```
+## Error in is(object, "DGEList"): object 'mycounts' not found
+```
+
+```r
 #
 # normalise the read counts with 'voom' function
 y <- voom(mycounts,design,lib.size=colSums(mycounts)*nf)
+```
+
+```
+## Error in is(counts, "DGEList"): object 'mycounts' not found
+```
+
+```r
 # extract the normalised read counts
 counts.voom <- y$E
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'y' not found
+```
+
+```r
 # save normalised expression data into output dir
 write.table(counts.voom,file="~/counts.voom.txt",row.names=T,quote=F,sep="\t")
+```
 
+```
+## Error in is.data.frame(x): object 'counts.voom' not found
+```
+
+```r
 # fit linear model for each gene given a series of libraries
 fit <- lmFit(y,design)
+```
+
+```
+## Error in is(object, "list"): object 'y' not found
+```
+
+```r
 # construct the contrast matrix corresponding to specified contrasts of a set of parameters
 cont.matrix <- makeContrasts(liver-brain,levels=design)
+```
+
+```
+## Error in is.factor(levels): object 'design' not found
+```
+
+```r
 cont.matrix 
 ```
 
 ```
-##        Contrasts
-## Levels  liver - brain
-##   brain            -1
-##   liver             1
+## Error in eval(expr, envir, enclos): object 'cont.matrix' not found
 ```
 
 ```r
 # compute estimated coefficients and standard errors for a given set of contrasts
 fit <- contrasts.fit(fit, cont.matrix)
+```
 
+```
+## Error in NCOL(fit$coefficients): object 'fit' not found
+```
+
+```r
 # compute moderated t-statistics of differential expression by empirical Bayes moderation of the standard errors
 fit <- eBayes(fit)
+```
+
+```
+## Error in ebayes(fit = fit, proportion = proportion, stdev.coef.lim = stdev.coef.lim, : object 'fit' not found
+```
+
+```r
 options(digits=3)
 
 # check the output fit
@@ -671,7 +848,7 @@ dim(fit)
 ```
 
 ```
-## [1] 15016     1
+## Error in eval(expr, envir, enclos): object 'fit' not found
 ```
 
 The*topTable* function summarises the output from limma in a table format. Significant DE genes for a particular comparison can be identified by selecting genes with a p-value smaller than a chosen cut-off value and/or a fold change greater than a chosen value in this table. By default the table will be sorted by increasing adjusted p-value, showing the most significant DE genes at the top.
@@ -688,7 +865,7 @@ colnames(fit$coefficients)
 ```
 
 ```
-## [1] "liver - brain"
+## Error in is.data.frame(x): object 'fit' not found
 ```
 
 ```r
@@ -698,46 +875,60 @@ topTable(fit,coef=mycoef)
 ```
 
 ```
-##      logFC AveExpr    t  P.Value adj.P.Val    B
-## 5265 10.45    7.33 86.7 1.89e-13  1.37e-09 18.6
-## 3240 11.28    7.62 89.4 1.46e-13  1.37e-09 18.5
-## 2335  6.82    8.56 67.2 1.53e-12  2.93e-09 18.4
-## 213  11.77   10.69 69.3 1.19e-12  2.93e-09 18.3
-## 338  11.51    8.31 70.4 1.04e-12  2.93e-09 18.0
-## 2243 11.56    7.17 80.0 3.64e-13  1.37e-09 17.7
-## 716   7.49    6.75 61.0 3.38e-12  4.22e-09 17.7
-## 229  10.90    6.45 82.0 2.98e-13  1.37e-09 17.4
-## 1571  9.64    6.62 63.8 2.33e-12  3.18e-09 17.3
-## 125  11.54    7.08 64.3 2.19e-12  3.18e-09 16.9
+## Error in is(fit, "MArrayLM"): object 'fit' not found
 ```
 
 ```r
 # get the full table ("n = number of genes in the fit")
 limma.res <- topTable(fit,coef=mycoef,n=dim(fit)[1])
+```
 
+```
+## Error in is(fit, "MArrayLM"): object 'fit' not found
+```
+
+```r
 # get significant DE genes only (adjusted p-value < mypval)
 limma.res.pval <- topTable(fit,coef=mycoef,n=dim(fit)[1],p.val=mypval)
+```
+
+```
+## Error in is(fit, "MArrayLM"): object 'fit' not found
+```
+
+```r
 dim(limma.res.pval)
 ```
 
 ```
-## [1] 8183    6
+## Error in eval(expr, envir, enclos): object 'limma.res.pval' not found
 ```
 
 ```r
 # get significant DE genes with low adjusted p-value high fold change
 limma.res.pval.FC <- limma.res.pval[which(abs(limma.res.pval$logFC)>myfc),]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'limma.res.pval' not found
+```
+
+```r
 dim(limma.res.pval.FC)
 ```
 
 ```
-## [1] 3044    6
+## Error in eval(expr, envir, enclos): object 'limma.res.pval.FC' not found
 ```
 
 ```r
 # write limma output table for significant genes into a tab delimited file
 filename = paste("~/DEgenes_",mycoef,"_pval",mypval,"_logFC",myfc,".txt",sep="")
 write.table(limma.res.pval.FC,file=filename,row.names=T,quote=F,sep="\t")
+```
+
+```
+## Error in is.data.frame(x): object 'limma.res.pval.FC' not found
 ```
 
 > ## Exercise: Limma {.challenge}
@@ -769,11 +960,18 @@ mart<- useDataset("hsapiens_gene_ensembl", useMart("ENSEMBL_MART_ENSEMBL",host="
 
 # get entrez gene IDs from limma output table
 entrez_genes <- as.character(rownames(limma.res.pval.FC))
+```
+
+```
+## Error in rownames(limma.res.pval.FC): object 'limma.res.pval.FC' not found
+```
+
+```r
 length(entrez_genes)
 ```
 
 ```
-## [1] 3044
+## Error in eval(expr, envir, enclos): object 'entrez_genes' not found
 ```
 
 ```r
@@ -784,12 +982,18 @@ detags.IDs <- getBM(
  values= entrez_genes,
  mart= mart
 )
+```
 
+```
+## Error in getBM(filters = "entrezgene", attributes = c("entrezgene", "hgnc_symbol", : object 'entrez_genes' not found
+```
+
+```r
 dim(detags.IDs)
 ```
 
 ```
-## [1] 2878    3
+## Error in eval(expr, envir, enclos): object 'detags.IDs' not found
 ```
 
 ```r
@@ -797,20 +1001,7 @@ head(detags.IDs)
 ```
 
 ```
-##   entrezgene hgnc_symbol
-## 1         10        NAT2
-## 2      10000        AKT3
-## 3  100033415  SNORD116-3
-## 4  100033421  SNORD116-9
-## 5  100033427 SNORD116-15
-## 6  100033442  SNORD115-5
-##                                                                                description
-## 1 N-acetyltransferase 2 (arylamine N-acetyltransferase) [Source:HGNC Symbol;Acc:HGNC:7646]
-## 2          v-akt murine thymoma viral oncogene homolog 3 [Source:HGNC Symbol;Acc:HGNC:393]
-## 3                   small nucleolar RNA, C/D box 116-3 [Source:HGNC Symbol;Acc:HGNC:33069]
-## 4                   small nucleolar RNA, C/D box 116-9 [Source:HGNC Symbol;Acc:HGNC:33075]
-## 5                  small nucleolar RNA, C/D box 116-15 [Source:HGNC Symbol;Acc:HGNC:33081]
-## 6                   small nucleolar RNA, C/D box 115-5 [Source:HGNC Symbol;Acc:HGNC:33024]
+## Error in head(detags.IDs): object 'detags.IDs' not found
 ```
 
 
@@ -824,38 +1015,53 @@ Once the annotation has been obtained for all DE genes, this table can be merged
 ```r
 # remove duplicates
 detags.IDs.matrix<-detags.IDs[-which(duplicated(detags.IDs$entrezgene)),]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'detags.IDs' not found
+```
+
+```r
 # select genes of interest only
 rownames(detags.IDs.matrix)<-detags.IDs.matrix$entrezgene
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'detags.IDs.matrix' not found
+```
+
+```r
 entrez_genes.annot <- detags.IDs.matrix[as.character(entrez_genes),]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'detags.IDs.matrix' not found
+```
+
+```r
 # join the two tables
 rownames(limma.res.pval.FC) <- limma.res.pval.FC$ID
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'limma.res.pval.FC' not found
+```
+
+```r
 limma.res.pval.FC.annot <- cbind(entrez_genes.annot,limma.res.pval.FC)
+```
+
+```
+## Error in cbind(entrez_genes.annot, limma.res.pval.FC): object 'entrez_genes.annot' not found
+```
+
+```r
 # check the annotated table
 head(limma.res.pval.FC.annot)
 ```
 
 ```
-##      entrezgene hgnc_symbol
-## 5265       5265    SERPINA1
-## 3240       3240          HP
-## 2335       2335         FN1
-## 213         213         ALB
-## 338         338        APOB
-## 2243       2243         FGA
-##                                                                                                                 description
-## 5265 serpin peptidase inhibitor, clade A (alpha-1 antiproteinase, antitrypsin), member 1 [Source:HGNC Symbol;Acc:HGNC:8941]
-## 3240                                                                         haptoglobin [Source:HGNC Symbol;Acc:HGNC:5141]
-## 2335                                                                       fibronectin 1 [Source:HGNC Symbol;Acc:HGNC:3778]
-## 213                                                                               albumin [Source:HGNC Symbol;Acc:HGNC:399]
-## 338                                                                      apolipoprotein B [Source:HGNC Symbol;Acc:HGNC:603]
-## 2243                                                              fibrinogen alpha chain [Source:HGNC Symbol;Acc:HGNC:3661]
-##      logFC AveExpr    t  P.Value adj.P.Val    B
-## 5265 10.45    7.33 86.7 1.89e-13  1.37e-09 18.6
-## 3240 11.28    7.62 89.4 1.46e-13  1.37e-09 18.5
-## 2335  6.82    8.56 67.2 1.53e-12  2.93e-09 18.4
-## 213  11.77   10.69 69.3 1.19e-12  2.93e-09 18.3
-## 338  11.51    8.31 70.4 1.04e-12  2.93e-09 18.0
-## 2243 11.56    7.17 80.0 3.64e-13  1.37e-09 17.7
+## Error in head(limma.res.pval.FC.annot): object 'limma.res.pval.FC.annot' not found
 ```
 
 
@@ -875,92 +1081,41 @@ library(GOstats)
 ```
 
 ```
-## Loading required package: Biobase
-## Loading required package: BiocGenerics
-## Loading required package: parallel
-## 
-## Attaching package: 'BiocGenerics'
-## 
-## The following objects are masked from 'package:parallel':
-## 
-##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
-##     clusterExport, clusterMap, parApply, parCapply, parLapply,
-##     parLapplyLB, parRapply, parSapply, parSapplyLB
-## 
-## The following object is masked from 'package:limma':
-## 
-##     plotMA
-## 
-## The following object is masked from 'package:stats':
-## 
-##     xtabs
-## 
-## The following objects are masked from 'package:base':
-## 
-##     anyDuplicated, append, as.data.frame, as.vector, cbind,
-##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
-##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
-##     table, tapply, union, unique, unlist, unsplit
-## 
-## Welcome to Bioconductor
-## 
-##     Vignettes contain introductory material; view with
-##     'browseVignettes()'. To cite Bioconductor, see
-##     'citation("Biobase")', and for packages 'citation("pkgname")'.
-## 
-## Loading required package: Category
-## Loading required package: stats4
-## Loading required package: Matrix
-## Loading required package: AnnotationDbi
-## Loading required package: GenomeInfoDb
-## Loading required package: S4Vectors
-## Loading required package: IRanges
-## 
-## Attaching package: 'IRanges'
-## 
-## The following object is masked from 'package:Matrix':
-## 
-##     expand
-## 
-## 
-## Attaching package: 'AnnotationDbi'
-## 
-## The following object is masked from 'package:GenomeInfoDb':
-## 
-##     species
-## 
-## Loading required package: GO.db
-## Loading required package: DBI
-## 
-## Loading required package: graph
-## 
-## Attaching package: 'GOstats'
-## 
-## The following object is masked from 'package:AnnotationDbi':
-## 
-##     makeGOGraph
+## Error in library(GOstats): there is no package called 'GOstats'
 ```
 
 ```r
 # Define list of genes of interest (DE genes - EntrezGene IDs)
 entrezgeneids <- as.character(rownames(limma.res.pval.FC))
+```
+
+```
+## Error in rownames(limma.res.pval.FC): object 'limma.res.pval.FC' not found
+```
+
+```r
 length(entrezgeneids)
 ```
 
 ```
-## [1] 3044
+## Error in eval(expr, envir, enclos): object 'entrezgeneids' not found
 ```
 
 ```r
 # Define the universe
 universeids <- rownames(mycounts)
+```
+
+```
+## Error in rownames(mycounts): object 'mycounts' not found
+```
+
+```r
 length(universeids)
 ```
 
 ```
-## [1] 15016
+## Error in eval(expr, envir, enclos): object 'universeids' not found
 ```
 
 
@@ -978,12 +1133,7 @@ params <- new("GOHyperGParams",annotation="org.Hs.eg",geneIds=entrezgeneids,univ
 ```
 
 ```
-## Loading required package: org.Hs.eg.db
-```
-
-```
-## Warning in makeValidParams(.Object): removing geneIds not in
-## universeGeneIds
+## Error in getClass(Class, where = topenv(parent.frame())): "GOHyperGParams" is not a defined class
 ```
 
 ```r
@@ -992,18 +1142,7 @@ hg <- hyperGTest(params)
 ```
 
 ```
-## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'pos'
-## argument
-```
-
-```
-## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'envir'
-## argument
-```
-
-```
-## Warning in .local(name, pos, envir, all.names, pattern): ignoring
-## 'all.names' argument
+## Error in eval(expr, envir, enclos): could not find function "hyperGTest"
 ```
 
 ```r
@@ -1012,11 +1151,7 @@ hg
 ```
 
 ```
-## Gene to GO BP  test for over-representation 
-## 8107 GO BP ids tested (3220 have p < 0.05)
-## Selected gene set size: 1519 
-##     Gene universe size: 11814 
-##     Annotation package: org.Hs.eg
+## Error in eval(expr, envir, enclos): object 'hg' not found
 ```
 
 
@@ -1027,40 +1162,62 @@ You can get the output table from the test for significant GO terms only by adju
 ```r
 ## Get the p-values of the test
 hg.pv <- pvalues(hg)
+```
+
+```
+## Error in eval(expr, envir, enclos): could not find function "pvalues"
+```
+
+```r
 ## Adjust p-values for multiple test (FDR)
 hg.pv.fdr <- p.adjust(hg.pv,'fdr')
+```
+
+```
+## Error in p.adjust(hg.pv, "fdr"): object 'hg.pv' not found
+```
+
+```r
 ## select the GO terms with adjusted p-value less than the cut off
 sigGO.ID <- names(hg.pv.fdr[hg.pv.fdr < hgCutoff])
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'hg.pv.fdr' not found
+```
+
+```r
 length(sigGO.ID)
 ```
 
 ```
-## [1] 2331
+## Error in eval(expr, envir, enclos): object 'sigGO.ID' not found
 ```
 
 ```r
 # get table from HyperG test result
 df <- summary(hg)
+```
+
+```
+## Error in summary(hg): object 'hg' not found
+```
+
+```r
 # keep only significant GO terms in the table
 GOannot.table <- df[df[,1] %in% sigGO.ID,]
+```
+
+```
+## Error in df[, 1]: object of type 'closure' is not subsettable
+```
+
+```r
 head(GOannot.table)
 ```
 
 ```
-##       GOBPID    Pvalue OddsRatio ExpCount Count Size
-## 1 GO:0042221 2.09e-101      3.56      327   670 2540
-## 2 GO:0050896  6.84e-92      3.18      700  1066 5443
-## 3 GO:0032501  1.59e-80      2.88      554   893 4305
-## 4 GO:0044707  1.82e-80      2.88      538   876 4183
-## 5 GO:0044699  1.54e-76      5.74     1202  1443 9349
-## 6 GO:0010033  5.18e-68      3.12      237   487 1840
-##                                    Term
-## 1                  response to chemical
-## 2                  response to stimulus
-## 3      multicellular organismal process
-## 4 single-multicellular organism process
-## 5               single-organism process
-## 6         response to organic substance
+## Error in head(GOannot.table): object 'GOannot.table' not found
 ```
 
 
@@ -1070,8 +1227,19 @@ The Gene Ontology enrichment result can be saved in a text file or an html file 
 ```r
 # Create text report of the significantly over-represented GO terms
 write.table(GOannot.table,file="~/GOterms_OverRep_BP.txt",sep="\t",row.names=F)
+```
+
+```
+## Error in is.data.frame(x): object 'GOannot.table' not found
+```
+
+```r
 # Create html report of all over-represented GO terms
 htmlReport(hg, file="~/GOterms_OverRep_BP.html")
+```
+
+```
+## Error in eval(expr, envir, enclos): could not find function "htmlReport"
 ```
 
 
@@ -1107,38 +1275,26 @@ sessionInfo()
 ```
 
 ```
-## R version 3.2.2 (2015-08-14)
+## R version 3.2.0 (2015-04-16)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 14.04.2 LTS
+## Running under: Ubuntu 14.04.1 LTS
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
-##  [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
-##  [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
 ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] stats4    parallel  methods   stats     graphics  grDevices utils    
-## [8] datasets  base     
+## [1] methods   stats     graphics  grDevices utils     datasets  base     
 ## 
 ## other attached packages:
-##  [1] xtable_1.8-0         org.Hs.eg.db_3.0.0   GOstats_2.32.0      
-##  [4] graph_1.44.1         Category_2.32.0      GO.db_3.0.0         
-##  [7] RSQLite_1.0.0        DBI_0.3.1            AnnotationDbi_1.28.2
-## [10] GenomeInfoDb_1.2.5   IRanges_2.0.1        S4Vectors_0.4.0     
-## [13] Matrix_1.2-3         Biobase_2.26.0       BiocGenerics_0.12.1 
-## [16] biomaRt_2.22.0       edgeR_3.8.6          limma_3.22.7        
-## [19] Rsubread_1.16.1     
+## [1] biomaRt_2.18.0 edgeR_3.4.2    limma_3.16.7  
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
-##  [4] lattice_0.20-33       stringr_1.0.0         tools_3.2.2          
-##  [7] grid_3.2.2            AnnotationForge_1.8.2 genefilter_1.48.1    
-## [10] survival_2.38-3       RBGL_1.42.0           GSEABase_1.28.0      
-## [13] formatR_1.2.1         bitops_1.0-6          RCurl_1.95-4.7       
-## [16] evaluate_0.8          stringi_1.0-1         XML_3.98-1.3         
-## [19] annotate_1.44.0
+## [1] formatR_1.4    tools_3.2.0    RCurl_1.95-4.1 knitr_1.13    
+## [5] stringr_0.6.2  XML_3.98-1.1   evaluate_0.9
 ```
 
