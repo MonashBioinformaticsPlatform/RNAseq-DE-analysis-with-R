@@ -52,22 +52,15 @@ Raw sequencing data are usually available in FASTQ format which is a well define
 
 ```r
 # define shared directory for RNAseq data
-RNAseqDATADIR <- "/mnt/RNAseqCourse/raw_data"
+RNAseqDATADIR <- "data/raw_data"
 #list the fastq files in the raw data directory
 dir(RNAseqDATADIR)
 ```
 
 ```
-##  [1] "ERR420386_1.fastq.gz"         "ERR420386_2.fastq.gz"        
-##  [3] "ERR420387_1.fastq.gz"         "ERR420387_2.fastq.gz"        
-##  [5] "ERR420388_1.fastq.gz"         "ERR420388_2.fastq.gz"        
-##  [7] "ERR420388_mini_1.fastq.gz"    "ERR420388_mini_2.fastq.gz"   
-##  [9] "ERR420388_subsamp_1.fastq.gz" "ERR420388_subsamp_2.fastq.gz"
-## [11] "ERR420389_1.fastq.gz"         "ERR420389_2.fastq.gz"        
-## [13] "ERR420390_1.fastq.gz"         "ERR420390_2.fastq.gz"        
-## [15] "ERR420391_2.fastq.gz"         "ERR420392_1.fastq.gz"        
-## [17] "ERR420392_2.fastq.gz"         "ERR420393_1.fastq.gz"        
-## [19] "ERR420393_2.fastq.gz"         "experiment_design.txt"
+## [1] "ERR420388_mini_1.fastq.gz"    "ERR420388_mini_2.fastq.gz"   
+## [3] "ERR420388_subsamp_1.fastq.gz" "ERR420388_subsamp_2.fastq.gz"
+## [5] "experiment_design.txt"
 ```
 
 
@@ -167,7 +160,7 @@ The function *propmapped* returns the proportion of mapped reads in the output S
 
 ```r
 # define the path to SAM file  
-outputsamfile <- "/mnt/RNAseqCourse/mapping/ERR420388.sam"
+outputsamfile <- "data/mapping/ERR420388.sam"
 propmapped(outputsamfile)
 ```
 
@@ -208,7 +201,7 @@ For the purpose of this course the read summarisation step has already been perf
 
 
 ```r
-MAPPINGDIR <- "/mnt/RNAseqCourse/mapping"
+MAPPINGDIR <- "data/mapping"
 # load the counts previously calculated
 load(file.path(MAPPINGDIR,"RawCounts.RData"))
 # check the presence of read counts for the 8 libraries

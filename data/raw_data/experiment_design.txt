@@ -1,0 +1,9 @@
+SampleID	Source_Name	organism	sex	age	tissue	Extract_Name	Material_Type	Assay_Name	technical_replicate_group
+ERR420386	brain_sample_1	Homo_sapiens	male	26	brain	GCCAAT	RNA	Assay4	group_2
+ERR420387	brain_sample_1	Homo_sapiens	male	26	brain	ACAGTG	RNA	Assay2	group_1
+ERR420388	liver_sample_1	Homo_sapiens	male	30	liver	GTGAAA	RNA	Assay7	group_4
+ERR420389	liver_sample_1	Homo_sapiens	male	30	liver	GTGAAA	RNA	Assay8	group_4
+ERR420390	liver_sample_1	Homo_sapiens	male	30	liver	CTTGTA	RNA	Assay6	group_3
+ERR420391	brain_sample_1	Homo_sapiens	male	26	brain	ACAGTG	RNA	Assay1	group_1
+ERR420392	brain_sample_1	Homo_sapiens	male	26	brain	GCCAAT	RNA	Assay3	group_2
+ERR420393	liver_sample_1	Homo_sapiens	male	30	liver	CTTGTA	RNA	Assay5	group_3

@@ -1,0 +1,35 @@
+Comment[ArrayExpressAccession]	E-MTAB-2259
+MAGE-TAB Version	1.1																													
+Investigation Title	Allele-Specific Expression in Human Brain and Liver																													
+Comment[Submitted Name]	Allele-Specific Expression in Human Brain and Liver
+Experiment Description	Systematic survey of gene and isoform allele-specific expression in human brain and liver tissues, and description of optimised bioinformatic and statistical methods to accurately measure allele-specific expression. DNA-seq data for the same set of samples have been deposited at the European Nucleotide Archive under project accessino PRJEB5279 ( http://www.ebi.ac.uk/ena/data/view/PRJEB5279 ).																													
+Experimental Design	genotype design	organism part comparison design	unknown design																											
+Comment[AEExperimentType]	RNA-seq of coding RNA	RNA-seq of non coding RNA																												
+Comment[AEExperimentDisplayName]	RNA-seq of human brain and liver samples to study allele-specific expression																													
+Experimental Factor Name	organism part	replicate																												
+Experimental Factor Type	organism part	replicate																												
+Quality Control Type	technical replicate																													
+Quality Control Term Source REF	EFO																													
+Public Release Date	2014-05-01																													
+Person Last Name	Wood																													
+Person First Name	David																													
+Person Mid Initials	L.A.																													
+Person Email	d.wood@imb.uq.edu.au																													
+Person Phone																														
+Person Address	Institute for Molecular Bioscience, 306 Carmody Rd, St Lucia QLD 4072, Australia																													
+Person Affiliation	Institute for Molecular Bioscience, University of Queensland																													
+Person Roles	submitter																													
+PubMed ID																														
+Publication Author List	David L. A. Wood, Katia Nones, Anita Steptoe, Angelika Christ, Ivon Harliwong, Felicity Newell, Timothy J. C. Bruxner, David Miller, Nicole Cloonan, Sean M. Grimmond																													
+Publication Title	Accurate Resolution of Gene and Isoform Allele-Specific Expression in Human Liver and Brain																													
+Publication Status																														
+Protocol Name	P-MTAB-37342	P-MTAB-37343	P-MTAB-37344
+Protocol Type	nucleic acid extraction protocol	nucleic acid library construction protocol	nucleic acid sequencing protocol																											
+Protocol Description	pre-extracted RNA was sourced commercially from BioChain	Ribosomal depletion and RNA library construction was performed using Truseq Stranded Total RNA kit with Ribo-Zero Human/Mouse/Rat Set A (Illumina, Cat. #RS-122-2201).1ug of total RNA used as starting material. The library preparations were performed according to the manufacturer's protocol (Truseq Stranded Total RNA Sample Prep Guide Pages 58-87) with minor modifications to the fragmentation and the number of PCR cycles (from the recommended 15 down to 8 in order to increase library fragment complexity). After the addition of elute, fragment and high mix to the ribosomal RNA-depleted RNA, samples were incubated on ice and followed immediately by first strand synthesis. The DNA fragments were amplified and the cleaned libraries quantified using high sensitivity Bioanalyzer. 	Libraries were indexed allowing sequencing of multiple samples on one slide. Prior to onboard cluster generation and sequencing run, the pooled library was denatured by using 0.1N NaOH and diluted to the required concentration (7pM). Libraries were sequenced as 100bp paired-end on the Illumina HiSeq 2500.																											
+Protocol Term Source REF	EFO	EFO	EFO																											
+Protocol Hardware			Illumina HiSeq 2500																											
+Term Source Name	EFO	ArrayExpress
+Term Source File	http://www.ebi.ac.uk/efo	http://www.ebi.ac.uk/arrayexpress																												
+Comment[SecondaryAccession]	ERP004697
+Comment[SequenceDataURI]	http://www.ebi.ac.uk/ena/data/view/ERR420386-ERR420393
+SDRF File	E-MTAB-2259.sdrf.txt

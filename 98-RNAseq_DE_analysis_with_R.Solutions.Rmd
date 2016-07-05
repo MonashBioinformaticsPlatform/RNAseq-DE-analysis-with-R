@@ -11,12 +11,8 @@ This document provides solutions to the exercises given in the 'RNAseq DE analys
 ```{r, echo=FALSE}
 # Delete all previously saved R objects
 rm(list=ls())
-# Get your home directory
-#HOMEDIR <- "/mnt/home/roxane"
-# define your working directory for the RNAseq data analysis
-#RNASeqDIR <- file.path(HOMEDIR,"RNAseq")
 
-load("/home/roxane/RNAseq_DE_analysis_with_R.RData")
+load("data/RNAseq_DE_analysis_with_R.RData")
 ```
 
 > ## Exercise: Heatmap  {.challenge}

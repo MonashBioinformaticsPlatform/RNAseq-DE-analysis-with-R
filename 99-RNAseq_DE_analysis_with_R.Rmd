@@ -49,7 +49,7 @@ Raw sequencing data are usually available in FASTQ format which is a well define
 
 ```{r , eval=TRUE}
 # define shared directory for RNAseq data
-RNAseqDATADIR <- "/mnt/RNAseqCourse/raw_data"
+RNAseqDATADIR <- "data/raw_data"
 #list the fastq files in the raw data directory
 dir(RNAseqDATADIR)
 ```
@@ -145,7 +145,7 @@ The function *propmapped* returns the proportion of mapped reads in the output S
 
 ```{r ,eval=FALSE,results='hide'}
 # define the path to SAM file  
-outputsamfile <- "/mnt/RNAseqCourse/mapping/ERR420388.sam"
+outputsamfile <- "data/mapping/ERR420388.sam"
 propmapped(outputsamfile)
 ```
 
@@ -185,7 +185,7 @@ For the purpose of this course the read summarisation step has already been perf
 
 
 ```{r ,eval=TRUE}
-MAPPINGDIR <- "/mnt/RNAseqCourse/mapping"
+MAPPINGDIR <- "data/mapping"
 # load the counts previously calculated
 load(file.path(MAPPINGDIR,"RawCounts.RData"))
 # check the presence of read counts for the 8 libraries

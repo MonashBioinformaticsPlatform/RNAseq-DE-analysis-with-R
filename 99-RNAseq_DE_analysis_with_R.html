@@ -61,19 +61,12 @@
 <p>The data considered for the RNAseq part of the course have been downloaded from ArrayExpress (<a href="http://www.ebi.ac.uk/arrayexpress">http://www.ebi.ac.uk/arrayexpress</a>) and correspond to 8 RNA sequencing libraries from Human brain and liver.</p>
 <p>Raw sequencing data are usually available in FASTQ format which is a well defined text-based format for storing both biological sequences (usually nucleotide sequences) and their corresponding quality scores. The raw data from this study have been downloaded (8Gb / fastq file) into the shared directory “~/data/RNAseq/raw_data”.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define shared directory for RNAseq data</span>
-RNAseqDATADIR &lt;-<span class="st"> &quot;/mnt/RNAseqCourse/raw_data&quot;</span>
+RNAseqDATADIR &lt;-<span class="st"> &quot;data/raw_data&quot;</span>
 <span class="co">#list the fastq files in the raw data directory</span>
 <span class="kw">dir</span>(RNAseqDATADIR)</code></pre>
-<pre><code>##  [1] &quot;ERR420386_1.fastq.gz&quot;         &quot;ERR420386_2.fastq.gz&quot;        
-##  [3] &quot;ERR420387_1.fastq.gz&quot;         &quot;ERR420387_2.fastq.gz&quot;        
-##  [5] &quot;ERR420388_1.fastq.gz&quot;         &quot;ERR420388_2.fastq.gz&quot;        
-##  [7] &quot;ERR420388_mini_1.fastq.gz&quot;    &quot;ERR420388_mini_2.fastq.gz&quot;   
-##  [9] &quot;ERR420388_subsamp_1.fastq.gz&quot; &quot;ERR420388_subsamp_2.fastq.gz&quot;
-## [11] &quot;ERR420389_1.fastq.gz&quot;         &quot;ERR420389_2.fastq.gz&quot;        
-## [13] &quot;ERR420390_1.fastq.gz&quot;         &quot;ERR420390_2.fastq.gz&quot;        
-## [15] &quot;ERR420391_2.fastq.gz&quot;         &quot;ERR420392_1.fastq.gz&quot;        
-## [17] &quot;ERR420392_2.fastq.gz&quot;         &quot;ERR420393_1.fastq.gz&quot;        
-## [19] &quot;ERR420393_2.fastq.gz&quot;         &quot;experiment_design.txt&quot;</code></pre>
+<pre><code>## [1] &quot;ERR420388_mini_1.fastq.gz&quot;    &quot;ERR420388_mini_2.fastq.gz&quot;   
+## [3] &quot;ERR420388_subsamp_1.fastq.gz&quot; &quot;ERR420388_subsamp_2.fastq.gz&quot;
+## [5] &quot;experiment_design.txt&quot;</code></pre>
 <p>The first step in a RNAseq analysis is to run a quick quality check on your data, this will give you an idea of the quality of your raw data in terms of number of reads per library, read length, average quality score along the reads, GC content, sequence duplication level, adaptors that might have not been removed correctly from the data etc.</p>
 <p>The fastQC tool is quick and easy to run and can be downloaded from here: <a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/">http://www.bioinformatics.babraham.ac.uk/projects/fastqc/</a>.</p>
 <p>To ensure highest quality of the sequences for subsequent mapping and differential expression analysis steps, the reads can also be trimmed using the Trimmomatic tool (Lohse et al. 2012, <a href="http://www.usadellab.org/cms/?page=trimmomatic">http://www.usadellab.org/cms/?page=trimmomatic</a>).</p>
@@ -140,7 +133,7 @@ inputfilervs &lt;-<span class="st"> </span><span class="kw">file.path</span>(RNA
 </aside>
 <p>The function <em>propmapped</em> returns the proportion of mapped reads in the output SAM file: total number of input reads, number of mapped reads and proportion of mapped reads. Let’s have a look at a small SAM file as an example:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define the path to SAM file  </span>
-outputsamfile &lt;-<span class="st"> &quot;/mnt/RNAseqCourse/mapping/ERR420388.sam&quot;</span>
+outputsamfile &lt;-<span class="st"> &quot;data/mapping/ERR420388.sam&quot;</span>
 <span class="kw">propmapped</span>(outputsamfile)</code></pre>
 <h3 id="count-reads-for-each-feature">Count reads for each feature</h3>
 <p>Rsubread provides a read summarization function <em>featureCounts</em>, which takes as input the SAM or BAM files and assigns them to genomic features. This gives the number of reads mapped per gene, which can then be transformed into RPKM values (Read Per Killobase per Million), normalised and tested for differential expression.</p>
@@ -165,7 +158,7 @@ mycounts$stat</code></pre>
 </div>
 </aside>
 <p>For the purpose of this course the read summarisation step has already been performed for all libraries. You will need to load the corresponding RData file to get these read counts.</p>
-<pre class="sourceCode r"><code class="sourceCode r">MAPPINGDIR &lt;-<span class="st"> &quot;/mnt/RNAseqCourse/mapping&quot;</span>
+<pre class="sourceCode r"><code class="sourceCode r">MAPPINGDIR &lt;-<span class="st"> &quot;data/mapping&quot;</span>
 <span class="co"># load the counts previously calculated</span>
 <span class="kw">load</span>(<span class="kw">file.path</span>(MAPPINGDIR,<span class="st">&quot;RawCounts.RData&quot;</span>))
 <span class="co"># check the presence of read counts for the 8 libraries</span>
