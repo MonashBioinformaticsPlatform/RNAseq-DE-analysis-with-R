@@ -109,7 +109,8 @@ Rsubread provides reference genome indices for the most common organisms: human 
 # define the reference genome fasta file
 REF_GENOME <- "hg19.fa"
 # define the output directory for the Rsubread index
-RSUBREAD_INDEX_PATH <- "/mnt/RNAseqCourse/ref_data"
+# (admin note: requires data/ref_data/download_hg19.sh to be run first)
+RSUBREAD_INDEX_PATH <- "data/ref_data"
 # define the basename for the index
 RSUBREAD_INDEX_BASE <- "hg19"
 # check what is in the reference directory

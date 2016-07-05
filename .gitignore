@@ -8,3 +8,5 @@ CONDUCT.html
 *.pyc
 _site
 .DS_Store
+data/ref_data/**
+!data/ref_data/**/download_hg19.sh
