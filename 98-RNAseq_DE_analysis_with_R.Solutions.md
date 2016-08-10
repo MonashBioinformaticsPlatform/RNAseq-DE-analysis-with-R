@@ -45,7 +45,7 @@ head(highexprgenes_counts)
 heatmap(highexprgenes_counts, col=topo.colors(50), margin=c(10,6))
 ```
 
-![plot of chunk Heatmap](figure/Heatmap-1.png) 
+![plot of chunk Heatmap](figure/Heatmap-1.png)
 
 
 ## Principal Component Analysis
@@ -79,7 +79,7 @@ plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="
 text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
-![plot of chunk PCA](figure/PCA-1.png) 
+![plot of chunk PCA](figure/PCA-1.png)
 
 ```r
 # Annotate the samples with their age & re-run the PCA & plot the main components
@@ -88,7 +88,7 @@ plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="
 text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
-![plot of chunk PCA](figure/PCA-2.png) 
+![plot of chunk PCA](figure/PCA-2.png)
 
 ```r
 # Annotate the samples with other clinical data & re-run the PCA & plot the main components until you can separate the samples within each tissue group
@@ -97,7 +97,7 @@ plot(mds[,1], -mds[,2], type="n", xlab="Dimension 1", ylab="Dimension 2", main="
 text(mds[,1], -mds[,2], rownames(mds), cex=0.8) 
 ```
 
-![plot of chunk PCA](figure/PCA-3.png) 
+![plot of chunk PCA](figure/PCA-3.png)
 
 
 ## Differential Expression
@@ -118,13 +118,7 @@ Solution:
 
 ```r
 library(limma)
-```
 
-```
-## Loading required package: methods
-```
-
-```r
 # Create a new design matrix for limma with the technical replicate groups
 techgroup<-factor(experiment_design.ord$technical_replicate_group)
 design <- model.matrix(~0+techgroup)
@@ -225,68 +219,124 @@ library(GOstats)
 
 ```
 ## Loading required package: Biobase
+```
+
+```
 ## Loading required package: BiocGenerics
+```
+
+```
+## Loading required package: methods
+```
+
+```
 ## Loading required package: parallel
+```
+
+```
 ## 
 ## Attaching package: 'BiocGenerics'
-## 
+```
+
+```
 ## The following objects are masked from 'package:parallel':
 ## 
 ##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
 ##     clusterExport, clusterMap, parApply, parCapply, parLapply,
 ##     parLapplyLB, parRapply, parSapply, parSapplyLB
-## 
+```
+
+```
 ## The following object is masked from 'package:limma':
 ## 
 ##     plotMA
+```
+
+```
+## The following objects are masked from 'package:stats':
 ## 
-## The following object is masked from 'package:stats':
-## 
-##     xtabs
-## 
+##     IQR, mad, xtabs
+```
+
+```
 ## The following objects are masked from 'package:base':
 ## 
-##     anyDuplicated, append, as.data.frame, as.vector, cbind,
-##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
-##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
-##     table, tapply, union, unique, unlist, unsplit
-## 
+##     anyDuplicated, append, as.data.frame, cbind, colnames,
+##     do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+##     grepl, intersect, is.unsorted, lapply, lengths, Map, mapply,
+##     match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+##     Position, rank, rbind, Reduce, rownames, sapply, setdiff,
+##     sort, table, tapply, union, unique, unsplit
+```
+
+```
 ## Welcome to Bioconductor
 ## 
 ##     Vignettes contain introductory material; view with
 ##     'browseVignettes()'. To cite Bioconductor, see
 ##     'citation("Biobase")', and for packages 'citation("pkgname")'.
-## 
+```
+
+```
 ## Loading required package: Category
+```
+
+```
 ## Loading required package: stats4
-## Loading required package: Matrix
+```
+
+```
 ## Loading required package: AnnotationDbi
-## Loading required package: GenomeInfoDb
-## Loading required package: S4Vectors
+```
+
+```
 ## Loading required package: IRanges
+```
+
+```
+## Loading required package: S4Vectors
+```
+
+```
 ## 
-## Attaching package: 'IRanges'
+## Attaching package: 'S4Vectors'
+```
+
+```
+## The following objects are masked from 'package:base':
 ## 
-## The following object is masked from 'package:Matrix':
+##     colMeans, colSums, expand.grid, rowMeans, rowSums
+```
+
+```
+## Loading required package: Matrix
+```
+
+```
+## 
+## Attaching package: 'Matrix'
+```
+
+```
+## The following object is masked from 'package:S4Vectors':
 ## 
 ##     expand
-## 
-## 
-## Attaching package: 'AnnotationDbi'
-## 
-## The following object is masked from 'package:GenomeInfoDb':
-## 
-##     species
-## 
-## Loading required package: GO.db
-## Loading required package: DBI
-## 
+```
+
+```
 ## Loading required package: graph
+```
+
+```
+## 
+```
+
+```
 ## 
 ## Attaching package: 'GOstats'
-## 
+```
+
+```
 ## The following object is masked from 'package:AnnotationDbi':
 ## 
 ##     makeGOGraph
@@ -306,6 +356,10 @@ params <- new("GOHyperGParams",annotation="org.Hs.eg",geneIds=entrezgeneids,univ
 ```
 
 ```
+## 
+```
+
+```
 ## Warning in makeValidParams(.Object): removing geneIds not in
 ## universeGeneIds
 ```
@@ -313,24 +367,6 @@ params <- new("GOHyperGParams",annotation="org.Hs.eg",geneIds=entrezgeneids,univ
 ```r
 # Run the test and adjust the pvalues in the output object
 hg <- hyperGTest(params)
-```
-
-```
-## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'pos'
-## argument
-```
-
-```
-## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'envir'
-## argument
-```
-
-```
-## Warning in .local(name, pos, envir, all.names, pattern): ignoring
-## 'all.names' argument
-```
-
-```r
 hg.pv <- pvalues(hg)
 hg.pv.fdr <- p.adjust(hg.pv,'fdr')
 
@@ -343,7 +379,7 @@ length(GOterms.sig )
 ```
 
 ```
-## [1] 400
+## [1] 433
 ```
 
 ```r
@@ -351,12 +387,12 @@ head(GOterms.sig)
 ```
 
 ```
-## [1] "signaling receptor activity"                    
-## [2] "transmembrane signaling receptor activity"      
-## [3] "signal transducer activity"                     
-## [4] "molecular transducer activity"                  
-## [5] "receptor activity"                              
-## [6] "extracellular ligand-gated ion channel activity"
+## [1] "transmembrane receptor activity"          
+## [2] "signal transducer activity"               
+## [3] "signaling receptor activity"              
+## [4] "transmembrane signaling receptor activity"
+## [5] "receptor activity"                        
+## [6] "molecular transducer activity"
 ```
 
 
@@ -368,9 +404,9 @@ sessionInfo()
 ```
 
 ```
-## R version 3.2.2 (2015-08-14)
+## R version 3.3.1 (2016-06-21)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 14.04.2 LTS
+## Running under: Ubuntu 14.04.4 LTS
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
@@ -385,17 +421,17 @@ sessionInfo()
 ## [8] datasets  base     
 ## 
 ## other attached packages:
-##  [1] org.Hs.eg.db_3.0.0   GOstats_2.32.0       graph_1.44.1        
-##  [4] Category_2.32.0      GO.db_3.0.0          RSQLite_1.0.0       
-##  [7] DBI_0.3.1            AnnotationDbi_1.28.2 GenomeInfoDb_1.2.5  
-## [10] IRanges_2.0.1        S4Vectors_0.4.0      Matrix_1.2-3        
-## [13] Biobase_2.26.0       BiocGenerics_0.12.1  limma_3.22.7        
+##  [1] GO.db_3.3.0          org.Hs.eg.db_3.3.0   GOstats_2.38.1      
+##  [4] graph_1.50.0         Category_2.38.0      Matrix_1.2-6        
+##  [7] AnnotationDbi_1.34.4 IRanges_2.6.1        S4Vectors_0.10.2    
+## [10] Biobase_2.32.0       BiocGenerics_0.18.0  limma_3.28.17       
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
-##  [4] xtable_1.8-0          lattice_0.20-33       stringr_1.0.0        
-##  [7] tools_3.2.2           grid_3.2.2            AnnotationForge_1.8.2
-## [10] genefilter_1.48.1     survival_2.38-3       RBGL_1.42.0          
-## [13] GSEABase_1.28.0       formatR_1.2.1         evaluate_0.8         
-## [16] stringi_1.0-1         XML_3.98-1.3          annotate_1.44.0
+##  [1] knitr_1.13             magrittr_1.5           splines_3.3.1         
+##  [4] xtable_1.8-2           lattice_0.20-33        stringr_1.0.0         
+##  [7] tools_3.3.1            grid_3.3.1             AnnotationForge_1.14.2
+## [10] DBI_0.4-1              genefilter_1.54.2      survival_2.39-5       
+## [13] RBGL_1.48.1            GSEABase_1.34.0        formatR_1.4           
+## [16] RSQLite_1.0.0          evaluate_0.9           stringi_1.1.1         
+## [19] XML_3.98-1.4           annotate_1.50.0
 ```

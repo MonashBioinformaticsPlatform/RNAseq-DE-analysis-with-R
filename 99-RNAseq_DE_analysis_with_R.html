@@ -361,8 +361,7 @@ mds &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(<span class="
 <p>Before proceeding with differential expression analysis, it is useful to filter out very lowly expressed genes. This will help increasing the statistical power of the analysi while keeping genes of interest. A common way to do this is by filtering out genes having less than 1 count-per-million reads (cpm) in half the samples. The “edgeR” library provides the <em>cpm</em> function which can be used here.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load required libraries</span>
 <span class="kw">library</span>(edgeR)</code></pre>
-<pre><code>## Loading required package: limma
-## Loading required package: methods</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get the expression counts from previous alignment step</span>
 mycounts &lt;-<span class="st"> </span>counts$counts
 <span class="kw">dim</span>(mycounts)</code></pre>
@@ -443,7 +442,7 @@ fit &lt;-<span class="st"> </span><span class="kw">eBayes</span>(fit)
 <span class="co"># check the output fit</span>
 <span class="kw">dim</span>(fit)</code></pre>
 <pre><code>## [1] 15016     1</code></pre>
-<p>The<em>topTable</em> function summarises the output from limma in a table format. Significant DE genes for a particular comparison can be identified by selecting genes with a p-value smaller than a chosen cut-off value and/or a fold change greater than a chosen value in this table. By default the table will be sorted by increasing adjusted p-value, showing the most significant DE genes at the top.</p>
+<p>The <em>topTable</em> function summarises the output from limma in a table format. Significant DE genes for a particular comparison can be identified by selecting genes with a p-value smaller than a chosen cut-off value and/or a fold change greater than a chosen value in this table. By default the table will be sorted by increasing adjusted p-value, showing the most significant DE genes at the top.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set adjusted pvalue threshold and log fold change threshold</span>
 mypval=<span class="fl">0.01</span>
 myfc=<span class="dv">3</span>
@@ -499,8 +498,9 @@ filename =<span class="st"> </span><span class="kw">paste</span>(<span class="st
 <h3 id="gene-annotation">Gene Annotation</h3>
 <p>The annotation of EntrezGene IDs from RNAseq data can be done using the BioMart database which contains many species including Human, Mouse, Zebrafish, Chicken and Rat.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get the Ensembl annotation for human genome</span>
-<span class="kw">library</span>(biomaRt)
-mart&lt;-<span class="st"> </span><span class="kw">useDataset</span>(<span class="st">&quot;hsapiens_gene_ensembl&quot;</span>, <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,<span class="dt">host=</span><span class="st">&quot;www.ensembl.org&quot;</span>))
+<span class="kw">library</span>(biomaRt)</code></pre>
+<pre><code>## Loading required package: methods</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">mart&lt;-<span class="st"> </span><span class="kw">useDataset</span>(<span class="st">&quot;hsapiens_gene_ensembl&quot;</span>, <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,<span class="dt">host=</span><span class="st">&quot;www.ensembl.org&quot;</span>))
 
 <span class="co"># get entrez gene IDs from limma output table</span>
 entrez_genes &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">rownames</span>(limma.res.pval.FC))
@@ -515,7 +515,7 @@ detags.IDs &lt;-<span class="st"> </span><span class="kw">getBM</span>(
 )
 
 <span class="kw">dim</span>(detags.IDs)</code></pre>
-<pre><code>## [1] 2875    3</code></pre>
+<pre><code>## [1] 2880    3</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(detags.IDs)</code></pre>
 <pre><code>##   entrezgene hgnc_symbol
 ## 1         10        NAT2
@@ -526,7 +526,7 @@ detags.IDs &lt;-<span class="st"> </span><span class="kw">getBM</span>(
 ## 6  100033442  SNORD115-5
 ##                                                                                description
 ## 1 N-acetyltransferase 2 (arylamine N-acetyltransferase) [Source:HGNC Symbol;Acc:HGNC:7646]
-## 2          v-akt murine thymoma viral oncogene homolog 3 [Source:HGNC Symbol;Acc:HGNC:393]
+## 2                          AKT serine/threonine kinase 3 [Source:HGNC Symbol;Acc:HGNC:393]
 ## 3                   small nucleolar RNA, C/D box 116-3 [Source:HGNC Symbol;Acc:HGNC:33069]
 ## 4                   small nucleolar RNA, C/D box 116-9 [Source:HGNC Symbol;Acc:HGNC:33075]
 ## 5                  small nucleolar RNA, C/D box 116-15 [Source:HGNC Symbol;Acc:HGNC:33081]
@@ -550,90 +550,76 @@ limma.res.pval.FC.annot &lt;-<span class="st"> </span><span class="kw">cbind</sp
 ## 213         213         ALB
 ## 338         338        APOB
 ## 2243       2243         FGA
-##                                                                                                                 description
-## 5265 serpin peptidase inhibitor, clade A (alpha-1 antiproteinase, antitrypsin), member 1 [Source:HGNC Symbol;Acc:HGNC:8941]
-## 3240                                                                         haptoglobin [Source:HGNC Symbol;Acc:HGNC:5141]
-## 2335                                                                       fibronectin 1 [Source:HGNC Symbol;Acc:HGNC:3778]
-## 213                                                                               albumin [Source:HGNC Symbol;Acc:HGNC:399]
-## 338                                                                      apolipoprotein B [Source:HGNC Symbol;Acc:HGNC:603]
-## 2243                                                              fibrinogen alpha chain [Source:HGNC Symbol;Acc:HGNC:3661]
-##      logFC AveExpr    t  P.Value adj.P.Val    B
-## 5265 10.45    7.33 86.7 1.89e-13  1.37e-09 18.6
-## 3240 11.28    7.62 89.4 1.46e-13  1.37e-09 18.5
-## 2335  6.82    8.56 67.2 1.53e-12  2.93e-09 18.4
-## 213  11.77   10.69 69.3 1.19e-12  2.93e-09 18.3
-## 338  11.51    8.31 70.4 1.04e-12  2.93e-09 18.0
-## 2243 11.56    7.17 80.0 3.64e-13  1.37e-09 17.7</code></pre>
+##                                                      description logFC
+## 5265 serpin family A member 1 [Source:HGNC Symbol;Acc:HGNC:8941] 10.45
+## 3240              haptoglobin [Source:HGNC Symbol;Acc:HGNC:5141] 11.28
+## 2335            fibronectin 1 [Source:HGNC Symbol;Acc:HGNC:3778]  6.82
+## 213                    albumin [Source:HGNC Symbol;Acc:HGNC:399] 11.77
+## 338           apolipoprotein B [Source:HGNC Symbol;Acc:HGNC:603] 11.51
+## 2243   fibrinogen alpha chain [Source:HGNC Symbol;Acc:HGNC:3661] 11.56
+##      AveExpr    t  P.Value adj.P.Val    B
+## 5265    7.33 86.7 1.89e-13  1.37e-09 18.6
+## 3240    7.62 89.4 1.46e-13  1.37e-09 18.5
+## 2335    8.56 67.2 1.53e-12  2.93e-09 18.4
+## 213    10.69 69.3 1.19e-12  2.93e-09 18.3
+## 338     8.31 70.4 1.04e-12  2.93e-09 18.0
+## 2243    7.17 80.0 3.64e-13  1.37e-09 17.7</code></pre>
 <h3 id="gene-set-enrichment">Gene Set Enrichment</h3>
 <p>Gene Ontology (GO) enrichment is a method for investigating sets of genes using the Gene Ontology system of classification, in which genes are assigned to a particular set of terms for three major domains: cellular component, biological process and molecular function.</p>
 <p>The <em>GOstats</em> package can test for both over and under representation of GO terms using the Hypergeometric test. The output of the analysis is typically a ranked list of GO terms, each associated with a p-value.</p>
 <p>The Hypergeometric test will require both a list of selected genes (i.e. your DE genes) and a “universe” list (e.g. all genes annotated in the genome you are working with), all represented by their “EntrezGene” ID.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the library</span>
 <span class="kw">library</span>(GOstats)</code></pre>
-<pre><code>## Loading required package: Biobase
-## Loading required package: BiocGenerics
-## Loading required package: parallel
-## 
-## Attaching package: &#39;BiocGenerics&#39;
-## 
-## The following objects are masked from &#39;package:parallel&#39;:
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:parallel&#39;:
 ## 
 ##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
 ##     clusterExport, clusterMap, parApply, parCapply, parLapply,
-##     parLapplyLB, parRapply, parSapply, parSapplyLB
+##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following object is masked from &#39;package:limma&#39;:
 ## 
-## The following object is masked from &#39;package:limma&#39;:
+##     plotMA</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
 ## 
-##     plotMA
+##     IQR, mad, xtabs</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
-## The following object is masked from &#39;package:stats&#39;:
-## 
-##     xtabs
-## 
-## The following objects are masked from &#39;package:base&#39;:
-## 
-##     anyDuplicated, append, as.data.frame, as.vector, cbind,
-##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
-##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
-##     table, tapply, union, unique, unlist, unsplit
-## 
-## Welcome to Bioconductor
+##     anyDuplicated, append, as.data.frame, cbind, colnames,
+##     do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+##     grepl, intersect, is.unsorted, lapply, lengths, Map, mapply,
+##     match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+##     Position, rank, rbind, Reduce, rownames, sapply, setdiff,
+##     sort, table, tapply, union, unique, unsplit</code></pre>
+<pre><code>## Welcome to Bioconductor
 ## 
 ##     Vignettes contain introductory material; view with
 ##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
-##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>## Loading required package: Category</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: AnnotationDbi</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## 
+## Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
-## Loading required package: Category
-## Loading required package: stats4
-## Loading required package: Matrix
-## Loading required package: AnnotationDbi
-## Loading required package: GenomeInfoDb
-## Loading required package: S4Vectors
-## Loading required package: IRanges
+##     colMeans, colSums, expand.grid, rowMeans, rowSums</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:S4Vectors&#39;:
 ## 
-## Attaching package: &#39;IRanges&#39;
-## 
-## The following object is masked from &#39;package:Matrix&#39;:
-## 
-##     expand
-## 
-## 
-## Attaching package: &#39;AnnotationDbi&#39;
-## 
-## The following object is masked from &#39;package:GenomeInfoDb&#39;:
-## 
-##     species
-## 
-## Loading required package: GO.db
-## Loading required package: DBI
-## 
-## Loading required package: graph
-## 
-## Attaching package: &#39;GOstats&#39;
-## 
-## The following object is masked from &#39;package:AnnotationDbi&#39;:
+##     expand</code></pre>
+<pre><code>## Loading required package: graph</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: &#39;GOstats&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:AnnotationDbi&#39;:
 ## 
 ##     makeGOGraph</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Define list of genes of interest (DE genes - EntrezGene IDs)</span>
@@ -650,22 +636,17 @@ universeids &lt;-<span class="st"> </span><span class="kw">rownames</span>(mycou
 hgCutoff &lt;-<span class="st"> </span><span class="fl">0.05</span>
 params &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;GOHyperGParams&quot;</span>,<span class="dt">annotation=</span><span class="st">&quot;org.Hs.eg&quot;</span>,<span class="dt">geneIds=</span>entrezgeneids,<span class="dt">universeGeneIds=</span>universeids,<span class="dt">ontology=</span><span class="st">&quot;BP&quot;</span>,<span class="dt">pvalueCutoff=</span>hgCutoff,<span class="dt">testDirection=</span><span class="st">&quot;over&quot;</span>)</code></pre>
 <pre><code>## Loading required package: org.Hs.eg.db</code></pre>
+<pre><code>## </code></pre>
 <pre><code>## Warning in makeValidParams(.Object): removing geneIds not in
 ## universeGeneIds</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co">#  Run the test</span>
-hg &lt;-<span class="st"> </span><span class="kw">hyperGTest</span>(params)</code></pre>
-<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring &#39;pos&#39;
-## argument</code></pre>
-<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring &#39;envir&#39;
-## argument</code></pre>
-<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring
-## &#39;all.names&#39; argument</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check results</span>
+hg &lt;-<span class="st"> </span><span class="kw">hyperGTest</span>(params)
+<span class="co"># Check results</span>
 hg</code></pre>
 <pre><code>## Gene to GO BP  test for over-representation 
-## 8107 GO BP ids tested (3220 have p &lt; 0.05)
-## Selected gene set size: 1519 
-##     Gene universe size: 11814 
+## 9093 GO BP ids tested (3464 have p &lt; 0.05)
+## Selected gene set size: 1528 
+##     Gene universe size: 12123 
 ##     Annotation package: org.Hs.eg</code></pre>
 <p>You can get the output table from the test for significant GO terms only by adjusting the pvalues with the <em>p.adjust</em> function.</p>
 <pre class="sourceCode r"><code class="sourceCode r">## Get the p-values of the test
@@ -675,26 +656,26 @@ hg.pv.fdr &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(hg.pv,<
 ## select the GO terms with adjusted p-value less than the cut off
 sigGO.ID &lt;-<span class="st"> </span><span class="kw">names</span>(hg.pv.fdr[hg.pv.fdr &lt;<span class="st"> </span>hgCutoff])
 <span class="kw">length</span>(sigGO.ID)</code></pre>
-<pre><code>## [1] 2331</code></pre>
+<pre><code>## [1] 2527</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get table from HyperG test result</span>
 df &lt;-<span class="st"> </span><span class="kw">summary</span>(hg)
 <span class="co"># keep only significant GO terms in the table</span>
 GOannot.table &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %in%<span class="st"> </span>sigGO.ID,]
 <span class="kw">head</span>(GOannot.table)</code></pre>
 <pre><code>##       GOBPID    Pvalue OddsRatio ExpCount Count Size
-## 1 GO:0042221 2.09e-101      3.56      327   670 2540
-## 2 GO:0050896  6.84e-92      3.18      700  1066 5443
-## 3 GO:0032501  1.59e-80      2.88      554   893 4305
-## 4 GO:0044707  1.82e-80      2.88      538   876 4183
-## 5 GO:0044699  1.54e-76      5.74     1202  1443 9349
-## 6 GO:0010033  5.18e-68      3.12      237   487 1840
+## 1 GO:0042221 1.56e-104      3.45      395   762 3131
+## 2 GO:0050896  1.79e-86      3.10      753  1108 5977
+## 3 GO:0044707  5.56e-69      2.64      562   877 4458
+## 4 GO:0032501  2.60e-68      2.62      599   915 4756
+## 5 GO:0010033  1.11e-65      2.85      298   563 2362
+## 6 GO:0044699  2.31e-63      5.07     1242  1453 9851
 ##                                    Term
 ## 1                  response to chemical
 ## 2                  response to stimulus
-## 3      multicellular organismal process
-## 4 single-multicellular organism process
-## 5               single-organism process
-## 6         response to organic substance</code></pre>
+## 3 single-multicellular organism process
+## 4      multicellular organismal process
+## 5         response to organic substance
+## 6               single-organism process</code></pre>
 <p>The Gene Ontology enrichment result can be saved in a text file or an html file for future reference.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create text report of the significantly over-represented GO terms</span>
 <span class="kw">write.table</span>(GOannot.table,<span class="dt">file=</span><span class="st">&quot;~/GOterms_OverRep_BP.txt&quot;</span>,<span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>,<span class="dt">row.names=</span>F)
@@ -721,9 +702,9 @@ GOannot.table &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %i
 <h3 id="record-package-and-version-info-with-sessioninfo">Record package and version info with <code>sessionInfo()</code></h3>
 <p>The <em>sessionInfo</em> function prints version information about R and any attached packages. It’s a good practice to always run this command at the end of your R session and record it for the sake of reproducibility in the future.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre>
-<pre><code>## R version 3.2.2 (2015-08-14)
+<pre><code>## R version 3.3.1 (2016-06-21)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 14.04.2 LTS
+## Running under: Ubuntu 14.04.4 LTS
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
@@ -738,22 +719,21 @@ GOannot.table &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %i
 ## [8] datasets  base     
 ## 
 ## other attached packages:
-##  [1] xtable_1.8-0         org.Hs.eg.db_3.0.0   GOstats_2.32.0      
-##  [4] graph_1.44.1         Category_2.32.0      GO.db_3.0.0         
-##  [7] RSQLite_1.0.0        DBI_0.3.1            AnnotationDbi_1.28.2
-## [10] GenomeInfoDb_1.2.5   IRanges_2.0.1        S4Vectors_0.4.0     
-## [13] Matrix_1.2-3         Biobase_2.26.0       BiocGenerics_0.12.1 
-## [16] biomaRt_2.22.0       edgeR_3.8.6          limma_3.22.7        
-## [19] Rsubread_1.16.1     
+##  [1] GO.db_3.3.0          org.Hs.eg.db_3.3.0   GOstats_2.38.1      
+##  [4] graph_1.50.0         Category_2.38.0      Matrix_1.2-6        
+##  [7] AnnotationDbi_1.34.4 IRanges_2.6.1        S4Vectors_0.10.2    
+## [10] Biobase_2.32.0       BiocGenerics_0.18.0  biomaRt_2.28.0      
+## [13] edgeR_3.14.0         limma_3.28.17        Rsubread_1.22.2     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
-##  [4] lattice_0.20-33       stringr_1.0.0         tools_3.2.2          
-##  [7] grid_3.2.2            AnnotationForge_1.8.2 genefilter_1.48.1    
-## [10] survival_2.38-3       RBGL_1.42.0           GSEABase_1.28.0      
-## [13] formatR_1.2.1         bitops_1.0-6          RCurl_1.95-4.7       
-## [16] evaluate_0.8          stringi_1.0-1         XML_3.98-1.3         
-## [19] annotate_1.44.0</code></pre>
+##  [1] knitr_1.13             magrittr_1.5           splines_3.3.1         
+##  [4] xtable_1.8-2           lattice_0.20-33        stringr_1.0.0         
+##  [7] tools_3.3.1            grid_3.3.1             AnnotationForge_1.14.2
+## [10] DBI_0.4-1              genefilter_1.54.2      survival_2.39-5       
+## [13] RBGL_1.48.1            GSEABase_1.34.0        formatR_1.4           
+## [16] bitops_1.0-6           RCurl_1.95-4.8         RSQLite_1.0.0         
+## [19] evaluate_0.9           stringi_1.1.1          XML_3.98-1.4          
+## [22] annotate_1.50.0</code></pre>
         </div>
       </div>
       </article>

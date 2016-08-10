@@ -531,7 +531,6 @@ library(edgeR)
 
 ```
 ## Loading required package: limma
-## Loading required package: methods
 ```
 
 
@@ -668,7 +667,7 @@ dim(fit)
 ## [1] 15016     1
 ```
 
-The*topTable* function summarises the output from limma in a table format. Significant DE genes for a particular comparison can be identified by selecting genes with a p-value smaller than a chosen cut-off value and/or a fold change greater than a chosen value in this table. By default the table will be sorted by increasing adjusted p-value, showing the most significant DE genes at the top.
+The *topTable* function summarises the output from limma in a table format. Significant DE genes for a particular comparison can be identified by selecting genes with a p-value smaller than a chosen cut-off value and/or a fold change greater than a chosen value in this table. By default the table will be sorted by increasing adjusted p-value, showing the most significant DE genes at the top.
 
 
 
@@ -759,6 +758,13 @@ The annotation of EntrezGene IDs from RNAseq data can be done using the BioMart 
 ```r
 # get the Ensembl annotation for human genome
 library(biomaRt)
+```
+
+```
+## Loading required package: methods
+```
+
+```r
 mart<- useDataset("hsapiens_gene_ensembl", useMart("ENSEMBL_MART_ENSEMBL",host="www.ensembl.org"))
 
 # get entrez gene IDs from limma output table
@@ -783,7 +789,7 @@ dim(detags.IDs)
 ```
 
 ```
-## [1] 2875    3
+## [1] 2880    3
 ```
 
 ```r
@@ -800,7 +806,7 @@ head(detags.IDs)
 ## 6  100033442  SNORD115-5
 ##                                                                                description
 ## 1 N-acetyltransferase 2 (arylamine N-acetyltransferase) [Source:HGNC Symbol;Acc:HGNC:7646]
-## 2          v-akt murine thymoma viral oncogene homolog 3 [Source:HGNC Symbol;Acc:HGNC:393]
+## 2                          AKT serine/threonine kinase 3 [Source:HGNC Symbol;Acc:HGNC:393]
 ## 3                   small nucleolar RNA, C/D box 116-3 [Source:HGNC Symbol;Acc:HGNC:33069]
 ## 4                   small nucleolar RNA, C/D box 116-9 [Source:HGNC Symbol;Acc:HGNC:33075]
 ## 5                  small nucleolar RNA, C/D box 116-15 [Source:HGNC Symbol;Acc:HGNC:33081]
@@ -836,20 +842,20 @@ head(limma.res.pval.FC.annot)
 ## 213         213         ALB
 ## 338         338        APOB
 ## 2243       2243         FGA
-##                                                                                                                 description
-## 5265 serpin peptidase inhibitor, clade A (alpha-1 antiproteinase, antitrypsin), member 1 [Source:HGNC Symbol;Acc:HGNC:8941]
-## 3240                                                                         haptoglobin [Source:HGNC Symbol;Acc:HGNC:5141]
-## 2335                                                                       fibronectin 1 [Source:HGNC Symbol;Acc:HGNC:3778]
-## 213                                                                               albumin [Source:HGNC Symbol;Acc:HGNC:399]
-## 338                                                                      apolipoprotein B [Source:HGNC Symbol;Acc:HGNC:603]
-## 2243                                                              fibrinogen alpha chain [Source:HGNC Symbol;Acc:HGNC:3661]
-##      logFC AveExpr    t  P.Value adj.P.Val    B
-## 5265 10.45    7.33 86.7 1.89e-13  1.37e-09 18.6
-## 3240 11.28    7.62 89.4 1.46e-13  1.37e-09 18.5
-## 2335  6.82    8.56 67.2 1.53e-12  2.93e-09 18.4
-## 213  11.77   10.69 69.3 1.19e-12  2.93e-09 18.3
-## 338  11.51    8.31 70.4 1.04e-12  2.93e-09 18.0
-## 2243 11.56    7.17 80.0 3.64e-13  1.37e-09 17.7
+##                                                      description logFC
+## 5265 serpin family A member 1 [Source:HGNC Symbol;Acc:HGNC:8941] 10.45
+## 3240              haptoglobin [Source:HGNC Symbol;Acc:HGNC:5141] 11.28
+## 2335            fibronectin 1 [Source:HGNC Symbol;Acc:HGNC:3778]  6.82
+## 213                    albumin [Source:HGNC Symbol;Acc:HGNC:399] 11.77
+## 338           apolipoprotein B [Source:HGNC Symbol;Acc:HGNC:603] 11.51
+## 2243   fibrinogen alpha chain [Source:HGNC Symbol;Acc:HGNC:3661] 11.56
+##      AveExpr    t  P.Value adj.P.Val    B
+## 5265    7.33 86.7 1.89e-13  1.37e-09 18.6
+## 3240    7.62 89.4 1.46e-13  1.37e-09 18.5
+## 2335    8.56 67.2 1.53e-12  2.93e-09 18.4
+## 213    10.69 69.3 1.19e-12  2.93e-09 18.3
+## 338     8.31 70.4 1.04e-12  2.93e-09 18.0
+## 2243    7.17 80.0 3.64e-13  1.37e-09 17.7
 ```
 
 
@@ -870,68 +876,120 @@ library(GOstats)
 
 ```
 ## Loading required package: Biobase
+```
+
+```
 ## Loading required package: BiocGenerics
+```
+
+```
 ## Loading required package: parallel
+```
+
+```
 ## 
 ## Attaching package: 'BiocGenerics'
-## 
+```
+
+```
 ## The following objects are masked from 'package:parallel':
 ## 
 ##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
 ##     clusterExport, clusterMap, parApply, parCapply, parLapply,
 ##     parLapplyLB, parRapply, parSapply, parSapplyLB
-## 
+```
+
+```
 ## The following object is masked from 'package:limma':
 ## 
 ##     plotMA
+```
+
+```
+## The following objects are masked from 'package:stats':
 ## 
-## The following object is masked from 'package:stats':
-## 
-##     xtabs
-## 
+##     IQR, mad, xtabs
+```
+
+```
 ## The following objects are masked from 'package:base':
 ## 
-##     anyDuplicated, append, as.data.frame, as.vector, cbind,
-##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
-##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
-##     table, tapply, union, unique, unlist, unsplit
-## 
+##     anyDuplicated, append, as.data.frame, cbind, colnames,
+##     do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+##     grepl, intersect, is.unsorted, lapply, lengths, Map, mapply,
+##     match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+##     Position, rank, rbind, Reduce, rownames, sapply, setdiff,
+##     sort, table, tapply, union, unique, unsplit
+```
+
+```
 ## Welcome to Bioconductor
 ## 
 ##     Vignettes contain introductory material; view with
 ##     'browseVignettes()'. To cite Bioconductor, see
 ##     'citation("Biobase")', and for packages 'citation("pkgname")'.
-## 
+```
+
+```
 ## Loading required package: Category
+```
+
+```
 ## Loading required package: stats4
-## Loading required package: Matrix
+```
+
+```
 ## Loading required package: AnnotationDbi
-## Loading required package: GenomeInfoDb
-## Loading required package: S4Vectors
+```
+
+```
 ## Loading required package: IRanges
+```
+
+```
+## Loading required package: S4Vectors
+```
+
+```
 ## 
-## Attaching package: 'IRanges'
+## Attaching package: 'S4Vectors'
+```
+
+```
+## The following objects are masked from 'package:base':
 ## 
-## The following object is masked from 'package:Matrix':
+##     colMeans, colSums, expand.grid, rowMeans, rowSums
+```
+
+```
+## Loading required package: Matrix
+```
+
+```
+## 
+## Attaching package: 'Matrix'
+```
+
+```
+## The following object is masked from 'package:S4Vectors':
 ## 
 ##     expand
-## 
-## 
-## Attaching package: 'AnnotationDbi'
-## 
-## The following object is masked from 'package:GenomeInfoDb':
-## 
-##     species
-## 
-## Loading required package: GO.db
-## Loading required package: DBI
-## 
+```
+
+```
 ## Loading required package: graph
+```
+
+```
+## 
+```
+
+```
 ## 
 ## Attaching package: 'GOstats'
-## 
+```
+
+```
 ## The following object is masked from 'package:AnnotationDbi':
 ## 
 ##     makeGOGraph
@@ -976,6 +1034,10 @@ params <- new("GOHyperGParams",annotation="org.Hs.eg",geneIds=entrezgeneids,univ
 ```
 
 ```
+## 
+```
+
+```
 ## Warning in makeValidParams(.Object): removing geneIds not in
 ## universeGeneIds
 ```
@@ -983,33 +1045,15 @@ params <- new("GOHyperGParams",annotation="org.Hs.eg",geneIds=entrezgeneids,univ
 ```r
 #  Run the test
 hg <- hyperGTest(params)
-```
-
-```
-## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'pos'
-## argument
-```
-
-```
-## Warning in .local(name, pos, envir, all.names, pattern): ignoring 'envir'
-## argument
-```
-
-```
-## Warning in .local(name, pos, envir, all.names, pattern): ignoring
-## 'all.names' argument
-```
-
-```r
 # Check results
 hg
 ```
 
 ```
 ## Gene to GO BP  test for over-representation 
-## 8107 GO BP ids tested (3220 have p < 0.05)
-## Selected gene set size: 1519 
-##     Gene universe size: 11814 
+## 9093 GO BP ids tested (3464 have p < 0.05)
+## Selected gene set size: 1528 
+##     Gene universe size: 12123 
 ##     Annotation package: org.Hs.eg
 ```
 
@@ -1029,7 +1073,7 @@ length(sigGO.ID)
 ```
 
 ```
-## [1] 2331
+## [1] 2527
 ```
 
 ```r
@@ -1042,19 +1086,19 @@ head(GOannot.table)
 
 ```
 ##       GOBPID    Pvalue OddsRatio ExpCount Count Size
-## 1 GO:0042221 2.09e-101      3.56      327   670 2540
-## 2 GO:0050896  6.84e-92      3.18      700  1066 5443
-## 3 GO:0032501  1.59e-80      2.88      554   893 4305
-## 4 GO:0044707  1.82e-80      2.88      538   876 4183
-## 5 GO:0044699  1.54e-76      5.74     1202  1443 9349
-## 6 GO:0010033  5.18e-68      3.12      237   487 1840
+## 1 GO:0042221 1.56e-104      3.45      395   762 3131
+## 2 GO:0050896  1.79e-86      3.10      753  1108 5977
+## 3 GO:0044707  5.56e-69      2.64      562   877 4458
+## 4 GO:0032501  2.60e-68      2.62      599   915 4756
+## 5 GO:0010033  1.11e-65      2.85      298   563 2362
+## 6 GO:0044699  2.31e-63      5.07     1242  1453 9851
 ##                                    Term
 ## 1                  response to chemical
 ## 2                  response to stimulus
-## 3      multicellular organismal process
-## 4 single-multicellular organism process
-## 5               single-organism process
-## 6         response to organic substance
+## 3 single-multicellular organism process
+## 4      multicellular organismal process
+## 5         response to organic substance
+## 6               single-organism process
 ```
 
 
@@ -1101,9 +1145,9 @@ sessionInfo()
 ```
 
 ```
-## R version 3.2.2 (2015-08-14)
+## R version 3.3.1 (2016-06-21)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 14.04.2 LTS
+## Running under: Ubuntu 14.04.4 LTS
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
@@ -1118,21 +1162,20 @@ sessionInfo()
 ## [8] datasets  base     
 ## 
 ## other attached packages:
-##  [1] xtable_1.8-0         org.Hs.eg.db_3.0.0   GOstats_2.32.0      
-##  [4] graph_1.44.1         Category_2.32.0      GO.db_3.0.0         
-##  [7] RSQLite_1.0.0        DBI_0.3.1            AnnotationDbi_1.28.2
-## [10] GenomeInfoDb_1.2.5   IRanges_2.0.1        S4Vectors_0.4.0     
-## [13] Matrix_1.2-3         Biobase_2.26.0       BiocGenerics_0.12.1 
-## [16] biomaRt_2.22.0       edgeR_3.8.6          limma_3.22.7        
-## [19] Rsubread_1.16.1     
+##  [1] GO.db_3.3.0          org.Hs.eg.db_3.3.0   GOstats_2.38.1      
+##  [4] graph_1.50.0         Category_2.38.0      Matrix_1.2-6        
+##  [7] AnnotationDbi_1.34.4 IRanges_2.6.1        S4Vectors_0.10.2    
+## [10] Biobase_2.32.0       BiocGenerics_0.18.0  biomaRt_2.28.0      
+## [13] edgeR_3.14.0         limma_3.28.17        Rsubread_1.22.2     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
-##  [4] lattice_0.20-33       stringr_1.0.0         tools_3.2.2          
-##  [7] grid_3.2.2            AnnotationForge_1.8.2 genefilter_1.48.1    
-## [10] survival_2.38-3       RBGL_1.42.0           GSEABase_1.28.0      
-## [13] formatR_1.2.1         bitops_1.0-6          RCurl_1.95-4.7       
-## [16] evaluate_0.8          stringi_1.0-1         XML_3.98-1.3         
-## [19] annotate_1.44.0
+##  [1] knitr_1.13             magrittr_1.5           splines_3.3.1         
+##  [4] xtable_1.8-2           lattice_0.20-33        stringr_1.0.0         
+##  [7] tools_3.3.1            grid_3.3.1             AnnotationForge_1.14.2
+## [10] DBI_0.4-1              genefilter_1.54.2      survival_2.39-5       
+## [13] RBGL_1.48.1            GSEABase_1.34.0        formatR_1.4           
+## [16] bitops_1.0-6           RCurl_1.95-4.8         RSQLite_1.0.0         
+## [19] evaluate_0.9           stringi_1.1.1          XML_3.98-1.4          
+## [22] annotate_1.50.0
 ```
 

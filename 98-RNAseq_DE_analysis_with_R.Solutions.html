@@ -129,9 +129,9 @@ mds &lt;-<span class="st"> </span><span class="kw">cmdscale</span>(<span class="
 </div>
 </section>
 <p>Solution:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(limma)</code></pre>
-<pre><code>## Loading required package: methods</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create a new design matrix for limma with the technical replicate groups</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(limma)
+
+<span class="co"># Create a new design matrix for limma with the technical replicate groups</span>
 techgroup&lt;-<span class="kw">factor</span>(experiment_design.ord$technical_replicate_group)
 design &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(~<span class="dv">0</span>+techgroup)
 <span class="kw">colnames</span>(design)&lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;techgroup&quot;</span>,<span class="st">&quot;&quot;</span>,<span class="kw">colnames</span>(design))
@@ -205,70 +205,57 @@ fit &lt;-<span class="st"> </span><span class="kw">eBayes</span>(fit)
 </section>
 <p>Solution:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(GOstats)</code></pre>
-<pre><code>## Loading required package: Biobase
-## Loading required package: BiocGenerics
-## Loading required package: parallel
-## 
-## Attaching package: &#39;BiocGenerics&#39;
-## 
-## The following objects are masked from &#39;package:parallel&#39;:
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: methods</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:parallel&#39;:
 ## 
 ##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
 ##     clusterExport, clusterMap, parApply, parCapply, parLapply,
-##     parLapplyLB, parRapply, parSapply, parSapplyLB
+##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following object is masked from &#39;package:limma&#39;:
 ## 
-## The following object is masked from &#39;package:limma&#39;:
+##     plotMA</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
 ## 
-##     plotMA
+##     IQR, mad, xtabs</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
-## The following object is masked from &#39;package:stats&#39;:
-## 
-##     xtabs
-## 
-## The following objects are masked from &#39;package:base&#39;:
-## 
-##     anyDuplicated, append, as.data.frame, as.vector, cbind,
-##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
-##     intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rep.int, rownames, sapply, setdiff, sort,
-##     table, tapply, union, unique, unlist, unsplit
-## 
-## Welcome to Bioconductor
+##     anyDuplicated, append, as.data.frame, cbind, colnames,
+##     do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+##     grepl, intersect, is.unsorted, lapply, lengths, Map, mapply,
+##     match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+##     Position, rank, rbind, Reduce, rownames, sapply, setdiff,
+##     sort, table, tapply, union, unique, unsplit</code></pre>
+<pre><code>## Welcome to Bioconductor
 ## 
 ##     Vignettes contain introductory material; view with
 ##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
-##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>## Loading required package: Category</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: AnnotationDbi</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## 
+## Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
-## Loading required package: Category
-## Loading required package: stats4
-## Loading required package: Matrix
-## Loading required package: AnnotationDbi
-## Loading required package: GenomeInfoDb
-## Loading required package: S4Vectors
-## Loading required package: IRanges
+##     colMeans, colSums, expand.grid, rowMeans, rowSums</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:S4Vectors&#39;:
 ## 
-## Attaching package: &#39;IRanges&#39;
-## 
-## The following object is masked from &#39;package:Matrix&#39;:
-## 
-##     expand
-## 
-## 
-## Attaching package: &#39;AnnotationDbi&#39;
-## 
-## The following object is masked from &#39;package:GenomeInfoDb&#39;:
-## 
-##     species
-## 
-## Loading required package: GO.db
-## Loading required package: DBI
-## 
-## Loading required package: graph
-## 
-## Attaching package: &#39;GOstats&#39;
-## 
-## The following object is masked from &#39;package:AnnotationDbi&#39;:
+##     expand</code></pre>
+<pre><code>## Loading required package: graph</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: &#39;GOstats&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:AnnotationDbi&#39;:
 ## 
 ##     makeGOGraph</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get your list of DE genes (Entrez Gene IDs)</span>
@@ -278,17 +265,12 @@ universeids &lt;-<span class="st"> </span><span class="kw">rownames</span>(mycou
 <span class="co"># Set the new parameters for the hypergeometric test</span>
 params &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;GOHyperGParams&quot;</span>,<span class="dt">annotation=</span><span class="st">&quot;org.Hs.eg&quot;</span>,<span class="dt">geneIds=</span>entrezgeneids,<span class="dt">universeGeneIds=</span>universeids,<span class="dt">ontology=</span><span class="st">&quot;MF&quot;</span>,<span class="dt">pvalueCutoff=</span><span class="fl">0.01</span>,<span class="dt">testDirection=</span><span class="st">&quot;over&quot;</span>)</code></pre>
 <pre><code>## Loading required package: org.Hs.eg.db</code></pre>
+<pre><code>## </code></pre>
 <pre><code>## Warning in makeValidParams(.Object): removing geneIds not in
 ## universeGeneIds</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Run the test and adjust the pvalues in the output object</span>
-hg &lt;-<span class="st"> </span><span class="kw">hyperGTest</span>(params)</code></pre>
-<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring &#39;pos&#39;
-## argument</code></pre>
-<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring &#39;envir&#39;
-## argument</code></pre>
-<pre><code>## Warning in .local(name, pos, envir, all.names, pattern): ignoring
-## &#39;all.names&#39; argument</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">hg.pv &lt;-<span class="st"> </span><span class="kw">pvalues</span>(hg)
+hg &lt;-<span class="st"> </span><span class="kw">hyperGTest</span>(params)
+hg.pv &lt;-<span class="st"> </span><span class="kw">pvalues</span>(hg)
 hg.pv.fdr &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(hg.pv,<span class="st">&#39;fdr&#39;</span>)
 
 <span class="co"># Identify the significant GO terms at pvalue 0.01</span>
@@ -297,19 +279,19 @@ df &lt;-<span class="st"> </span><span class="kw">summary</span>(hg)
 GOterms.sig &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %in%<span class="st"> </span>sigGO.ID,<span class="st">&quot;Term&quot;</span>]
 
 <span class="kw">length</span>(GOterms.sig )</code></pre>
-<pre><code>## [1] 400</code></pre>
+<pre><code>## [1] 433</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(GOterms.sig)</code></pre>
-<pre><code>## [1] &quot;signaling receptor activity&quot;                    
-## [2] &quot;transmembrane signaling receptor activity&quot;      
-## [3] &quot;signal transducer activity&quot;                     
-## [4] &quot;molecular transducer activity&quot;                  
-## [5] &quot;receptor activity&quot;                              
-## [6] &quot;extracellular ligand-gated ion channel activity&quot;</code></pre>
+<pre><code>## [1] &quot;transmembrane receptor activity&quot;          
+## [2] &quot;signal transducer activity&quot;               
+## [3] &quot;signaling receptor activity&quot;              
+## [4] &quot;transmembrane signaling receptor activity&quot;
+## [5] &quot;receptor activity&quot;                        
+## [6] &quot;molecular transducer activity&quot;</code></pre>
 <h2 id="r-environment">R environment</h2>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre>
-<pre><code>## R version 3.2.2 (2015-08-14)
+<pre><code>## R version 3.3.1 (2016-06-21)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 14.04.2 LTS
+## Running under: Ubuntu 14.04.4 LTS
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
@@ -324,19 +306,19 @@ GOterms.sig &lt;-<span class="st"> </span>df[df[,<span class="dv">1</span>] %in%
 ## [8] datasets  base     
 ## 
 ## other attached packages:
-##  [1] org.Hs.eg.db_3.0.0   GOstats_2.32.0       graph_1.44.1        
-##  [4] Category_2.32.0      GO.db_3.0.0          RSQLite_1.0.0       
-##  [7] DBI_0.3.1            AnnotationDbi_1.28.2 GenomeInfoDb_1.2.5  
-## [10] IRanges_2.0.1        S4Vectors_0.4.0      Matrix_1.2-3        
-## [13] Biobase_2.26.0       BiocGenerics_0.12.1  limma_3.22.7        
+##  [1] GO.db_3.3.0          org.Hs.eg.db_3.3.0   GOstats_2.38.1      
+##  [4] graph_1.50.0         Category_2.38.0      Matrix_1.2-6        
+##  [7] AnnotationDbi_1.34.4 IRanges_2.6.1        S4Vectors_0.10.2    
+## [10] Biobase_2.32.0       BiocGenerics_0.18.0  limma_3.28.17       
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] knitr_1.11            magrittr_1.5          splines_3.2.2        
-##  [4] xtable_1.8-0          lattice_0.20-33       stringr_1.0.0        
-##  [7] tools_3.2.2           grid_3.2.2            AnnotationForge_1.8.2
-## [10] genefilter_1.48.1     survival_2.38-3       RBGL_1.42.0          
-## [13] GSEABase_1.28.0       formatR_1.2.1         evaluate_0.8         
-## [16] stringi_1.0-1         XML_3.98-1.3          annotate_1.44.0</code></pre>
+##  [1] knitr_1.13             magrittr_1.5           splines_3.3.1         
+##  [4] xtable_1.8-2           lattice_0.20-33        stringr_1.0.0         
+##  [7] tools_3.3.1            grid_3.3.1             AnnotationForge_1.14.2
+## [10] DBI_0.4-1              genefilter_1.54.2      survival_2.39-5       
+## [13] RBGL_1.48.1            GSEABase_1.34.0        formatR_1.4           
+## [16] RSQLite_1.0.0          evaluate_0.9           stringi_1.1.1         
+## [19] XML_3.98-1.4           annotate_1.50.0</code></pre>
         </div>
       </div>
       </article>

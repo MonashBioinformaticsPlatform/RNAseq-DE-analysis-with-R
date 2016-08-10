@@ -84,6 +84,26 @@ Time-permitting, you can fit in one of these shorter lessons that cover bigger p
 
 ~~~{.r}
 dat <- read.csv("data/inflammation-01.csv", header = FALSE)
+~~~
+
+
+
+~~~{.output}
+Warning in file(file, "rt"): cannot open file 'data/inflammation-01.csv':
+No such file or directory
+
+~~~
+
+
+
+~~~{.output}
+Error in file(file, "rt"): cannot open the connection
+
+~~~
+
+
+
+~~~{.r}
 animal <- c("m", "o", "n", "k", "e", "y")
 # Challenge - Slicing (subsetting data)
 animal[4:1]  # first 4 characters in reverse order
@@ -158,7 +178,7 @@ max(dat[5, 3:7])
 
 
 ~~~{.output}
-[1] 3
+Error in eval(expr, envir, enclos): object 'dat' not found
 
 ~~~
 
@@ -184,443 +204,23 @@ plot(sd_day_inflammation)
 
 
 
-## [Creating Functions](02-func-R.html)
 
 
-~~~{.r}
-# Challenge - Create a function
-fence <- function(original, wrapper) {
-  answer <- c(wrapper, original, wrapper)
-  return(answer)
-}
-~~~
 
 
-~~~{.r}
-# Challenge - A more advanced function
-analyze <- function(filename) {
-  # Plots the average, min, and max inflammation over time.
-  # Input is character string of a csv file.
-  dat <- read.csv(file = filename, header = FALSE)
-  avg_day_inflammation <- apply(dat, 2, mean)
-  plot(avg_day_inflammation)
-  max_day_inflammation <- apply(dat, 2, max)
-  plot(max_day_inflammation)
-  min_day_inflammation <- apply(dat, 2, min)
-  plot(min_day_inflammation)
-}
 
-# Challenge - rescale
-rescale <- function(v) {
-  # Rescales a vector, v, to lie in the range 0 to 1.
-  L <- min(v)
-  H <- max(v)
-  result <- (v - L) / (H - L)
-  return(result)
-}
-~~~
 
 
-~~~{.r}
-# Challenge - A function with default argument values
-rescale <- function(v, lower = 0, upper = 1) {
-  # Rescales a vector, v, to lie in the range lower to upper.
-  L <- min(v)
-  H <- max(v)
-  result <- (v - L) / (H - L) * (upper - lower) + lower
-  return(result)
-}
-answer <- rescale(dat[, 4], lower = 2, upper = 5)
-min(answer)
-~~~
 
 
 
-~~~{.output}
-[1] 2
 
-~~~
 
 
 
-~~~{.r}
-max(answer)
-~~~
 
 
 
-~~~{.output}
-[1] 5
 
-~~~
 
 
-
-~~~{.r}
-answer <- rescale(dat[, 4], lower = -5, upper = -2)
-min(answer)
-~~~
-
-
-
-~~~{.output}
-[1] -5
-
-~~~
-
-
-
-~~~{.r}
-max(answer)
-~~~
-
-
-
-~~~{.output}
-[1] -2
-
-~~~
-
-## [Analyzing Multiple Data Sets](03-loops-R.html)
-
-* The transition from the previous lesson to this one might be challenging for
-  a very novice audience. Do not rush through the challenges, maybe drop some.
-
-
-~~~{.r}
-# Challenge - Using loops
-print_N <- function(N) {
-  nseq <- seq(N)
-  for (num in nseq) {
-    print(num)
-  }
-}
-print_N(3)
-~~~
-
-
-
-~~~{.output}
-[1] 1
-[1] 2
-[1] 3
-
-~~~
-
-
-
-~~~{.r}
-total <- function(vec) {
-  #calculates the sum of the values in a vector
-  vec_sum <- 0
-  for (num in vec) {
-    vec_sum <- vec_sum + num
-  }
-  return(vec_sum)
-}
-ex_vec <- c(4, 8, 15, 16, 23, 42)
-total(ex_vec)
-~~~
-
-
-
-~~~{.output}
-[1] 108
-
-~~~
-
-
-
-~~~{.r}
-expo <- function(base, power) {
-  result <- 1
-  for (i in seq(power)) {
-    result <- result * base
-  }
-  return(result)
-}
-expo(2, 4)
-~~~
-
-
-
-~~~{.output}
-[1] 16
-
-~~~
-
-
-
-~~~{.r}
-# Challenge - Using loops to analyze multiple files
-analyze_all <- function(pattern) {
-  # Runs the function analyze for each file in the current working directory
-  # that contains the given pattern.
-  filenames <- list.files(path = "data", pattern = pattern, full.names = TRUE)
-  for (f in filenames) {
-    analyze(f)
-  }
-}
-~~~
-
-## [Loops in R](03-supp-loops-in-depth.html)
-
-## [Making Choices](04-cond-colors-R.html)
-
-## [Making Choices](04-cond.html)
-
-
-~~~{.r}
-# Challenge - Using conditions to change behaviour
-plot_dist <- function(x, threshold) {
-  if (length(x) > threshold) {
-    boxplot(x)
-  } else {
-    stripchart(x)
-  }
-}
-
-plot_dist <- function(x, threshold, use_boxplot = TRUE) {
-  if (length(x) > threshold & use_boxplot) {
-    boxplot(x)
-  } else if (length(x) > threshold & !use_boxplot) {
-    hist(x)
-  } else {
-    stripchart(x)
-  }
-}
-
-# Challenge - Changing behaviour of the plot command
-analyze <- function(filename, output = NULL) {
-  # Plots the average, min, and max inflammation over time.
-  # Input:
-  #    filename: character string of a csv file
-  #    output: character string of pdf file for saving
-  if (!is.null(output)) {
-    pdf(output)
-  }
-  dat <- read.csv(file = filename, header = FALSE)
-  avg_day_inflammation <- apply(dat, 2, mean)
-  plot(avg_day_inflammation, type = "l")
-  max_day_inflammation <- apply(dat, 2, max)
-  plot(max_day_inflammation, type = "l")
-  min_day_inflammation <- apply(dat, 2, min)
-  plot(min_day_inflammation, type = "l")
-  if (!is.null(output)) {
-    dev.off()
-  }
-}
-~~~
-
-## [Best Practices for Using R and Designing Programs](06-best-practices-R.html)
-
-## [Command-Line Programs](05-cmdline.html)
-
-
-~~~{.r}
-# Challenge - A simple command line program
-cat arith.R
-~~~
-
-
-
-
-~~~{.output}
-main <- function() {
-  # Performs addition or subtraction from the command line.
-  #
-  # Takes three arguments:
-  # The first and third are the numbers.
-  # The second is either + for addition or - for subtraction.
-  #
-  # Ex. usage:
-  #   Rscript arith.R 1 + 2
-  #   Rscript arith.R 3 - 4
-  #
-  args <- commandArgs(trailingOnly = TRUE)
-  num1 <- as.numeric(args[1])
-  operation <- args[2]
-  num2 <- as.numeric(args[3])
-  if (operation == "+") {
-    answer <- num1 + num2
-    cat(answer)
-  } else if (operation == "-") {
-    answer <- num1 - num2
-    cat(answer)
-  } else {
-    stop("Invalid input. Use + for addition or - for subtraction.")
-  }
-}
-
-main()
-
-~~~
-
-
-~~~{.r}
-cat find-pattern.R
-~~~
-
-
-
-
-~~~{.output}
-main <- function() {
-  # Finds all files in the current directory that contain a given pattern.
-  #
-  # Takes one argument: the pattern to be searched.
-  #
-  # Ex. usage:
-  #   Rscript find-pattern.R csv
-  #
-  args <- commandArgs(trailingOnly = TRUE)
-  pattern <- args[1]
-  files <- list.files(pattern = pattern)
-  cat(files, sep = "\n")
-}
-
-main()
-
-~~~
-
-
-~~~{.r}
-## Challenge - A command line program with arguments
-cat check.R
-~~~
-
-
-
-
-~~~{.output}
-main <- function() {
-  # Checks that all csv files have the same number of rows and columns.
-  #
-  # Takes multiple arguments: the names of the files to be checked.
-  #
-  # Ex. usage:
-  #   Rscript check.R inflammation-*
-  #
-  args <- commandArgs(trailingOnly = TRUE)
-  first_file <- read.csv(args[1], header = FALSE)
-  first_dim <- dim(first_file)
-#   num_rows <- dim(args[1])[1]  # nrow(args[1])
-#   num_cols <- dim(args[1])[2]  # ncol(args[1])
-  for (filename in args[-1]) {
-    new_file <- read.csv(filename, header = FALSE)
-    new_dim <- dim(new_file)
-    if (new_dim[1] != first_dim[1] | new_dim[2] != first_dim[2]) {
-      cat("Not all the data files have the same dimensions.")
-    }
-  }
-}
-
-main()
-
-~~~
-
-
-~~~{.r}
-# Challenge - Shorter command line arguments
-cat readings-usage.R
-~~~
-
-
-
-
-~~~{.output}
-main <- function() {
-  args <- commandArgs(trailingOnly = TRUE)
-  action <- args[1]
-  filenames <- args[-1]
-  if (!(action %in% c("--min", "--mean", "--max"))) {
-    usage()
-  } else if (length(filenames) == 0) {
-    process(file("stdin"), action)
-  } else {  
-    for (f in filenames) {
-      process(f, action)
-    }
-  }
-}
-
-process <- function(filename, action) {
-  dat <- read.csv(file = filename, header = FALSE)
-  
-  if (action == "--min") {
-    values <- apply(dat, 1, min)
-  } else if (action == "--mean") {
-    values <- apply(dat, 1, mean)
-  } else if (action == "--max") {
-    values <- apply(dat, 1, max)
-  }
-  cat(values, sep = "\n")
-}
-
-usage <- function() {
-  cat("usage: Rscript readings-usage.R [--min, --mean, --max] filenames", sep = "\n")
-}
-
-main()
-
-~~~
-
-
-~~~{.r}
-# Challenge - Implementing wc in R
-cat line-count.R
-~~~
-
-
-
-
-~~~{.output}
-main <- function() {
-  args <- commandArgs(trailingOnly = TRUE)
-  if (length(args) > 0) {
-    for (filename in args) {
-      input <- readLines(filename)
-      num_lines <- length(input)
-      cat(filename)
-      cat(" ")
-      cat(num_lines, sep = "\n")
-    }
-  } else {
-    input <- readLines(file("stdin"))
-    num_lines <- length(input)
-    cat(num_lines, sep = "\n")
-  }
-}
-
-main()
-
-~~~
-
-## [Dynamic Reports with knitr](07-knitr-R.html)
-
-## [Making Packages in R](08-making-packages-R.html)
-
-## Using Git in RStudio
-
-Some instructors will demo RStudio's git integration at some point during the
-workshop. This often goes over very well, but there can be a few snags with the
-setup. First, RStudio may not know where to find git. You can specify where git
-is located in _Tools > Global Options > Git/SVN_; on Mac/Linux git is often in
-`usr/bin/git` or `usr/local/bin/git` and on Windows it is often in
-`C:/Program Files (x86)/Git/bin/git.exe`. If you don't know where git is
-installed on someone's computer, open a terminal and try `which git` on
-Mac/Linux, or `where git` or `whereis git.exe` on Windows. See
-[Jenny Bryan's instructions](http://stat545-ubc.github.io/git03_rstudio-meet-git.html)
-for more detail.
-
-If Windows users select the option "Run Git from the Windows command prompt"
-while setting up Git Bash, RStudio will automatically find the git executable.
-If you plan to demo git in RStudio during your workshop, you should edit the
-workshop setup instructions to have the Windows users choose this option during
-setup.
-
-Another common gotcha is that the push/pull buttons in RStudio are grayed out,
-even after you have added a remote and pushed to it from the command line. You
-need to add an upstream tracking reference before you can push and pull directly
-from RStudio; have your learners do `git push -u origin master` from the command
-line and this should resolve the issue.
