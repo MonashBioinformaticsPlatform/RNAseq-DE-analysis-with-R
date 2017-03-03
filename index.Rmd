@@ -1,0 +1,32 @@
+---
+title: "RNAseq analysis with R"
+output: 
+    html_document:
+        theme: cerulean
+        css: style.css
+---
+
+The Monash Bioinformatics Platform wants to help make introductory bioinformatics approaches part of the research landscape in Biomedicine. To do this, a foundation level of expertise amongst as many researchers as possible is an important step forward.
+
+This lesson focuses on enabling researchers to be able to analyse RNASeq (next-gen sequencing) data with R.
+
+#### Prerequisites {.callout}
+
+An understanding of the concepts of files and directories (including working
+directory) is required.
+
+Though not required, we often use RStudio when teaching this lesson.
+
+A basic knowledge of the R language.
+
+
+
+## Files
+
+* [data.zip](data.zip) - files used in this course
+
+
+### Topics
+
+*  [RNAseq Using R (notebook)](RNAseq_DE_analysis_with_R.html)
+*  [RNAseq Using R (solutions)](RNAseq_DE_analysis_with_R.Solutions.html)

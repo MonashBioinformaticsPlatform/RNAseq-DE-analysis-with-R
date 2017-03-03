@@ -8,8 +8,6 @@ You can teach your lessons from there.
 
 ## Contributing
 
-Thanks to [Software Carpentry](http://software-carpentry.org/) for allowing us to take their lesson template and modify it for this course.
-
 **These lessons show 'live' computed output. This means that to edit the lessons, you need to do so on a computer that has all the lesson's required R packages installed.**
 
 When editing topic pages for R lessons, you should change the source R Markdown

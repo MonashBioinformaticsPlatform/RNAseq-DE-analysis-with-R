@@ -1,0 +1,78 @@
+
+body {
+    margin-bottom: 4em;
+}
+
+
+h1,h2,h3,h4,h5,h6 {
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: 50px;
+}
+
+h1.title {
+  font-size: 70px;
+  margin-top: 0.5em;
+}
+
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+
+pre {
+    margin-left: 4em;
+    margin-right: 4em;
+}
+
+.challenge {
+    margin: 4em;
+    padding: 2em;
+    border: 1px solid black;
+    border-radius: 5px;
+    background: #ddf;
+}
+
+.challenge > :first-child {
+    margin-top: 0;
+}
+
+
+.callout {
+    margin: 2em;
+    padding: 2em;
+    border: 1px solid black;
+    border-radius: 5px;
+    background: Cornsilk;
+}
+
+.callout > :first-child {
+    margin-top: 0;
+}
+
+
+.objectives {
+    margin: 2em;
+    padding: 2em;
+    border: 1px solid black;
+    border-radius: 5px;
+    background: #fed;
+}
+
+.objectives > :first-child {
+    margin-top: 0;
+}
